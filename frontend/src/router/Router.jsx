@@ -11,6 +11,7 @@ import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
 import DashboardPage from "../pages/mypage/DashboardPage";
+import RedcardPage from "../pages/mypage/RedcardPage";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "/mypage/dashboard",
         element: <DashboardPage />,
+      },
+      {
+        path: "/mypage/redcard",
+        element: <RedcardPage />,
       },
     ],
   },

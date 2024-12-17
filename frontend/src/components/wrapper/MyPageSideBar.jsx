@@ -9,9 +9,9 @@ export default function MyPageSideBar() {
       url: "/mypage/dashboard",
     },
     {
-      key: "redcards",
+      key: "redcard",
       name: "나의 헌혈증 목록",
-      url: "/mypage/redcards",
+      url: "/mypage/redcard",
     },
     {
       key: "profile",
@@ -24,14 +24,14 @@ export default function MyPageSideBar() {
       url: "/mypage/password",
     },
     {
-      key: "donations",
+      key: "donation",
       name: "기부 목록",
-      url: "/mypage/donations",
+      url: "/mypage/donation",
     },
     {
-      key: "receipts",
+      key: "receipt",
       name: "수혜 목록",
-      url: "/mypage/receipts",
+      url: "/mypage/receipt",
     },
   ];
   return <Sidebar category={CATEGORY_NAME} param={MY_PAGE_SIDEBAR_URLS} />;
