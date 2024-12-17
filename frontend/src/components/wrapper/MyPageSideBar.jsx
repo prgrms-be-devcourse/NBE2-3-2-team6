@@ -19,14 +19,9 @@ export default function MyPageSideBar() {
       url: "/mypage/profile",
     },
     {
-      key: "donation",
-      name: "기부 목록",
-      url: "/mypage/donation",
-    },
-    {
-      key: "receipt",
-      name: "수혜 목록",
-      url: "/mypage/receipt",
+      key: "history",
+      name: "기부 / 수혜 목록",
+      url: "/mypage/history",
     },
   ];
   return <Sidebar category={CATEGORY_NAME} param={MY_PAGE_SIDEBAR_URLS} />;

@@ -13,6 +13,7 @@ import DonatePage from "../pages/DonatePage";
 import DashboardPage from "../pages/mypage/DashboardPage";
 import RedcardPage from "../pages/mypage/RedcardPage";
 import ProfilePage from "../pages/mypage/ProfilePage";
+import HistoryPage from "../pages/mypage/HistoryPage";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/mypage/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/mypage/history",
+        element: <HistoryPage />,
       },
     ],
   },
