@@ -38,7 +38,7 @@ const NoticePage = () => {
             <div className="border rounded-lg">
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
-                <div className="flex-1 px-6 text-sm font-medium text-gray-500">제목</div>
+                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">제목</div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">작성일</div>
                 <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
               </div>
