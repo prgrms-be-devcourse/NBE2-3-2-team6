@@ -12,6 +12,7 @@ import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
 import DashboardPage from "../pages/mypage/DashboardPage";
 import RedcardPage from "../pages/mypage/RedcardPage";
+import ProfilePage from "../pages/mypage/ProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: "/mypage/redcard",
         element: <RedcardPage />,
+      },
+      {
+        path: "/mypage/profile",
+        element: <ProfilePage />,
       },
     ],
   },

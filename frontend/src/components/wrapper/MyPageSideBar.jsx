@@ -19,11 +19,6 @@ export default function MyPageSideBar() {
       url: "/mypage/profile",
     },
     {
-      key: "password",
-      name: "비밀번호 수정",
-      url: "/mypage/password",
-    },
-    {
       key: "donation",
       name: "기부 목록",
       url: "/mypage/donation",
