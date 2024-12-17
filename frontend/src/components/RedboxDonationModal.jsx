@@ -2,13 +2,13 @@ import { useState } from "react";
 
 const Modal = ({ onSubmit, onClose }) => {
   const [quantity, setQuantity] = useState("");
-
+  const [comment, setComment] = useState("");
   const handleSubmit = () => {
     if (!quantity || quantity <= 0) {
       alert("유효한 개수를 입력하세요.");
       return;
     }
-    onSubmit(quantity); 
+    onSubmit(quantity, comment); 
     // onClose(); 
   };
     return (
@@ -22,12 +22,18 @@ const Modal = ({ onSubmit, onClose }) => {
             type="number"
             min="1"
             value={quantity}
-            placeholder="요청할 헌혈증 개수"
+            placeholder="기부할 헌혈증 개수"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             onChange={(e) => setQuantity(e.target.value)}
           />
+        <input
+            type="text"
+            value={comment}
+            placeholder="따뜻한 나눔의 말"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            onChange={(e) => setComment(e.target.value)}
+        />
         </div>
-
         <div className="flex justify-center mt-4 space-x-4">
           <button
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"

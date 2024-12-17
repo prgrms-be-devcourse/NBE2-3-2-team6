@@ -1,34 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Modal from "../components/DonateModal";
+import MemberDonationModal from "../components/MemberDonationModal";
+import RedboxDonationModal from "../components/RedboxDonationModal";
 
 const DonatePage = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleLinkDonateButton = () => {
-    console.log("btn click")
-    navigate("/donate"); // 기본 이동
-  };
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false);
 
   const url = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/redbox';
 
-  const handleSubmit = async (quantity) => {
+  const handleSubmit = async ( quantity, comment, memberId = null) => {
     try {
-      console.log(quantity)
+      const payload = memberId ? { quantity, comment, memberId } : { quantity, comment };
       const response = await fetch(url, {
-        method: 'POST',  // 요청 방법
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',  // 요청 본문 형식
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ quantity }),  // body에 JSON 데이터 전송
+        body: JSON.stringify(payload),
       });
       if (response.ok) {
         alert("기부 성공");
@@ -36,13 +27,12 @@ const DonatePage = () => {
         throw new Error("기부 요청 실패");
       }
     } catch (error) {
-      console.error("기부 오류 : ", error);
+      console.error("기부 오류:", error);
       alert("기부 실패");
     }
-    handleModalClose();
-  } 
-
- 
+    setIsMemberModalOpen(false);
+    setIsRedboxModalOpen(false);
+  };
   
   const fetchData = async() => {
     try {
@@ -71,13 +61,18 @@ const DonatePage = () => {
             <p className="text-gray-600 text-3xl mt-15 mb-20">
               당신의 작은 기부가 누군가에게는 큰 희망이 됩니다
             </p>
-            <button className="bg-pink-500 hover:bg-yellow-500 transition-colors rounded-lg"
-              onClick={handleModalOpen}
+            <button className="bg-green-500 hover:bg-pink-500 transition-colors rounded-lg mr-8"
+              onClick={() => setIsRedboxModalOpen(true)}
             >
               <img src="/src/assets/image.png" alt="레드 박스" className="w-25 h-25" />
-              기부하기
+              레드박스 기부하기
             </button>
-           
+            <button className="bg-yellow-500 hover:bg-blue-500 transition-colors rounded-lg ml-8"
+              onClick={() => setIsMemberModalOpen(true)}
+            >
+              <img src="/src/assets/image.png" alt="레드 박스" className="w-25 h-25" />
+              개인에게 기부하기
+            </button>
           </div>
         </div>
 
@@ -97,14 +92,25 @@ const DonatePage = () => {
               <p className="text-gray-600">도움을 받은 환자</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_articles}</p>
-              <p className="text-gray-600">진행중인 기부 요청</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_articles} 건</p>
+              <button className="text-gray-600 hover:text-black" onClick={()=>{navigate("/community/request")}}>진행중인 기부 요청 확인하기</button>
             </div>
           </div>
         </div>
       </section>
       {/* 모달 컴포넌트 */}
-      {isModalOpen && <Modal onClose={handleModalClose} onSubmit={handleSubmit}/>}
+      {isMemberModalOpen && (
+        <MemberDonationModal
+          onClose={() => setIsMemberModalOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
+      {isRedboxModalOpen && (
+        <RedboxDonationModal
+          onClose={() => setIsRedboxModalOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
     </main>
   );
 };
