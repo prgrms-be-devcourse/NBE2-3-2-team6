@@ -53,7 +53,7 @@ const ArticlePage = () => {
                 <div className="w-16 text-center text-sm font-medium text-gray-500">
                   번호
                 </div>
-                <div className="flex-1 px-6 text-sm font-medium text-gray-500">
+                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
                   제목
                 </div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">
@@ -75,6 +75,7 @@ const ArticlePage = () => {
                       {notice.id}
                     </div>
                     <div className="flex-1 px-6">
+                      {/* TODO : {article.id}로 링크, 기사들은 db에 저장 */}
                       <Link
                         to={`/community/notice/${notice.id}`}
                         className="text-gray-900 hover:text-red-600"
