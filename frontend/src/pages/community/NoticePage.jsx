@@ -3,28 +3,26 @@ import { Link } from "react-router-dom";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 
 const NoticePage = () => {
-  const [data, setData] = useState({
-    notices: [
-      { id: 1, title: "현혈증 기부 시스템 이용 안내", date: "2024-03-15", views: 156 },
-      { id: 2, title: "2024년 헌혈의 집 운영시간 변경 안내", date: "2024-03-10", views: 234 },
-      { id: 3, title: "현혈증 기부 캠페인 안내", date: "2024-03-05", views: 189 },
-      { id: 4, title: "시스템 정기 점검 안내", date: "2024-03-01", views: 145 }
-    ]
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState({ notices: [] });
+
+  const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices'
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("네트워크 응답이 좋지 않습니다.");
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생 : ", error);
+    }
+  };
 
   useEffect(() => {
-    setLoading(false);
+    fetchData(); // 컴포넌트가 마운트될 때 데이터 가져오기
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   return (
     <div className="flex-1 bg-gray-50">
@@ -32,7 +30,7 @@ const NoticePage = () => {
         <CommunitySideBar />
 
         <div className="flex-1 p-8">
-          <div className="bg-white rounded-lg shadow-md p-6 p-6 h-[800px] max-w-6xl">
+          <div className="bg-white rounded-lg shadow-md p-6 h-[800px] max-w-6xl">
             <h1 className="text-2xl font-bold mb-6">공지사항</h1>
 
             <div className="border rounded-lg">
@@ -59,6 +57,7 @@ const NoticePage = () => {
               </div>
             </div>
 
+            {/* TODO 페이지네이션 */}
             <div className="mt-6 flex justify-center">
               <nav className="flex space-x-2">
                 <button className="px-3 py-1 border rounded hover:bg-gray-50">이전</button>
