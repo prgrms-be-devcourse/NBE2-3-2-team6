@@ -40,7 +40,7 @@ const AdminPage = () => {
             className={`w-[17rem] p-6 text-center rounded-lg shadow-md ${
               item.link ? "border-2 border-red-600 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300" : "bg-white"
             }`}
-            onClick={item.link ? () => (window.location.href = "/target-page") : undefined}
+            onClick={item.link ? () => (window.location.href = "/admin/approve") : undefined}
           >
             <h2 className={`text-sm ${item.link ? "text-red-600 font-semibold" : "text-gray-400 font-medium"}`}>
               {item.title}
