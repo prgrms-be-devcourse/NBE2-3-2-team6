@@ -11,7 +11,10 @@ import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
 import AdminPage from "../pages/admin/AdminPage";
+import AdminRequestPage from "../pages/admin/AdminRequestPage";
 import AdminLayout from "../layout/AdminLayout";
+import AdminArticlePage from "../pages/admin/AdminArticlePage";
+import AdminNoticePage from "../pages/admin/AdminNoticePage";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +69,18 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <AdminPage/>,
+      },
+      {
+        path: "/admin/community/request",
+        element: <AdminRequestPage/>,
+      },
+      {
+        path: "/admin/community/article",
+        element: <AdminArticlePage/>,
+      },
+      {
+        path: "/admin/community/notice",
+        element: <AdminNoticePage/>,
       },
     ],
   }
