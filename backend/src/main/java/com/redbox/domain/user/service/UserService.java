@@ -1,5 +1,6 @@
 package com.redbox.domain.user.service;
 
+import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
 import com.redbox.domain.user.dto.VerificationCodeRequest;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,4 +34,13 @@ public class UserService {
         emailVerificationCodeRepository.save(request.getEmail(), verificationCode);
     }
 
+    public boolean validateVerificationCode(ValidateVerificationCodeRequest request) {
+        return emailVerificationCodeRepository.getVerificationCodeByEmail(request.getEmail())
+                .filter(verificationCode -> verificationCode.equals(request.getVerificationCode()))
+                .map(verificationCode -> {
+                    emailVerificationCodeRepository.deleteByEmail(request.getEmail());
+                    return Boolean.TRUE;
+                })
+                .orElse(Boolean.FALSE);
+    }
 }

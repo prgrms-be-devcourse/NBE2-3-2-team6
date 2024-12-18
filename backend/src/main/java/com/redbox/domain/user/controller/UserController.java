@@ -1,9 +1,11 @@
 package com.redbox.domain.user.controller;
 
+import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
 import com.redbox.domain.user.dto.VerificationCodeRequest;
 import com.redbox.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,4 +23,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/auth/email/verify-code")
+    public ResponseEntity<Void> validateVerificationCode(@RequestBody @Valid ValidateVerificationCodeRequest request) {
+        boolean isValid = userService.validateVerificationCode(request);
+        if (isValid) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+    }
 }
