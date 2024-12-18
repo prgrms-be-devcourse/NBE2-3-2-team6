@@ -10,6 +10,7 @@ import AuthLayout from "../layout/AuthLayout";
 import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
+import AdminPage from "../pages/AdminPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
         path: "/community/article",
         element: <ArticlePage />,
       },
+      {
+        path: "/admin/main",
+        element: <AdminPage />,
+      }
     ],
   },
   {
