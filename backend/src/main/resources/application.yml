@@ -41,7 +41,10 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
-
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
 ---
 spring:
   config:
