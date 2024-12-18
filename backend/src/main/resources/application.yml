@@ -1,17 +1,19 @@
 spring:
   profiles:
-    active: test  # 기본 프로필을 local로 지정
+    active: local  # 기본 프로필을 local로 지정
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${mail.username}
-    password: ${mail.password}
+    username: ${mail_username}
+    password: ${mail_password}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  config:
+    import: optional:file:.env[.properties]
 server:
   shutdown: graceful
 ---
@@ -36,9 +38,9 @@ spring:
         dialect: org.hibernate.dialect.MariaDBDialect
   data:
     redis:
-      port: ${redis.port}
-      host: ${redis.host}
-      password: ${redis.password}
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
 
 ---
 spring:

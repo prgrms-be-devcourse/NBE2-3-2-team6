@@ -45,5 +45,5 @@ redis/
 ### QueryDSL QClass ###
 **/generated/
 
-### security.properties ###
-**/resources/*.properties
+### .env ###
+**/resources/.env
