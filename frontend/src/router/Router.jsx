@@ -10,6 +10,7 @@ import AuthLayout from "../layout/AuthLayout";
 import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
+import RequestDetailPage from "../pages/community/RequestDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "/community/request",
         element: <RequestPage />,
+      },
+      {
+        path: "/community/request/:id",
+        element: <RequestDetailPage />
       },
       {
         path: "/community/request/write",
