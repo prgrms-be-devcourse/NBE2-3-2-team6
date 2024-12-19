@@ -1,5 +1,7 @@
 package com.redbox.domain.user.controller;
 
+import com.redbox.domain.user.dto.SignupRequest;
+import com.redbox.domain.user.dto.SignupResponse;
 import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
 import com.redbox.domain.user.dto.VerificationCodeRequest;
 import com.redbox.domain.user.service.UserService;
@@ -31,4 +33,10 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
     }
+
+//    @PostMapping("/auth/signup")
+//    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
+//        SignupResponse response = userService.signup(request);
+//        return ResponseEntity.ok(response);
+//    }
 }
