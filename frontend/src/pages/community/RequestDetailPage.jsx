@@ -3,14 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios";
 
-const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests/${id}`;
-
 const RequestDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [request, setRequest] = useState(null);
   const [likes, setLikes] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
+
+  const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests/${id}`;
 
   useEffect(() => {
     const fetchData = async () => {
