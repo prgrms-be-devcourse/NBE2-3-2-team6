@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios";
+import { ThumbsUp } from 'lucide-react';
+import { HandHeart } from 'lucide-react';
+import RedboxDonationModal from "../../components/RedboxDonationModal"; // 모달 컴포넌트 임포트
 
 const RequestDetailPage = () => {
   const { id } = useParams();
@@ -9,8 +12,9 @@ const RequestDetailPage = () => {
   const [request, setRequest] = useState(null);
   const [likes, setLikes] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
+  const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false); // 모달 상태 추가
 
-  const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests/${id}`;
+  const url = `https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/request/${id}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,8 +35,31 @@ const RequestDetailPage = () => {
     setLikes((prevLikes) => prevLikes + 1);
   };
 
-  const handleDonate = () => {
-    setCurrentAmount((prevAmount) => prevAmount + 1);
+  const handleDonate = async (quantity, comment) => {
+    // 기부 요청 처리 로직 추가
+    try {
+      const donationUrl = 'localhost:5173/donate'; // 실제 기부 API URL
+      const payload = {
+        quantity: parseInt(quantity), // 기부 수량
+        requestId: id, // 현재 게시글 ID
+        comment,
+      };
+      console.log('요청 로그: ', payload);
+      const response = await axios.post(donationUrl, payload);
+      console.log('응답 로그: ', response);
+      
+      if (response.status === 200) {
+        setCurrentAmount((prevAmount) => prevAmount + parseInt(quantity)); // 기부 수량 업데이트
+        alert("기부가 성공적으로 처리되었습니다.");
+      } else {
+        alert("기부 처리 중 오류가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error("기부 오류:", error);
+      alert("기부 요청 실패");
+    }
+
+    setIsRedboxModalOpen(false); // 모달 닫기
   };
 
   return (
@@ -74,16 +101,16 @@ const RequestDetailPage = () => {
                 </button>
                 <button
                   className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
-                  onClick={handleDonate}
+                  onClick={() => setIsRedboxModalOpen(true)} // 모달 열기
                 >
-                  기부
+                  <HandHeart />
                 </button>
                 <span className="mx-2">{currentAmount} 기부</span>
                 <button
                   className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
                   onClick={handleLike}
                 >
-                  따봉
+                  <ThumbsUp />
                 </button>
                 <span className="mx-2">{likes} 따봉</span>
               </div>
@@ -104,6 +131,14 @@ const RequestDetailPage = () => {
           )}
         </div>
       </div>
+
+      {/* 레드박스 기부 모달 컴포넌트 */}
+      {isRedboxModalOpen && (
+        <RedboxDonationModal
+          onClose={() => setIsRedboxModalOpen(false)}
+          onSubmit={handleDonate} // 기부 처리 함수
+        />
+      )}
     </div>
   );
 };
