@@ -11,7 +11,7 @@ const AdminNoticePage = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
   
-const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
+    const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
   
     // 현재 페이지 그룹 계산을 위한 상수
     const PAGE_GROUP_SIZE = 10;
@@ -99,6 +99,7 @@ const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/n
               {/* 페이지네이션 */}
               <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
                 <div className="flex justify-between items-center w-full">
+                  <div className="w-16"></div>
                   <nav className="flex space-x-2 justify-between">
                     {/* 이전 그룹 버튼 */}
                     <button
