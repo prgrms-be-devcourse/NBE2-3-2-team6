@@ -1,35 +1,32 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import axios from "axios"; // axios 임포트
+
+const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests';
+const PAGE_SIZE = 10; // 페이지 크기 상수화
 
 const RequestPage = () => {
   const navigate = useNavigate();
-  const size = 10; // 페이지 크기
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests';
-
   const fetchData = async (page, size) => {
     try {
-      const response = await fetch(`${url}?page=${page - 1}&size=${size}`);
-      if (!response.ok) {
-        throw new Error("네트워크 응답이 좋지 않습니다.");
-      }
-      const result = await response.json();
-      setContent(result.requests); // requests 배열 설정
-      setTotalPages(result.totalPages); // 전체 페이지 수 설정
-      setTotalElements(result.totalElements); // 전체 요청 수 설정
+      const response = await axios.get(`${url}?page=${page - 1}&size=${size}`);
+      setContent(response.data.requests); // requests 배열 설정
+      setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+      setTotalElements(response.data.totalElements); // 전체 요청 수 설정
     } catch (error) {
-      console.error("데이터를 가져오는 중 오류 발생 : ", error);
+      console.error("데이터를 가져오는 중 오류 발생: ", error);
     }
   };
 
   useEffect(() => {
-    fetchData(page, size); // 데이터 가져오기
-  }, [page, size]);
+    fetchData(page, PAGE_SIZE); // 데이터 가져오기
+  }, [page]);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -79,7 +76,7 @@ const RequestPage = () => {
               </div>
 
               <div className="divide-y">
-                {content?.map((request) => (
+                {content.map((request) => (
                   <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
                     <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
                     <div className="flex-1 px-6">
