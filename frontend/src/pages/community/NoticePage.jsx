@@ -1,35 +1,39 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import { Link } from "react-router-dom";
+
+const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
+const PAGE_SIZE = 10; // 페이지 크기
+
 const NoticePage = () => {
-  const size = 10; // 페이지 크기
   const [page, setPage] = useState(1);
   const [data, setData] = useState({ notices: [] });
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
-  const fetchData = async (page, size) => {
+
+  // 공지사항 데이터를 가져오는 함수
+  const fetchNotices = async () => {
     try {
-      const response = await fetch(`${url}?page=${page - 1}&size=${size}`);
-      if (!response.ok) {
-        throw new Error("네트워크 응답이 좋지 않습니다.");
-      }
-      const result = await response.json();
-      setData(result); // notices 배열 설정
-      setTotalPages(result.totalPages); // 전체 페이지 수 설정
-      setTotalElements(result.totalElements); // 전체 요청 수 설정
+      const response = await axios.get(`${url}?page=${page - 1}&size=${PAGE_SIZE}`);
+      setData(response.data);
+      setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+      setTotalElements(response.data.totalElements); // 전체 요청 수 설정
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생: ", error);
     }
   };
+
   useEffect(() => {
-    fetchData(page, size); // 데이터 가져오기
-  }, [page]);
+    fetchNotices(); // 데이터 가져오기
+  }, [page]); // page가 변경될 때마다 호출
+
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
   const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
+
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -37,17 +41,20 @@ const NoticePage = () => {
       window.scrollTo(0, 0);
     }
   };
+
   // 이전/다음 그룹으로 이동
   const handlePrevGroup = () => {
     if (startPage > 1) {
       setPage(startPage - 1);
     }
   };
+
   const handleNextGroup = () => {
     if (endPage < totalPages) {
       setPage(startPage + PAGE_GROUP_SIZE);
     }
   };
+
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
@@ -77,6 +84,7 @@ const NoticePage = () => {
                 ))}
               </div>
             </div>
+
             {/* 페이지네이션 */}
             <div className="mt-6 flex justify-center">
               <nav className="flex space-x-2">
@@ -89,6 +97,7 @@ const NoticePage = () => {
                 <button onClick={handleNextGroup} disabled={endPage === totalPages} className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50">다음</button>
               </nav>
             </div>
+            
             {/* 페이지 정보 가운데 정렬 */}
             <div className="mt-4 flex justify-center">
               <div className="text-sm text-gray-500">{page} / {totalPages} 페이지 (총 {totalElements}개)</div>
@@ -99,4 +108,5 @@ const NoticePage = () => {
     </div>
   );
 };
+
 export default NoticePage;
