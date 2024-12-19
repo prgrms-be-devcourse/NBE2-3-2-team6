@@ -9,23 +9,23 @@ const PAGE_SIZE = 10; // 페이지 크기 상수화
 const RequestPage = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const [content, setContent] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchData = async (page, size) => {
-    try {
-      const response = await axios.get(`${url}?page=${page - 1}&size=${size}`);
-      setContent(response.data.requests); // requests 배열 설정
-      setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
-      setTotalElements(response.data.totalElements); // 전체 요청 수 설정
-    } catch (error) {
-      console.error("데이터를 가져오는 중 오류 발생: ", error);
-    }
-  };
-
   useEffect(() => {
-    fetchData(page, PAGE_SIZE); // 데이터 가져오기
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${url}?page=${page - 1}&size=${PAGE_SIZE}`);
+        setRequests(response.data.requests); // requests 배열 설정
+        setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+        setTotalElements(response.data.totalElements); // 전체 요청 수 설정
+      } catch (error) {
+        console.error("데이터를 가져오는 중 오류 발생: ", error);
+      }
+    };
+
+    fetchData(); // 데이터 가져오기
   }, [page]);
 
   // 현재 페이지 그룹 계산을 위한 상수
@@ -76,7 +76,7 @@ const RequestPage = () => {
               </div>
 
               <div className="divide-y">
-                {content.map((request) => (
+                {requests.map((request) => (
                   <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
                     <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
                     <div className="flex-1 px-6">
@@ -91,24 +91,58 @@ const RequestPage = () => {
               </div>
             </div>
 
+            {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
               <div className="flex justify-between items-center w-full">
-                <div></div>
+                <div className="w-16"></div>
                 <nav className="flex space-x-2 justify-between">
-                  <button onClick={handlePrevGroup} disabled={startPage === 1} className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50">이전</button>
+                  {/* 이전 그룹 버튼 */}
+                  <button
+                    onClick={handlePrevGroup}
+                    disabled={startPage === 1}
+                    className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    이전
+                  </button>
 
-                  {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNum) => (
-                    <button key={pageNum} onClick={() => handlePageChange(pageNum)} className={`px-3 py-1 border rounded ${pageNum === page ? "bg-red-600 text-white" : "hover:bg-gray-50"}`}>
+                  {/* 페이지 번호 버튼들 */}
+                  {Array.from(
+                    { length: endPage - startPage + 1 },
+                    (_, i) => startPage + i
+                  ).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 border rounded ${pageNum === page
+                          ? "bg-red-600 text-white"
+                          : "hover:bg-gray-50"
+                        }`}
+                    >
                       {pageNum}
                     </button>
                   ))}
 
-                  <button onClick={handleNextGroup} disabled={endPage === totalPages} className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50">다음</button>
+                  {/* 다음 그룹 버튼 */}
+                  <button
+                    onClick={handleNextGroup}
+                    disabled={endPage === totalPages}
+                    className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    다음
+                  </button>
                 </nav>
-                <button onClick={handleRequestWrite} className="px-3 py-1 border rounded hover:bg-gray-50">글쓰기</button>
+                <button
+                  onClick={handleRequestWrite}
+                  className="px-3 py-1 border rounded hover:bg-gray-50"
+                >
+                  글쓰기
+                </button>
               </div>
 
-              <div className="text-sm text-gray-500">{page} / {totalPages} 페이지 (총 {totalElements}개)</div>
+              {/* 전체 페이지 정보 */}
+              <div className="text-sm text-gray-500">
+                {page} / {totalPages} 페이지 (총 {totalElements}개)
+              </div>
             </div>
           </div>
         </div>
