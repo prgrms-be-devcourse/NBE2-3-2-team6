@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import axios from "axios";
+
+const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests/${id}`;
 
 const RequestDetailPage = () => {
   const { id } = useParams();
@@ -9,19 +12,13 @@ const RequestDetailPage = () => {
   const [likes, setLikes] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
 
-  const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests/${id}`;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("네트워크 응답이 좋지 않습니다.");
-        }
-        const result = await response.json();
-        setRequest(result);
-        setLikes(result.likes);
-        setCurrentAmount(result.current_amount);
+        const response = await axios.get(url);
+        setRequest(response.data);
+        setLikes(response.data.likes);
+        setCurrentAmount(response.data.current_amount);
       } catch (error) {
         console.error("데이터를 가져오는 중 오류 발생: ", error);
       }
@@ -43,7 +40,7 @@ const RequestDetailPage = () => {
       <div className="flex">
         <CommunitySideBar />
         <div className="flex-1 p-8">
-          {request ? (
+          {request && (
             <>
               <div className="bg-white rounded-lg shadow-md p-6 max-w-6xl">
                 <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
@@ -104,8 +101,6 @@ const RequestDetailPage = () => {
                 </div>
               </div>
             </>
-          ) : (
-            <div className="text-center text-lg font-medium">요청 정보를 찾을 수 없습니다.</div>
           )}
         </div>
       </div>
