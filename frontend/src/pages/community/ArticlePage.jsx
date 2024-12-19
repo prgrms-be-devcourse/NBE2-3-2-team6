@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";  // axios 임포트
+import axios from "axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 
 const url = "https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/articles";
 
 const ArticlePage = () => {
-  const [articles, setArticles] = useState([]);
   const [page, setPage] = useState(1);
+  const [articles, setArticles] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
