@@ -4,43 +4,34 @@ import { useEffect, useState } from "react";
 import AdminSideBar from "../../components/wrapper/AdminSidebar";
 
 const AdminRequestPage = () => {
+  const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests';
+  const PAGE_SIZE = 10; // 페이지 크기 상수화
   const navigate = useNavigate();
-  // 페이지네이션 상태 관리
-  const size = 10;
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const url = "https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/main/hot";
+  const fetchData = async (page, size) => {
+    try {
+      const response = await axios.get(`${url}?page=${page - 1}&size=${size}`);
+      setContent(response.data.requests); // requests 배열 설정
+      setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+      setTotalElements(response.data.totalElements); // 전체 요청 수 설정
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(page, PAGE_SIZE); // 데이터 가져오기
+  }, [page]);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
   const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
-
-  useEffect(() => {
-    const fetchBoards = async (page, size) => {
-      try {
-        const response = await axios.get(url, {
-          params: {
-            page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
-            size,
-          },
-        });
-
-        const { content, totalPages, totalElements } = response.data;
-        setContent(content);
-        setTotalPages(totalPages);
-        setTotalElements(totalElements);
-      } catch (error) {
-        console.error("Error fetching boards:", error);
-      }
-    };
-
-    fetchBoards(page, size);
-  }, [page, size]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -63,9 +54,9 @@ const AdminRequestPage = () => {
     }
   };
 
-  const handleRequestWrite = () => {
-    navigate("/community/request/write");
-  };
+  // const handleRequestWrite = () => {
+  //   navigate("/community/request/write");
+  // };
 
   return (
     <div className="flex-1 bg-gray-50">
@@ -96,28 +87,16 @@ const AdminRequestPage = () => {
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {content?.map((notice) => (
-                  <div
-                    key={notice.id}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {notice.id}
-                    </div>
+              {content.map((request) => (
+                  <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
+                    <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
                     <div className="flex-1 px-6">
-                      <Link
-                        to={`/community/notice/${notice.id}`}
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {notice.title}
+                      <Link to={`/community/request/${request.id}`} className="text-gray-900 hover:text-red-600">
+                        {request.title}
                       </Link>
                     </div>
-                    <div className="w-24 text-center text-sm text-gray-500">
-                      {new Date(notice.createdAt).toLocaleDateString()}
-                    </div>
-                    <div className="w-20 text-center text-sm text-gray-500">
-                      {notice.views}
-                    </div>
+                    <div className="w-24 text-center text-sm text-gray-500">{new Date(request.date).toLocaleDateString()}</div>
+                    <div className="w-20 text-center text-sm text-gray-500">{request.views}</div>
                   </div>
                 ))}
               </div>
@@ -165,7 +144,7 @@ const AdminRequestPage = () => {
                   </button>
                 </nav>
                 <button
-                  onClick={handleRequestWrite}
+                  // onClick={handleRequestWrite}
                   className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                 >
                   글쓰기
