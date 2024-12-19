@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     // 이메일 인증 관련 엔드포인트 허용
                     .requestMatchers("/auth/email/**").permitAll()
+                    // 회원가입, 로그인 관련 엔드포인트 허용
+                    .requestMatchers("/auth/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));

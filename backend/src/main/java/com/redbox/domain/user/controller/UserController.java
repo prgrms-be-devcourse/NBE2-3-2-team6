@@ -34,9 +34,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
     }
 
-//    @PostMapping("/auth/signup")
-//    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
-//        SignupResponse response = userService.signup(request);
-//        return ResponseEntity.ok(response);
-//    }
+    @PostMapping("/auth/signup")
+    public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
+        SignupResponse response = userService.signup(request);
+        return ResponseEntity.ok(response);
+    }
 }
