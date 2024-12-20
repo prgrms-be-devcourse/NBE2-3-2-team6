@@ -14,6 +14,7 @@ import DashboardPage from "../pages/mypage/DashboardPage";
 import RedcardPage from "../pages/mypage/RedcardPage";
 import ProfilePage from "../pages/mypage/ProfilePage";
 import HistoryPage from "../pages/mypage/HistoryPage";
+import RequestListPage from "../pages/mypage/RequestListPage";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "/mypage/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/mypage/request",
+        element: <RequestListPage />,
       },
       {
         path: "/mypage/history",

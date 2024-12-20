@@ -19,6 +19,11 @@ export default function MyPageSideBar() {
       url: "/mypage/profile",
     },
     {
+      key: "request",
+      name: "나의 요청 목록",
+      url: "/mypage/request",
+    },
+    {
       key: "history",
       name: "기부 / 수혜 목록",
       url: "/mypage/history",

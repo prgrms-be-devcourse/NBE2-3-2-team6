@@ -43,7 +43,7 @@ const StepTwo = ({
     }
 
     // 전화번호 형식 체크
-    const phoneRegex = /^[0-9]{10,11}$/;
+    const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
     if (!phoneRegex.test(userInfo.phone.replace(/-/g, ""))) {
       alert("올바른 전화번호 형식이 아닙니다.");
       return false;
