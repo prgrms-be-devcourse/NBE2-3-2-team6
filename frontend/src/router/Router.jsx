@@ -17,6 +17,7 @@ import AdminArticlePage from "../pages/admin/AdminArticlePage";
 import AdminNoticePage from "../pages/admin/AdminNoticePage";
 import ApprovalRequestPage from "../pages/admin/ApprovalRequestPage";
 import AdminNoticeDetailPage from "../pages/admin/AdminNoticeDetailPage";
+import AdminRequestDetailPage from "../pages/admin/AdminRequestDetailPage";
 
 const router = createBrowserRouter([
   {
