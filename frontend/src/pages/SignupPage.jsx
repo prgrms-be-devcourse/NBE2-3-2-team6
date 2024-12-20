@@ -55,13 +55,13 @@ const SignupPage = () => {
       return;
     }
 
+    setIsVerificationSent(true);
+    setTimer(300);
+
     try {
       await axios.post("http://localhost:8080/auth/email/verification-code", {
         email: userInfo.email,
       });
-
-      setIsVerificationSent(true);
-      setTimer(300);
     } catch (error) {
       if (error.response) {
         alert(
