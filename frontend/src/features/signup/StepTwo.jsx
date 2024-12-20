@@ -1,7 +1,10 @@
+import axios from "axios";
+
 const StepTwo = ({
   userInfo,
   setUserInfo,
   handleVerificationRequest,
+  handleVerifyCode,
   isVerificationSent,
   timer,
   formatTime,
@@ -9,18 +12,6 @@ const StepTwo = ({
 }) => {
   // 유효성 검사 함수 추가
   const validateForm = () => {
-    // 필수 필드 체크
-    if (
-      !userInfo.email ||
-      !userInfo.password ||
-      !userInfo.name ||
-      !userInfo.phone ||
-      !userInfo.address
-    ) {
-      alert("필수 항목을 모두 입력해주세요.");
-      return false;
-    }
-
     // 이메일 형식 체크
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userInfo.email)) {
@@ -42,10 +33,25 @@ const StepTwo = ({
       return false;
     }
 
+    if (!userInfo.gender) {
+      alert("성별을 선택해주세요.");
+      return false;
+    }
+
+    if (!userInfo.name) {
+      alert("이름을 입력해주세요.");
+      return false;
+    }
+
     // 전화번호 형식 체크
     const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
-    if (!phoneRegex.test(userInfo.phone.replace(/-/g, ""))) {
+    if (!phoneRegex.test(userInfo.phone)) {
       alert("올바른 전화번호 형식이 아닙니다.");
+      return false;
+    }
+
+    if (!userInfo.isEmailVerified) {
+      alert("이메일 인증이 필요합니다.");
       return false;
     }
 
@@ -53,9 +59,54 @@ const StepTwo = ({
   };
 
   // 다음 버튼 클릭 핸들러 수정
-  const handleSubmit = () => {
-    if (validateForm()) {
-      handleNext();
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const signupData = {
+        email: userInfo.email,
+        password: userInfo.password,
+        userName: userInfo.name,
+        gender: userInfo.gender,
+        birth: userInfo.birth || null, // birth가 선택값이므로 없을 수 있음
+        phoneNumber: userInfo.phone,
+        roadAddress: userInfo.address,
+        extraAddress: userInfo.addressDetail1,
+        detailAddress: userInfo.addressDetail2,
+        verified: userInfo.isEmailVerified,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8080/auth/signup",
+        signupData
+      );
+
+      if (response.status === 200) {
+        handleNext(); // 성공 시 다음 단계로
+      }
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400: // BAD_REQUEST - 이메일 미인증
+            alert("이메일 인증이 완료되지 않았습니다.");
+            break;
+          case 409: // CONFLICT - 중복 이메일
+            alert("이미 가입된 이메일입니다.");
+            break;
+          case 422: // UNPROCESSABLE_ENTITY - 유효성 검증 실패
+            alert(
+              error.response.data.message ||
+                "입력하신 정보를 다시 확인해주세요."
+            );
+            break;
+          default:
+            alert("회원가입 처리 중 오류가 발생했습니다.");
+        }
+      } else {
+        alert("서버와의 통신 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -76,7 +127,7 @@ const StepTwo = ({
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            이메일
+            이메일 <span className="text-red-500">*</span>
           </label>
           <div className="mt-1 flex space-x-2">
             <input
@@ -90,7 +141,7 @@ const StepTwo = ({
             />
             <button
               onClick={handleVerificationRequest}
-              disabled={isVerificationSent}
+              disabled={isVerificationSent || userInfo.isEmailVerified}
               className="px-4 py-2 bg-red-600 text-white rounded-md disabled:bg-gray-300"
             >
               인증하기
@@ -98,7 +149,7 @@ const StepTwo = ({
           </div>
         </div>
 
-        {isVerificationSent && (
+        {(isVerificationSent || userInfo.isEmailVerified) && (
           <div>
             <label className="block text-sm font-medium text-gray-700">
               인증번호
@@ -110,19 +161,39 @@ const StepTwo = ({
                 onChange={(e) =>
                   setUserInfo({ ...userInfo, verificationCode: e.target.value })
                 }
-                className="flex-1 rounded-md border border-gray-300 px-3 py-2"
-                placeholder="인증번호 6자리를 입력하세요"
+                disabled={userInfo.isEmailVerified}
+                className={`flex-1 rounded-md border px-3 py-2 ${
+                  userInfo.isEmailVerified
+                    ? "bg-gray-100 border-gray-300 text-gray-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="인증번호를 입력하세요"
               />
-              <span className="flex items-center text-red-600">
-                {formatTime(timer)}
-              </span>
+              {!userInfo.isEmailVerified && (
+                <>
+                  <span className="flex items-center text-red-600">
+                    {formatTime(timer)}
+                  </span>
+                  <button
+                    onClick={handleVerifyCode}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    인증하기
+                  </button>
+                </>
+              )}
+              {userInfo.isEmailVerified && (
+                <span className="flex items-center text-green-500 font-medium">
+                  인증 완료
+                </span>
+              )}
             </div>
           </div>
         )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            비밀번호
+            비밀번호 <span className="text-red-500">*</span>
           </label>
           <input
             type="password"
@@ -137,7 +208,7 @@ const StepTwo = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            비밀번호 확인
+            비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
             type="password"
@@ -152,7 +223,7 @@ const StepTwo = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            성별
+            성별 <span className="text-red-500">*</span>
           </label>
           <div className="mt-1 space-x-4">
             <label className="inline-flex items-center">
@@ -198,7 +269,7 @@ const StepTwo = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            이름
+            이름 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -211,7 +282,7 @@ const StepTwo = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            연락처
+            연락처 <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
@@ -220,7 +291,7 @@ const StepTwo = ({
               setUserInfo({ ...userInfo, phone: e.target.value })
             }
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-            placeholder="연락처를 입력하세요"
+            placeholder="연락처를 입력하세요 ex) 010-0000-0000"
           />
         </div>
 
