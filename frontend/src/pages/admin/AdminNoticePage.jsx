@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 
 const AdminNoticePage = () => {
+    const navigate = useNavigate();
     // 페이지네이션 상태 관리
     const size = 10;
     const [page, setPage] = useState(1);
@@ -63,6 +64,10 @@ const AdminNoticePage = () => {
         setPage(startPage + PAGE_GROUP_SIZE);
       }
     };
+
+    const handleNoticeWrite = () => {
+      navigate("/admin/community/notice/write")
+    }
   
     return (
       <div className="flex-1 bg-gray-50">
@@ -138,13 +143,13 @@ const AdminNoticePage = () => {
                     </button>
                   </nav>
                   <button
-                    // onClick={handleRequestWrite}
+                    onClick={handleNoticeWrite}
                     className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                   >
                     글쓰기
                   </button>
                 </div>
-  
+                    
                 {/* 전체 페이지 정보 */}
                 <div className="text-sm text-gray-500">
                   {page} / {totalPages} 페이지 (총 {totalElements}개)
