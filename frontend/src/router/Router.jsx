@@ -16,6 +16,7 @@ import AdminLayout from "../layout/AdminLayout";
 import AdminArticlePage from "../pages/admin/AdminArticlePage";
 import AdminNoticePage from "../pages/admin/AdminNoticePage";
 import ApprovalRequestPage from "../pages/admin/ApprovalRequestPage";
+import AdminNoticeDetailPage from "../pages/admin/AdminNoticeDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -86,6 +87,14 @@ const router = createBrowserRouter([
       {
         path: "/admin/approve",
         element: <ApprovalRequestPage/>,
+      },
+      {
+        path: "admin/community/notice/:id",
+        element: <AdminNoticeDetailPage />,
+      },
+      {
+        path: "admin/community/request/:id",
+        element: <AdminRequestDetailPage />,
       },
     ],
   }
