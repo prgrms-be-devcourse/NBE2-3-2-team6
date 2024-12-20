@@ -50,6 +50,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional
     public boolean validateVerificationCode(ValidateVerificationCodeRequest request) {
         return emailVerificationCodeRepository.getVerificationCodeByEmail(request.getEmail())
                 .filter(verificationCode -> verificationCode.equals(request.getVerificationCode()))
