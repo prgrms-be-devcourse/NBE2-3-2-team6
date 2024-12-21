@@ -19,21 +19,15 @@ const AdminRequestPage = () => {
   const [startDate, setStartDate] = useState(""); // 시작 날짜
   const [endDate, setEndDate] = useState(""); // 종료 날짜
 
-  // API URL 맵핑
-  const API_URL = {
-    최신순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/recent",
-    만료순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/finish",
-    좋아요순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/good",
-  };
-
   // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
   const fetchData = async (page, size, status, option, start, end) => {
     try {
-      const url = API_URL[status] || API_URL['최신순'];    
-      //console.log(status, url);
+      const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request"
+
       const params = {
         page: page-1,
         size: size,
+        status: status || "최신순",
         option: option || "전체글",
         startDate: start || "전체",
         endDate: end || "전체",
@@ -58,7 +52,7 @@ const AdminRequestPage = () => {
   // 기본 데이터 로드
   useEffect(() => {
     fetchData(page, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate);
-  }, [page]);
+  }, [page, selectedStatus, selectedOption, startDate, endDate]);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
