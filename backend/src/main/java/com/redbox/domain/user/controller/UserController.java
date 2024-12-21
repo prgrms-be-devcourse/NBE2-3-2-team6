@@ -1,5 +1,7 @@
 package com.redbox.domain.user.controller;
 
+import com.redbox.domain.redcard.dto.RegisterRedCardRequest;
+import com.redbox.domain.redcard.service.RedCardService;
 import com.redbox.domain.user.dto.SignupRequest;
 import com.redbox.domain.user.dto.SignupResponse;
 import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final RedCardService redCardService;
 
     @PostMapping("/auth/email/verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody @Valid VerificationCodeRequest request) {
@@ -38,5 +41,11 @@ public class UserController {
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
         SignupResponse response = userService.signup(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/users/me/redcards")
+    public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedCardRequest request) {
+        redCardService.registerRedCard(request);
+        return ResponseEntity.ok().build();
     }
 }
