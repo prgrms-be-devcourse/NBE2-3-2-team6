@@ -5,7 +5,7 @@ import AdminSideBar from "../../components/wrapper/AdminSidebar";
 import { Search } from 'lucide-react';
 
 const AdminRequestPage = () => {
-  //const url = 'https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/request';
+
   const PAGE_SIZE = 10;
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -13,31 +13,51 @@ const AdminRequestPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  // [필터링] 날짜 선택
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  //select 선택
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedOption, setSelectedOption] = useState('');
+  // 필터링 관련 상태
+  const [selectedStatus, setSelectedStatus] = useState("최신순"); // 기본 정렬
+  const [selectedOption, setSelectedOption] = useState("전체글"); // 기본 옵션
+  const [startDate, setStartDate] = useState(""); // 시작 날짜
+  const [endDate, setEndDate] = useState(""); // 종료 날짜
 
-  const fetchData = async (page, size) => {
+  // API URL 맵핑
+  const API_URL = {
+    최신순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/recent",
+    만료순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/finish",
+    좋아요순: "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request/good",
+  };
+
+  // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
+  const fetchData = async (page, size, status, option, start, end) => {
     try {
-      const response = await axios.get(`${url}?page=${page - 1}&size=${size}`);
-      if (response.data && response.data.requests) {
-        setContent(response.data.requests);
-        setTotalPages(response.data.totalPages);
-        setTotalElements(response.data.totalElements);
-      } else {
-        setContent([]);
+      const url = API_URL[status] || API_URL['최신순'];    
+      //console.log(status, url);
+      const params = {
+        page: page-1,
+        size: size,
+        option: option || "전체글",
+        startDate: start || "전체",
+        endDate: end || "전체",
       }
+      const response = await axios.get(url, {params});
+
+      if (response.status === 200) {
+        if (response.data && response.data.requests) {
+          setContent(response.data.requests);
+          setTotalPages(response.data.totalPages);
+          setTotalElements(response.data.totalElements);
+        } else {
+          setContent([]);
+        }
+      }   
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생: ", error);
       setContent([]);
     }
   };
 
+  // 기본 데이터 로드
   useEffect(() => {
-    fetchData(page, PAGE_SIZE);
+    fetchData(page, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate);
   }, [page]);
 
   // 현재 페이지 그룹 계산을 위한 상수
@@ -67,27 +87,27 @@ const AdminRequestPage = () => {
     }
   };
 
-  // (필터링) 선택값 확인 가능, 필터 처리 로직
-  const filterByContent = () => {
-    try {
-      console.log('Start Date:', startDate);
-      console.log('End Date:', endDate);
-      console.log('Selected Status:', selectedStatus);
-      console.log('Selected Option:', selectedOption);
-      // 여기에 실제 필터링 로직 추가
-    } catch (error) {
-      console.error("필터링 중 오류 발생: ", error);
-    }
+  // 정렬 버튼 클릭 시
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status);
+
+    setSelectedOption("전체글");
+    setStartDate("");
+    setEndDate("");
+
+    fetchData(1, PAGE_SIZE, status, selectedOption, startDate, endDate); // 필터링된 데이터 로드
+    setPage(1);
   };
 
-  // select 선택된 값 출력(상태)
-  const handleStatus = (event) => {
-    setSelectedStatus(event.target.value);
-  };
+  // 필터 버튼 클릭 시
+  const handleFilterClick = () => {
 
-  // select 선택된 값 출력(정렬)
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
+    console.log("옵션:", selectedOption);
+    console.log("시작 날짜:", startDate || "전체");
+    console.log("종료 날짜:", endDate || "전체");
+
+    fetchData(1, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate); // 필터링된 데이터 로드
+    setPage(1);
   };
 
   return (
@@ -100,71 +120,93 @@ const AdminRequestPage = () => {
 
             {/* 게시판 필터링(날짜, 상태, 조회) */}
             <div className="w-100 mb-3">
-              <div className="flex align-items-center justify-start space-x-4">
-                {/* 상태 선택 */}
-                <div className="w-[250px] border p-2 rounded me-3 text-center">
-                  <label htmlFor="dropdown" className="me-2 text-red-600">상태 선택</label>
-                  <select
-                    id="dropdown"
-                    className="form-select"
-                    value={selectedStatus}
-                    onChange={handleStatus}
-                    style={{ width: '120px' }}
-                  >
-                    <option value="" disabled>선택</option>
-                    <option value="진행중">진행중</option>
-                    <option value="마감">마감</option>
-                  </select>
+              <div
+                className="flex items-center justify-between" // 전체 가로 정렬
+                style={{ width: "100%", alignItems: "center" }}
+              >
+                {/* 왼쪽: 최신순, 만료순, 좋아요 순 */}
+                <div className="flex">
+                  {["최신순", "만료순", "좋아요순"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusClick(status)}
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: selectedStatus === status ? "bold" : "500",
+                        color: selectedStatus === status ? "red" : "gray",
+                        cursor: "pointer",
+                        padding: "5px 12px",
+                      }}
+                    >
+                      • {status}
+                    </button>
+                  ))}
                 </div>
 
-                {/* 옵션 선택 */}
-              <div className="w-[250px] border p-2 rounded me-3 text-center">
-                  <label htmlFor="dropdown" className="me-2 text-red-600">옵션 선택</label>
-                  <select
-                    id="dropdown"
-                    className="form-select"
-                    value={selectedOption}
-                    onChange={handleChange}
-                    style={{ width: '120px' }}
-                  >
-                    <option value="" disabled>조회 방법</option>
-                    <option value="조회수">조회수</option>
-                    <option value="추천수">추천수</option>
-                    <option value="최신수">최신수</option>
-                    <option value="진행률">진행률</option>
-                  </select>
-                </div>
+                {/* 오른쪽: 옵션 선택, 날짜 입력, 버튼 */}
+                <div className="flex items-center space-x-4">
+                  {/* 옵션 선택 */}
+                  <div className="w-[230px] border p-1 rounded text-center">
+                    <label htmlFor="dropdown" className="me-2" style={{ fontSize: "15px", fontWeight: "bold" }} >
+                      옵션 선택 
+                    </label>
+                    <select
+                      id="dropdown"
+                      className="form-select"
+                      value={selectedOption}
+                      onChange={(e) => setSelectedOption(e.target.value)}
+                      style={{ 
+                        width: "110px",
+                        fontSize: "15px", // 글씨 크기 조정
+                        textAlignLast: "center", // 드롭다운 화살표 오른쪽 정렬 유지
+                        padding: "5px", // 패딩 조정
+                       }}
+                    >
+                      <option value="" disabled>
+                        선택
+                      </option>
+                      <option value="전체글">전체글</option>
+                      <option value="관심글">관심글</option>
+                    </select>
+                  </div>
 
-                {/* 시작 날짜 - 종료 날짜 */}
-                <div className="w-[330px] border p-2 rounded me-3 text-center">
-                  <label htmlFor="startDate" className="me-2"></label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    className="form-control me-3"
-                    style={{ width: '120px' }}
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                  />
-                  <label htmlFor="endDate" className="me-2"> ~ </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    className="form-control me-3"
-                    style={{ width: '120px' }}
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
+                  {/* 시작 날짜 - 종료 날짜 */}
+                  <div className="w-[330px] border p-2 rounded text-center">
+                    <label htmlFor="startDate" className="me-2"></label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      className="form-control me-3"
+                      style={{ width: "120px", fontSize: "15px" }}
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                    <label htmlFor="endDate" className="me-2">
+                      ~
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      className="form-control me-3"
+                      style={{ width: "120px", fontSize: "15px"  }}
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
 
-                {/* 버튼 - 서버에 전송하는 정보 */}
-                <div className="px-2 py-2 rounded-lg hover:bg-red-200 transition-colors">
-                  <button className="btn btn-dark" onClick={filterByContent}>
-                    <Search className="w- h-6 text-red-500 mx-auto"/>
-                  </button>
+                  {/* 버튼 */}
+                  <div className="px-2 py-2 rounded-lg hover:bg-red-200 transition-colors">
+                    <button
+                      className="btn btn-dark flex items-center justify-center"
+                      onClick={handleFilterClick}
+                    >
+                      <Search className="w- h-6 text-red-500 mx-auto"/>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+
 
             {/* 게시판 리스트 */}
             <div className="border rounded-lg">
