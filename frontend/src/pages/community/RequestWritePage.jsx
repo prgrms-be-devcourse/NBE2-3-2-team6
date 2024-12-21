@@ -7,7 +7,7 @@ import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios";
 
 //const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request/write"
-const url = "localhost8080:/community/request/write"
+const url = "http://localhost:8080/community/request/write"
 
 const RequestWritePage = () => {
 
@@ -66,11 +66,16 @@ const RequestWritePage = () => {
 
       // FormData 생성
       const formData = new FormData();
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("donationAmount", donationAmount);
-      formData.append("donationStartDate", donationStartDate);
-      formData.append("donationEndDate", donationEndDate);
+
+      const postData = {
+        title,
+        content,
+        donationAmount,
+        donationStartDate,
+        donationEndDate,
+      };
+      formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
+
       if (file) {
         formData.append("file", file);
       }
@@ -80,12 +85,6 @@ const RequestWritePage = () => {
         console.log("FormData 내용 확인")
         console.log(key, value);
       }
-
-      // TODO: API 호출로 데이터 저장
-      // const response = await axios.post("http://localhost:8080/boards", {
-      //   title,
-      //   content,
-      // });
 
       const response = await axios.post(url, formData, {
         headers: {
