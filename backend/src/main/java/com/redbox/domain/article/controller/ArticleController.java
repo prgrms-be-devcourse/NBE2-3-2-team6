@@ -2,7 +2,7 @@ package com.redbox.domain.article.controller;
 
 import com.redbox.domain.article.dto.ArticleResponse;
 import com.redbox.domain.article.service.ArticleService;
-import com.redbox.domain.common.dto.PageResponse;
+import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

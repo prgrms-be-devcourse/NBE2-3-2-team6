@@ -3,7 +3,7 @@ package com.redbox.domain.article.service;
 import com.redbox.domain.article.dto.ArticleResponse;
 import com.redbox.domain.article.entity.Article;
 import com.redbox.domain.article.repository.ArticleRepository;
-import com.redbox.domain.common.dto.PageResponse;
+import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

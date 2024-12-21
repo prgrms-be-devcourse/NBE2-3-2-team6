@@ -1,4 +1,4 @@
-package com.redbox.domain.common.dto;
+package com.redbox.global.entity;
 
 import lombok.Getter;
 import org.springframework.data.domain.Page;
