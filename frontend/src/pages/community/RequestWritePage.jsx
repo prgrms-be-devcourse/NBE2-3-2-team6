@@ -68,11 +68,11 @@ const RequestWritePage = () => {
       const formData = new FormData();
 
       const postData = {
-        title,
-        content,
-        donationAmount,
-        donationStartDate,
-        donationEndDate,
+        request_title: title,
+        request_content: content,
+        target_amount: donationAmount,
+        donation_start_date: donationStartDate,
+        donation_end_date: donationEndDate,
       };
       formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
 
