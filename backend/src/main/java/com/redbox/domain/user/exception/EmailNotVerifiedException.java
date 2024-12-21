@@ -5,6 +5,6 @@ import com.redbox.global.exception.ErrorCode;
 
 public class EmailNotVerifiedException extends BusinessException {
     public EmailNotVerifiedException() {
-        super(ErrorCode.EMAIL_NOT_VERIFIED);
+        super(ErrorCode.UNVERIFIED_EMAIL);
     }
 }
