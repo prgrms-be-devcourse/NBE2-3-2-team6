@@ -1,38 +1,66 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import { Link } from "react-router-dom";
+
+const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
+const PAGE_SIZE = 10; // 페이지 크기
 
 const NoticePage = () => {
-  const [data, setData] = useState({ notices: [] });
+  const [page, setPage] = useState(1);
+  const [notices, setNotices] = useState([]); 
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices'
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("네트워크 응답이 좋지 않습니다.");
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const response = await axios.get(`${url}?page=${page - 1}&size=${PAGE_SIZE}`);
+        setNotices(response.data.notices); // notices 상태에 데이터 설정
+        setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+        setTotalElements(response.data.totalElements); // 전체 요청 수 설정
+      } catch (error) {
+        console.error("데이터를 가져오는 중 오류 발생: ", error);
       }
-      const result = await response.json();
-      setData(result);
-    } catch (error) {
-      console.error("데이터를 가져오는 중 오류 발생 : ", error);
+    };
+
+    fetchNotices(); // 데이터 가져오기
+  }, [page]); // page가 변경될 때마다 호출
+
+  // 현재 페이지 그룹 계산을 위한 상수
+  const PAGE_GROUP_SIZE = 10;
+  const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
+  const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
+  const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo(0, 0);
     }
   };
 
-  useEffect(() => {
-    fetchData(); // 컴포넌트가 마운트될 때 데이터 가져오기
-  }, []);
+  // 이전/다음 그룹으로 이동
+  const handlePrevGroup = () => {
+    if (startPage > 1) {
+      setPage(startPage - 1);
+    }
+  };
+
+  const handleNextGroup = () => {
+    if (endPage < totalPages) {
+      setPage(startPage + PAGE_GROUP_SIZE);
+    }
+  };
 
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
         <CommunitySideBar />
-
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6 h-[800px] max-w-6xl">
             <h1 className="text-2xl font-bold mb-6">공지사항</h1>
-
             <div className="border rounded-lg">
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
@@ -40,9 +68,8 @@ const NoticePage = () => {
                 <div className="w-24 text-center text-sm font-medium text-gray-500">작성일</div>
                 <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
               </div>
-
               <div className="divide-y">
-                {data.notices.map((notice) => (
+                {notices.map((notice) => ( // notices 상태를 사용
                   <div key={notice.id} className="flex items-center py-3 hover:bg-gray-50">
                     <div className="w-16 text-center text-sm text-gray-500">{notice.id}</div>
                     <div className="flex-1 px-6">
@@ -50,22 +77,60 @@ const NoticePage = () => {
                         {notice.title}
                       </Link>
                     </div>
-                    <div className="w-24 text-center text-sm text-gray-500">{notice.date}</div>
+                    <div className="w-24 text-center text-sm text-gray-500">{new Date(notice.date).toLocaleDateString()}</div>
                     <div className="w-20 text-center text-sm text-gray-500">{notice.views}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* TODO 페이지네이션 */}
-            <div className="mt-6 flex justify-center">
-              <nav className="flex space-x-2">
-                <button className="px-3 py-1 border rounded hover:bg-gray-50">이전</button>
-                <button className="px-3 py-1 border rounded bg-red-600 text-white">1</button>
-                <button className="px-3 py-1 border rounded hover:bg-gray-50">2</button>
-                <button className="px-3 py-1 border rounded hover:bg-gray-50">3</button>
-                <button className="px-3 py-1 border rounded hover:bg-gray-50">다음</button>
-              </nav>
+            {/* 페이지네이션 */}
+            <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
+              <div className="flex justify-items-center">
+                <div></div>
+                <nav className="flex space-x-2 justify-between">
+                  {/* 이전 그룹 버튼 */}
+                  <button
+                    onClick={handlePrevGroup}
+                    disabled={startPage === 1}
+                    className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    이전
+                  </button>
+
+                  {/* 페이지 번호 버튼들 */}
+                  {Array.from(
+                    { length: endPage - startPage + 1 },
+                    (_, i) => startPage + i
+                  ).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 border rounded ${
+                        pageNum === page
+                          ? "bg-red-600 text-white"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  {/* 다음 그룹 버튼 */}
+                  <button
+                    onClick={handleNextGroup}
+                    disabled={endPage === totalPages}
+                    className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    다음
+                  </button>
+                </nav>
+              </div>
+
+              {/* 전체 페이지 정보 */}
+              <div className="text-sm text-gray-500">
+                {page} / {totalPages} 페이지 (총 {totalElements}개)
+              </div>
             </div>
           </div>
         </div>
