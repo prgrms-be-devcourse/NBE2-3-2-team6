@@ -3,7 +3,7 @@ import axios from "axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import { Link } from "react-router-dom";
 
-const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices';
+const url = 'https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices';
 const PAGE_SIZE = 10; // 페이지 크기
 
 const NoticePage = () => {

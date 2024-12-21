@@ -8,7 +8,7 @@ const NoticeDetailPage = () => {
   const navigate = useNavigate();
   const [notice, setNotice] = useState(null);
 
-  const url = `https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices/${id}`;
+  const url = `https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices/${id}`;
 
   useEffect(() => {
     const fetchNotice = async () => {
