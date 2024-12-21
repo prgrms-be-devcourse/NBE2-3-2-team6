@@ -54,4 +54,12 @@ public class ArticleService {
 
         return new ArticleResponse(article);
     }
+
+    @Transactional
+    public void deleteArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(ArticleNotFoundException::new);
+
+        articleRepository.delete(article);
+    }
 }

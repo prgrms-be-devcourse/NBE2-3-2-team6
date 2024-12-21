@@ -40,4 +40,10 @@ public class ArticleController {
     public ResponseEntity<ArticleResponse> getArticle(@PathVariable Long articleId) {
         return ResponseEntity.ok(articleService.getArticle(articleId));
     }
+
+    @DeleteMapping("/articles/{articleId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
+        articleService.deleteArticle(articleId);
+        return ResponseEntity.ok().build();
+    }
 }
