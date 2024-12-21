@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios"; // axios 임포트
 
-const url = 'https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/request';
+const url = 'https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request';
 const PAGE_SIZE = 10; // 페이지 크기 상수화
 
 const RequestPage = () => {
