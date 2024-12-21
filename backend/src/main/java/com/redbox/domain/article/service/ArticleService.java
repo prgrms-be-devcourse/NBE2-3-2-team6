@@ -45,6 +45,6 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(ArticleNotFoundException::new);
 
-        article.modifyArticle(request);
+        article.updateArticle(request);
     }
 }
