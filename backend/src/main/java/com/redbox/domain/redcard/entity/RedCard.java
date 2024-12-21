@@ -14,12 +14,10 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RedCard {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "redcard_id")
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

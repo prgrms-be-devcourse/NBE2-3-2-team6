@@ -8,7 +8,6 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 public class RegisterRedCardRequest {
-    private Long userId;
     //TODO: valid 처리
     private String cardNumber;
     private Date donationDate;

@@ -43,6 +43,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    //개인적으로 uri 가 조금 적합하지 않은것 같아용 (프론트와 같이 수정 필요)
     @PostMapping("/users/me/redcards")
     public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedCardRequest request) {
         redCardService.registerRedCard(request);
