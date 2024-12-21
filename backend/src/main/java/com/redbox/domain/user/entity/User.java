@@ -1,5 +1,7 @@
 package com.redbox.domain.user.entity;
 
+import com.redbox.domain.redcard.entity.RedCard;
+import com.redbox.domain.redcard.entity.RedCards;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -41,6 +43,9 @@ public class User extends BaseEntity {
 
     private LocalDateTime lastLoginAt;
 
+    @Embedded
+    private RedCards redCards = new RedCards();
+
     @Builder
     public User(String email, String password, String name, LocalDate birth, String phoneNumber, String roadAddress, String extraAddress, String detailAddress, Gender gender, RoleType roleType, Status status) {
         this.email = email;
@@ -54,6 +59,10 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.roleType = roleType;
         this.status = status;
+    }
+
+    public void registerRedCard(RedCard redCard) {
+        this.redCards.addRedCard(redCard);
     }
 
 }
