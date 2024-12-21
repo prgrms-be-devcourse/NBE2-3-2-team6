@@ -47,4 +47,11 @@ public class ArticleService {
 
         article.updateArticle(request);
     }
+
+    public ArticleResponse getArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(ArticleNotFoundException::new);
+
+        return new ArticleResponse(article);
+    }
 }

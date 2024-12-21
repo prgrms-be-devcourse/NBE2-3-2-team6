@@ -35,4 +35,9 @@ public class ArticleController {
         articleService.updateArticle(articleId, request);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/articles/{articleId}")
+    public ResponseEntity<ArticleResponse> getArticle(@PathVariable Long articleId) {
+        return ResponseEntity.ok(articleService.getArticle(articleId));
+    }
 }
