@@ -4,6 +4,7 @@ import com.redbox.domain.user.entity.User;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,11 +19,18 @@ public class Article extends BaseEntity {
     @Column(name = "article_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
     private String subject;
     private String articleUrl;
     private String source;
+
+    @Builder
+    public Article(Long userId, String subject, String articleUrl, String source) {
+        this.userId = userId;
+        this.subject = subject;
+        this.articleUrl = articleUrl;
+        this.source = source;
+    }
 }
