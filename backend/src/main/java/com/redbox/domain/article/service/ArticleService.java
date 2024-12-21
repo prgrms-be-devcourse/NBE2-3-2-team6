@@ -2,7 +2,9 @@ package com.redbox.domain.article.service;
 
 import com.redbox.domain.article.dto.ArticleResponse;
 import com.redbox.domain.article.dto.CreateArticleRequest;
+import com.redbox.domain.article.dto.UpdateArticleRequest;
 import com.redbox.domain.article.entity.Article;
+import com.redbox.domain.article.exception.ArticleNotFoundException;
 import com.redbox.domain.article.repository.ArticleRepository;
 import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +38,13 @@ public class ArticleService {
                 .articleUrl(request.getUrl())
                 .source(request.getSource())
                 .build());
+    }
+
+    @Transactional
+    public void updateArticle(Long articleId, UpdateArticleRequest request) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(ArticleNotFoundException::new);
+
+        article.modifyArticle(request);
     }
 }

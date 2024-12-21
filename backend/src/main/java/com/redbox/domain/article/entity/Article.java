@@ -1,5 +1,6 @@
 package com.redbox.domain.article.entity;
 
+import com.redbox.domain.article.dto.UpdateArticleRequest;
 import com.redbox.domain.user.entity.User;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -32,5 +33,11 @@ public class Article extends BaseEntity {
         this.subject = subject;
         this.articleUrl = articleUrl;
         this.source = source;
+    }
+
+    public void updateArticle(UpdateArticleRequest request) {
+        this.subject = request.getSubject();
+        this.articleUrl = request.getUrl();
+        this.source = request.getSource();
     }
 }
