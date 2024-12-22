@@ -1,12 +1,21 @@
 package com.redbox.domain.request.service;
 
+import com.redbox.domain.request.dto.BoardResponse;
 import com.redbox.domain.request.dto.BoardWriteRequest;
+import com.redbox.domain.request.dto.RequestFilter;
 import com.redbox.domain.request.entity.Board;
+import com.redbox.domain.request.dto.Filter;
 import com.redbox.domain.request.entity.Priority;
 import com.redbox.domain.request.entity.Status;
 import com.redbox.domain.request.repository.BoardWriteRepository;
+import com.redbox.global.entity.PageResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,5 +97,13 @@ public class BoardWriteService {
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
         }
+    }
+
+    public PageResponse<BoardResponse> getRequests(int page, int size, RequestFilter request) {
+        Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
+        // 동적쿼리로 처리하기
+        Page<Board> boardPage = boardWriteRepository.findAll(pageable);
+        Page<BoardResponse> responsePage = boardPage.map(BoardResponse::new);
+        return new PageResponse<>(responsePage);
     }
 }
