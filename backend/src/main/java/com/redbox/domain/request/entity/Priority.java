@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Priority {
 
-    HIGH("상"),Medium("중"),Low("하");
+    HIGH("상"),MEDIUM("중"),LOW("하");
     private final String text;
 
 }

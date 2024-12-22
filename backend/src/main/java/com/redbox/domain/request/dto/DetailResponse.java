@@ -1,11 +1,9 @@
 package com.redbox.domain.request.dto;
 
-import com.redbox.domain.request.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,11 +12,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDetailResponse {
+public class DetailResponse {
     private Long id; // 게시글 ID
     private String title; // 제목
-    private String author; // 작성자
-    private LocalDate date; // 작성일
     private int views; // 조회수
     private LocalDate start_date; // 기부 시작일
     private LocalDate end_date; // 기부 종료일
