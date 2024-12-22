@@ -3,9 +3,11 @@ package com.redbox.domain.request.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Setter
 @Getter
 public class BoardWriteRequest {
 
@@ -23,6 +25,8 @@ public class BoardWriteRequest {
 
     @NotBlank(message = "종료 일자를 입력해주세요")
     private LocalDate donation_end_date; // 기부 종료 일자
+
+    // private String attach_file;
 
     // 파일 정보는 controller 로직에 포함
     // DTO 와 파일 처리 로직은 독립적이다
