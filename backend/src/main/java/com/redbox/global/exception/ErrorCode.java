@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    // 공지사항 관련
+    FAIL_TO_FIND_NOTICE(HttpStatus.NOT_FOUND,"해당 공지사항을 찾을 수 없습니다."),
+
     // 첨부파일 관련
     INVALID_ATTACHFILE(HttpStatus.BAD_REQUEST, "첨부파일이 비어있습니다."),
 

@@ -1,11 +1,13 @@
 package com.redbox.domain.notice.controller;
 
 import com.redbox.domain.notice.dto.NoticeListResponse;
+import com.redbox.domain.notice.dto.NoticeResponse;
 import com.redbox.domain.notice.service.NoticeService;
 import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +23,10 @@ public class NoticeController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(noticeService.getNotices(page, size));
+    }
+
+    @GetMapping("/notices/{noticeId}")
+    public ResponseEntity<NoticeResponse> getNotice(@PathVariable Long noticeId) {
+        return ResponseEntity.ok(noticeService.getNotice(noticeId));
     }
 }
