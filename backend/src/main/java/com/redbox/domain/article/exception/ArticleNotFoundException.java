@@ -5,6 +5,6 @@ import com.redbox.global.exception.ErrorCode;
 
 public class ArticleNotFoundException extends BusinessException {
     public ArticleNotFoundException() {
-        super(ErrorCode.FAILED_TO_FIND_ARTICLE);
+        super(ErrorCode.FAIL_TO_FIND_ARTICLE);
     }
 }

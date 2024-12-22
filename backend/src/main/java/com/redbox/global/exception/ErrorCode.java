@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    // 첨부파일 관련
+    INVALID_ATTACHFILE(HttpStatus.BAD_REQUEST, "첨부파일이 비어있습니다."),
 
     // 헌혈 기사 관련
-    FAILED_TO_FIND_ARTICLE(HttpStatus.NOT_FOUND,"해당 기사를 찾을 수 없습니다."),
+    FAIL_TO_FIND_ARTICLE(HttpStatus.NOT_FOUND,"해당 기사를 찾을 수 없습니다."),
 
     // 회원 가입 관련
     UNVERIFIED_EMAIL(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다."),
