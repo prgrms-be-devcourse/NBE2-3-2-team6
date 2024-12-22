@@ -1,14 +1,15 @@
 package com.redbox.domain.request.entity;
 
-import com.redbox.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @Service
 @NoArgsConstructor
 @Entity
@@ -48,9 +49,12 @@ public class Board {
     private Priority priority; // 중요도
 
     private int request_hits;
-    private int request_likes;
+    private int request_likes; // 좋아요 수
 
-    public Board(long request_id, int user_id, String request_title, String request_content, int target_amount, int current_amount, Status status, LocalDate create_at, String create_by, LocalDate update_at, String update_by, LocalDate donation_start_date, LocalDate donation_end_date, String request_attach_file, Priority priority, int request_hits, int request_likes) {
+    private int file_downloads;
+    // private boolean isLiked; // 개인당 좋아요 여부
+
+    public Board(long request_id, int user_id, String request_title, String request_content, int target_amount, int current_amount, Status status, LocalDate create_at, String create_by, LocalDate update_at, String update_by, LocalDate donation_start_date, LocalDate donation_end_date, String request_attach_file, Priority priority, int request_hits, int request_likes, int file_downloads) {
         this.request_id = request_id;
         this.user_id = user_id;
         this.request_title = request_title;
@@ -68,5 +72,7 @@ public class Board {
         this.priority = priority;
         this.request_hits = request_hits;
         this.request_likes = request_likes;
+        this.file_downloads = file_downloads;
+        //this.isLiked = isLiked;
     }
 }

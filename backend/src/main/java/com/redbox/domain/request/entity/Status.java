@@ -1,5 +1,6 @@
 package com.redbox.domain.request.entity;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

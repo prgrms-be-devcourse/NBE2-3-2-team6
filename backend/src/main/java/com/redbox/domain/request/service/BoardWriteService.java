@@ -72,7 +72,9 @@ public class BoardWriteService {
                 Priority.Medium, // 기본 중요도
 
                 0, // 조회수 초기값 0
-                0 // 좋아요 초기값 0
+                0, // 좋아요 초기값 0
+                0
+//                false
         );
 
         // 데이터베이스에 저장

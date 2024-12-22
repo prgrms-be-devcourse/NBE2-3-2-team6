@@ -75,4 +75,5 @@ spring:
       max-request-size: 10MB
       enabled: true
   file:
+# TODO : 경로 .env 로 바꾸기
     upload-dir: "C:\\Java\\Project2"
