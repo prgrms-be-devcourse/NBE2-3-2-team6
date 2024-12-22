@@ -2,6 +2,7 @@ package com.redbox.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,13 +29,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // API 서버이므로
                 .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/**").permitAll()
                     // 이메일 인증 관련 엔드포인트 허용
-                    .requestMatchers("/auth/email/**").permitAll()
-                    // 회원가입, 로그인 관련 엔드포인트 허용
-                    .requestMatchers("/auth/**").permitAll()
+//                    .requestMatchers("/auth/email/**").permitAll()
+//                    // 회원가입, 로그인 관련 엔드포인트 허용
+//                    .requestMatchers("/auth/**").permitAll()
+//                    /// request 임의로 허용
+//                    .requestMatchers("/community/request/write").permitAll()
                     .anyRequest().authenticated()
                 )
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
         // ... 다른 보안 설정들
 
         return http.build();
