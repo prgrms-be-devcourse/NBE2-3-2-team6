@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
+
+    // 이메일을 기반으로 사용자 정보를 조회
+    User findByEmail(String email);
 }
