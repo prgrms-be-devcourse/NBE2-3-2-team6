@@ -101,7 +101,10 @@ const RequestDetailPage = () => {
                   <div className="w-28 text-right text-sm font-medium text-gray-500">조회수</div>
                   <div className="w-20 text-center text-sm font-medium">{request.views}</div>
                 </div>
-                <p className="mt-4 pl-4 h-[500px]">{request.content}</p> {/* 요청 내용 */}
+                <div
+                  className="mt-4 pl-4 h-[500px]"
+                  dangerouslySetInnerHTML={{ __html: request.content }}
+                ></div>
               </div>
               <div className="mt-4 flex items-center">
                 <button
