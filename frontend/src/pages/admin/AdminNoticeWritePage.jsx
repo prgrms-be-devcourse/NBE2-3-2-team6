@@ -3,46 +3,20 @@ import { useRef, useState } from "react";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import axios from "axios";
 
-//const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request/write"
-const url = "http://localhost:8080/community/request/write"
-
-const RequestWritePage = () => {
-
-  // 날짜를 YYYY-MM-DD 형식으로 변환하는 함수
-  const formatDate = (date) => {
-    return date.toISOString().split("T")[0];
-  };
-
+const AdminNoticeWritePage = () => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
-  const [donationStartDate, setDonationStartDate] = useState(
-    formatDate(new Date())
-  );
-  const [donationEndDate, setDonationEndDate] = useState(
-    formatDate(new Date())
-  );
-  const [donationAmount, setDonationAmount] = useState("1");
   const [attachFile, setAttachFile] = useState("선택된 파일 없음");
+
+  // const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/notice/write"
 
   const handleTitleInput = (e) => {
     setTitle(e.target.value);
-  };
-
-  const handleDonationStartDateInput = (e) => {
-    setDonationStartDate(e.target.value);
-  };
-
-  const handleDonationEndDateInput = (e) => {
-    setDonationEndDate(e.target.value);
-  };
-
-  const handleDonationAmountInput = (e) => {
-    setDonationAmount(e.target.value);
   };
 
   const handleFileButton = () => {
@@ -64,28 +38,22 @@ const RequestWritePage = () => {
         return;
       }
 
-      // FormData 생성
+      // FormData 생성 
       const formData = new FormData();
-
-      const postData = {
-        request_title: title,
-        request_content: content,
-        target_amount: donationAmount,
-        donation_start_date: donationStartDate,
-        donation_end_date: donationEndDate,
-      };
-      formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
-
+      formData.append("title", title);
+      formData.append("content", content);
       if (file) {
         formData.append("file", file);
       }
 
       // FormData 내용 확인
-      for (const [key, value] of formData.entries()) {
-        console.log("FormData 내용 확인")
-        console.log(key, value);
-      }
+    //   for (const [key, value] of formData.entries()) {
+    //     console.log("FormData 내용 확인")
+    //     console.log(key, value);
+    //   }
 
+      // API 호출
+      // TODO : formdata로 제목, 내용, 파일을 다 넣었음(erd에서는 구분되어 있음)
       const response = await axios.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -93,10 +61,10 @@ const RequestWritePage = () => {
       });
 
       if (response.status === 200) {
-        alert("등록 완료");
-        navigate("/community/request");
+        alert("작성되었습니다");
+        navigate("/admin/community/notice");
       } else {
-        alert("등록 실패");
+        console.log(error);
       }
 
     } catch (error) {
@@ -105,14 +73,14 @@ const RequestWritePage = () => {
   };
 
   const handleCancelButton = () => {
-    navigate("/community/request");
+    navigate("/admin/community/notice");
   };
 
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
         {/* 사이드바 */}
-        <CommunitySideBar />
+        <AdminSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h1 className="text-2xl font-bold mb-6">글쓰기</h1>
@@ -125,46 +93,6 @@ const RequestWritePage = () => {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 value={title}
                 onChange={handleTitleInput}
-              />
-            </div>
-
-            {/* 기부 기간 및 요청 개수 */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  기부 시작일자
-                </label>
-                <input
-                  type="date"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={donationStartDate}
-                  onChange={handleDonationStartDateInput}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  기부 종료일자
-                </label>
-                <input
-                  type="date"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={donationEndDate}
-                  onChange={handleDonationEndDateInput}
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                헌혈증 요청 개수
-              </label>
-              <input
-                type="number"
-                min="1"
-                placeholder="요청할 헌혈증 개수를 입력하세요"
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                value={donationAmount}
-                onChange={handleDonationAmountInput}
               />
             </div>
 
@@ -228,4 +156,4 @@ const RequestWritePage = () => {
   );
 };
 
-export default RequestWritePage;
+export default AdminNoticeWritePage;

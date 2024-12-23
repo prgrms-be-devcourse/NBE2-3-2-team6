@@ -1,36 +1,29 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import axios from "axios";
+import React, { useCallback } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const NoticeDetailPage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [notice, setNotice] = useState(null);
+const Notice = ({notice, isAdmin, url}) => {
 
-  const url = `https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices/${id}`;
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchNotice = async () => {
-      try {
-        const response = await axios.get(url);
-        setNotice(response.data);
-      } catch (error) {
-        console.error("데이터를 가져오는 중 오류 발생: ", error);
-      }
-    };
-
-    fetchNotice(); // 데이터 가져오기
-  }, [id]);
-
-  return (
-    <div className="flex-1 bg-gray-50">
-      <div className="flex">
-        <CommunitySideBar />
-        <div className="flex-1 p-8">
+    const handleDeleteBtn = useCallback(async () => {
+        try{
+            const response = await axios.delete(url);
+            if(response.status === 200) {
+        
+                alert(response.data.message); 
+                navigate("/admin/community/notice", {replace: true});
+            }
+        } catch(error) {
+            console.log(error);
+        }  
+      }, [url, navigate]);
+    
+    return (
+        <div className="flex-1 p-8"> 
           {notice && (
             <>
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
                 <h1 className="text-2xl font-bold mb-6">공지사항</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
                 <div className="flex bg-gray-50 py-3 border-b">
@@ -44,13 +37,10 @@ const NoticeDetailPage = () => {
                   <div className="w-20 text-right text-sm font-medium text-gray-500">조회수</div>
                   <div className="w-20 text-center text-sm font-medium">{notice.views}</div>
                 </div>
-                <div
-                  className="mt-4 pl-4 h-[500px]"
-                  dangerouslySetInnerHTML={{ __html: notice.content }}
-                ></div>
+                <p className="mt-4 pl-4">{notice.content}</p>
               </div>
 
-              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
+              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
                 <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                 <div className="bg-gray-50 p-4 rounded-md">
                   {notice.attachments && notice.attachments.map((attachment, index) => (
@@ -62,10 +52,20 @@ const NoticeDetailPage = () => {
                 </div>
               </div>
 
+              {isAdmin && (
+                <div className="w-16 text-center text-sm text-gray-500">
+                <button
+                    onClick={() => handleDeleteBtn()}
+                    className="mx-1 px-3 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+                >
+                  삭제
+                </button>
+            </div>
+              )}
               <div className="mt-4">
                 <button
                   className="bg-gray-300 text-black rounded px-4 py-2"
-                  onClick={() => navigate("/community/notice")}
+                  onClick={() => navigate("/admin/community/notice")}
                 >
                   목록
                 </button>
@@ -73,9 +73,7 @@ const NoticeDetailPage = () => {
             </>
           )}
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default NoticeDetailPage;
+export default Notice;

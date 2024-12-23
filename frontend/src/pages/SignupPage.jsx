@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import StepOne from "../features/signup/StepOne";
 import StepTwo from "../features/signup/StepTwo";
 import StepThree from "../features/signup/StepThree";
@@ -24,11 +25,14 @@ const SignupPage = () => {
     verificationCode: "",
     password: "",
     passwordConfirm: "",
+    gender: "",
+    birth: "",
     name: "",
     phone: "",
     address: "",
     addressDetail1: "",
     addressDetail2: "",
+    isEmailVerified: false,
   });
 
   // 타이머 관리
@@ -45,9 +49,64 @@ const SignupPage = () => {
   }, [timer, isVerificationSent]);
 
   // 이메일 인증 요청
-  const handleVerificationRequest = () => {
+  const handleVerificationRequest = async () => {
+    if (!userInfo.email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+
     setIsVerificationSent(true);
-    setTimer(180); // 3분 = 180초
+    setTimer(300);
+
+    try {
+      await axios.post("http://localhost:8080/auth/email/verification-code", {
+        email: userInfo.email,
+      });
+    } catch (error) {
+      if (error.response) {
+        alert(
+          error.response.data.message || "이메일 인증 요청에 실패했습니다."
+        );
+      } else {
+        alert("서버와의 통신 중 오류가 발생했습니다.");
+      }
+      setIsVerificationSent(false);
+    }
+  };
+
+  // 인증코드 검증 함수
+  const handleVerifyCode = async () => {
+    if (!userInfo.verificationCode) {
+      alert("인증코드를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/email/verify-code",
+        {
+          email: userInfo.email,
+          verificationCode: userInfo.verificationCode,
+        }
+      );
+
+      if (response.status === 200) {
+        setUserInfo((prev) => {
+          const updated = {
+            ...prev,
+            isEmailVerified: true,
+          };
+          return updated;
+        });
+        setTimer(0);
+      }
+    } catch (error) {
+      if (error.response?.status === 422) {
+        alert("유효하지 않은 인증코드입니다.");
+      } else {
+        alert("인증 처리 중 오류가 발생했습니다.");
+      }
+    }
   };
 
   // 약관 전체 동의 처리
@@ -90,6 +149,7 @@ const SignupPage = () => {
             userInfo={userInfo}
             setUserInfo={setUserInfo}
             handleVerificationRequest={handleVerificationRequest}
+            handleVerifyCode={handleVerifyCode}
             isVerificationSent={isVerificationSent}
             timer={timer}
             formatTime={formatTime}

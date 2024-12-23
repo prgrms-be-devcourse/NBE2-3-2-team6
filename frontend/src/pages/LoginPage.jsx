@@ -66,12 +66,12 @@ const LoginPage = () => {
             </div>
 
             <div className="text-sm">
-              <a
-                href="#"
+              <Link
+                to="/find/account"
                 className="font-medium text-red-600 hover:text-red-500"
               >
-                비밀번호 찾기
-              </a>
+                아이디/비밀번호 찾기
+              </Link>
             </div>
           </div>
 

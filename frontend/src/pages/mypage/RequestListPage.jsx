@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import { useEffect, useState } from "react";
+import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
-const url = "http://localhost:8080/articles";
-
-const ArticlePage = () => {
+const RequestListPage = () => {
+  const navigate = useNavigate();
+  // 페이지네이션 상태 관리
   const size = 10;
   const [page, setPage] = useState(1);
-  const [articles, setArticles] = useState([]);
-  const [totalElements, setTotalElements] = useState(0);
+  const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -17,25 +18,30 @@ const ArticlePage = () => {
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
-  useEffect(() => {
-    fetchArticles(page, size);
-  }, [page, size]);
-
-  const fetchArticles = async (page, size) => {
+  const fetchBoards = async (page, size) => {
     try {
-      const response = await axios.get(url, {
-        params: {
-          page: page,
-          size,
-        },
-      });
-      setArticles(response.data.content);
-      setTotalElements(response.data.totalElements);
-      setTotalPages(response.data.totalPages);
+      const response = await axios.get(
+        "http://localhost:8080/mypage/requests",
+        {
+          params: {
+            page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+            size,
+          },
+        }
+      );
+
+      const { content, totalPages, totalElements } = response.data;
+      setContent(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
     } catch (error) {
-      console.error("Error fetching articles:", error);
+      console.error("Error fetching boards:", error);
     }
   };
+
+  useEffect(() => {
+    fetchBoards(page, size);
+  }, [page, size]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -58,16 +64,18 @@ const ArticlePage = () => {
     }
   };
 
+  const handleRequestWrite = () => {
+    navigate("/community/request/write");
+  };
+
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
         {/* 사이드바 */}
-        <CommunitySideBar />
-
-        {/* 메인 컨텐츠 */}
+        <MyPageSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
-            <h1 className="text-2xl font-bold mb-6">헌혈 기사</h1>
+            <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
 
             {/* 게시판 리스트 */}
             <div className="border rounded-lg">
@@ -76,44 +84,53 @@ const ArticlePage = () => {
                 <div className="w-16 text-center text-sm font-medium text-gray-500">
                   번호
                 </div>
-                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
-                  제목
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  상태
                 </div>
-                <div className="w-32 text-center text-sm font-medium text-gray-500">
-                  출처
+                <div className="flex-1 px-6 text-sm font-medium text-gray-500">
+                  제목
                 </div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">
                   작성일
+                </div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  좋아요수
+                </div>
+                <div className="w-20 text-center text-sm font-medium text-gray-500">
+                  조회수
                 </div>
               </div>
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {articles.map((article) => (
+                {content?.map((request) => (
                   <div
-                    key={article.articleNo}
+                    key={request.id}
                     className="flex items-center py-3 hover:bg-gray-50"
                   >
                     <div className="w-16 text-center text-sm text-gray-500">
-                      {article.articleNo}
+                      {request.id}
+                    </div>
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.status}
                     </div>
                     <div className="flex-1 px-6">
-                      <a
-                        href={article.url}
-                        target="_blank" // 새 탭에서 열기
-                        rel="noopener noreferrer" // 보안을 위한 추가 속성
+                      <Link
+                        to={`/community/request/${request.id}`}
                         className="text-gray-900 hover:text-red-600"
                       >
-                        {article.subject}
-                      </a>
-                    </div>
-                    <div className="w-32 text-center text-sm text-gray-500">
-                      {article.source}
+                        {request.title}
+                      </Link>
                     </div>
                     <div className="w-24 text-center text-sm text-gray-500">
-                      {article.createdDate}
+                      {new Date(request.createdAt).toLocaleDateString()}
                     </div>
-                    {/* 출처 추가 */}
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.likes}
+                    </div>
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.views}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -121,8 +138,8 @@ const ArticlePage = () => {
 
             {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
-              <div className="flex justify-items-center">
-                <div></div>
+              <div className="flex justify-between items-center w-full">
+                <div className="w-16"></div>
                 <nav className="flex space-x-2 justify-between">
                   {/* 이전 그룹 버튼 */}
                   <button
@@ -160,6 +177,12 @@ const ArticlePage = () => {
                     다음
                   </button>
                 </nav>
+                <button
+                  onClick={handleRequestWrite}
+                  className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                >
+                  글쓰기
+                </button>
               </div>
 
               {/* 전체 페이지 정보 */}
@@ -174,4 +197,4 @@ const ArticlePage = () => {
   );
 };
 
-export default ArticlePage;
+export default RequestListPage;
