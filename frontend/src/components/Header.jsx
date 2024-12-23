@@ -61,10 +61,16 @@ const Header = () => {
             <div className="invisible group-hover:visible absolute left-0 w-48 bg-white text-black rounded-md shadow-lg">
               <div className="py-1">
                 <Link
-                  to="/blood-house/reservation"
+                  to="/center"
                   className="block px-4 py-2 hover:bg-red-50 hover:text-red-600"
                 >
-                  조회 및 예약
+                  조회
+                </Link>
+                <Link
+                  to="/center/reservation"
+                  className="block px-4 py-2 hover:bg-red-50 hover:text-red-600"
+                >
+                  예약
                 </Link>
               </div>
             </div>

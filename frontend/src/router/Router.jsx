@@ -10,6 +10,7 @@ import AuthLayout from "../layout/AuthLayout";
 import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
+import CenterFindPage from "../pages/center/CenterFindPage";
 import AdminPage from "../pages/admin/AdminPage";
 import AdminRequestPage from "../pages/admin/AdminRequestPage";
 import AdminLayout from "../layout/AdminLayout";
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/community/article",
         element: <ArticlePage />,
+      },
+      {
+        path: "/center",
+        element: <CenterFindPage />,
       },
       {
         path: "/mypage/dashboard",
