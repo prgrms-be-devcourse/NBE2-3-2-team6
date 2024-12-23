@@ -1,9 +1,6 @@
 package com.redbox.domain.user.controller;
 
-import com.redbox.domain.user.dto.SignupRequest;
-import com.redbox.domain.user.dto.SignupResponse;
-import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
-import com.redbox.domain.user.dto.VerificationCodeRequest;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +35,11 @@ public class UserController {
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
         SignupResponse response = userService.signup(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/auth/password/reset")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordResetRequest request) {
+        userService.resetPassword(request);
+        return ResponseEntity.ok().build();
     }
 }

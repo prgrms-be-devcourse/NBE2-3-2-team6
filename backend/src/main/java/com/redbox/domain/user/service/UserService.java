@@ -1,12 +1,10 @@
 package com.redbox.domain.user.service;
 
-import com.redbox.domain.user.dto.SignupRequest;
-import com.redbox.domain.user.dto.SignupResponse;
-import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
-import com.redbox.domain.user.dto.VerificationCodeRequest;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
+import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -85,5 +83,32 @@ public class UserService {
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    @Transactional
+    public void resetPassword(PasswordResetRequest request) {
+        // 사용자 조회
+        User user = userRepository.findByEmailAndName(request.getEmail(), request.getUsername())
+                .orElseThrow(UserNotFoundException::new);
+
+        // 임시 비밀번호 생성
+        String tempPassword = RandomCodeGenerator.generateRandomCode();
+        String encodedPassword = encodePassword(tempPassword);
+        System.out.println("Generated temporary password: " + tempPassword);
+
+        // 비밀번호 변경
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+
+        // 이메일 전송
+        String subject = "[Redbox] 임시 비밀번호 안내";
+        String content = createTempPasswordEmailContent(tempPassword);
+        emailSender.sendMail(request.getEmail(), subject, content);
+    }
+
+    private String createTempPasswordEmailContent(String tempPassword) {
+        Context context = new Context();
+        context.setVariable("tempPassword", tempPassword);
+        return templateEngine.process("temp-password-email", context);
     }
 }
