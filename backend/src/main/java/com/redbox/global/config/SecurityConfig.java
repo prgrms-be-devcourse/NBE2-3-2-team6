@@ -66,17 +66,23 @@ public class SecurityConfig {
                 )
                 // Form 로그인 방식 disable
                 .formLogin((auth) -> auth.disable())
+
                 // 기본 LogoutFilter disable
                 .logout((auth) -> auth.disable())
+
                 // http basic 인증 방식 disable
                 .httpBasic((auth) -> auth.disable())
+
                 // JWTFilter 등록
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+
                 //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
                 // AuthenticationManager() JWTUtil 인수 전달
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class)
+
                 // 로그아웃
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class)
+
                 // 세션 설정
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

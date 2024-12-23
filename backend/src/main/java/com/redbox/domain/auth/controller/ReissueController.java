@@ -19,6 +19,7 @@ public class ReissueController {
 
     private final ReissueService reissueService;
 
+    // 토큰 갱신
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         try {
