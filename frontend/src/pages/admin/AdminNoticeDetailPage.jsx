@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import Notice from "../../components/Notice";
 import axios from "axios";
 

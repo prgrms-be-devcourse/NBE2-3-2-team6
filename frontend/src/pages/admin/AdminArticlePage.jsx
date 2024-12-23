@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 
 const AdminArticlePage = () => {
   const size = 10;
