@@ -20,8 +20,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        // RoleType의 이름을 "ROLE_" 접두사가 포함된 권한으로 설정
-        authorities.add(() -> "ROLE_" + user.getRoleType().name());
+        authorities.add(() -> user.getRoleType().getFullRole()); // "ROLE_ADMIN" 또는 "ROLE_USER"
         return authorities;
     }
 
