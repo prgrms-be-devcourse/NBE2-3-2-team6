@@ -5,6 +5,9 @@ import com.redbox.domain.user.dto.LoginRequest;
 import com.redbox.domain.auth.entity.RefreshEntity;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.repository.RefreshRepository;
+import com.redbox.global.exception.BusinessException;
+import com.redbox.global.exception.ErrorCode;
+import com.redbox.global.util.error.ErrorResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +50,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             String password = loginRequest.getPassword();
 
             if (email == null || password == null) {
-                throw new RuntimeException("Email or password is missing");
+                throw new BusinessException(ErrorCode.EMAIL_OR_PASSWORD_MISSING);
             }
 
             // 인증 토큰 생성
@@ -56,7 +59,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             // AuthenticationManager로 전달하여 인증 시도
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to parse authentication request", e);
+            throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
+        } catch (AuthenticationException e) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 
@@ -89,8 +94,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     // 로그인 실패 시 실행
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        ErrorResponseUtil.handleAuthenticationError(response, failed);
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
