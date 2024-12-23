@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 
-const url = "https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/articles";
+const url = "http://localhost:8080/articles";
 
 const ArticlePage = () => {
+  const size = 10;
   const [page, setPage] = useState(1);
   const [articles, setArticles] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
@@ -17,21 +18,24 @@ const ArticlePage = () => {
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await axios.get(url);
-        setArticles(response.data.articles);
-        setTotalElements(response.data.totalElements);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchArticles(page, size);
+  }, [page, size]);
 
-    fetchArticles();
-  }, []);
+  const fetchArticles = async (page, size) => {
+    try {
+      const response = await axios.get(url, {
+        params: {
+          page: page,
+          size,
+        },
+      });
+      setArticles(response.data.content);
+      setTotalElements(response.data.totalElements);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+    }
+  };
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -69,29 +73,47 @@ const ArticlePage = () => {
             <div className="border rounded-lg">
               {/* 헤더 */}
               <div className="flex bg-gray-50 py-3 border-b">
-                <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
-                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">제목</div>
-                <div className="w-24 text-center text-sm font-medium text-gray-500">작성일</div>
-                <div className="w-32 text-center text-sm font-medium text-gray-500">출처</div>
+                <div className="w-16 text-center text-sm font-medium text-gray-500">
+                  번호
+                </div>
+                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
+                  제목
+                </div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  작성일
+                </div>
+                <div className="w-32 text-center text-sm font-medium text-gray-500">
+                  출처
+                </div>
               </div>
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
                 {articles.map((article) => (
-                  <div key={article.id} className="flex items-center py-3 hover:bg-gray-50">
-                    <div className="w-16 text-center text-sm text-gray-500">{article.id}</div>
+                  <div
+                    key={article.articleNo}
+                    className="flex items-center py-3 hover:bg-gray-50"
+                  >
+                    <div className="w-16 text-center text-sm text-gray-500">
+                      {article.articleNo}
+                    </div>
                     <div className="flex-1 px-6">
                       <a
-                        href={article.link}
+                        href={article.url}
                         target="_blank" // 새 탭에서 열기
                         rel="noopener noreferrer" // 보안을 위한 추가 속성
                         className="text-gray-900 hover:text-red-600"
                       >
-                        {article.title}
+                        {article.subject}
                       </a>
                     </div>
-                    <div className="w-24 text-center text-sm text-gray-500">{article.date}</div>
-                    <div className="w-32 text-center text-sm text-gray-500">{article.source}</div> {/* 출처 추가 */}
+                    <div className="w-32 text-center text-sm text-gray-500">
+                      {article.source}
+                    </div>
+                    <div className="w-24 text-center text-sm text-gray-500">
+                      {article.createdDate}
+                    </div>
+                    {/* 출처 추가 */}
                   </div>
                 ))}
               </div>
@@ -119,10 +141,11 @@ const ArticlePage = () => {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 border rounded ${pageNum === page
-                        ? "bg-red-600 text-white"
-                        : "hover:bg-gray-50"
-                        }`}
+                      className={`px-3 py-1 border rounded ${
+                        pageNum === page
+                          ? "bg-red-600 text-white"
+                          : "hover:bg-gray-50"
+                      }`}
                     >
                       {pageNum}
                     </button>
