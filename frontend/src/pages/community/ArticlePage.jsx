@@ -79,11 +79,11 @@ const ArticlePage = () => {
                 <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
                   제목
                 </div>
-                <div className="w-24 text-center text-sm font-medium text-gray-500">
-                  작성일
-                </div>
                 <div className="w-32 text-center text-sm font-medium text-gray-500">
                   출처
+                </div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  작성일
                 </div>
               </div>
 
