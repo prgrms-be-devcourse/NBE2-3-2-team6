@@ -10,6 +10,13 @@ import AuthLayout from "../layout/AuthLayout";
 import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
+import DashboardPage from "../pages/mypage/DashboardPage";
+import RedcardPage from "../pages/mypage/RedcardPage";
+import ProfilePage from "../pages/mypage/ProfilePage";
+import HistoryPage from "../pages/mypage/HistoryPage";
+import RequestListPage from "../pages/mypage/RequestListPage";
+import FindAccountPage from "../pages/FindAccountPage";
+import FindResultPage from "../pages/FindResultPage";
 import RequestDetailPage from "../pages/community/RequestDetailPage";
 
 const router = createBrowserRouter([
@@ -48,6 +55,26 @@ const router = createBrowserRouter([
         path: "/community/article",
         element: <ArticlePage />,
       },
+      {
+        path: "/mypage/dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/mypage/redcard",
+        element: <RedcardPage />,
+      },
+      {
+        path: "/mypage/profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/mypage/request",
+        element: <RequestListPage />,
+      },
+      {
+        path: "/mypage/history",
+        element: <HistoryPage />,
+      },
     ],
   },
   {
@@ -60,6 +87,14 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignupPage />,
+      },
+      {
+        path: "/find/account",
+        element: <FindAccountPage />,
+      },
+      {
+        path: "/find/result",
+        element: <FindResultPage />,
       },
     ],
   },
