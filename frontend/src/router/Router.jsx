@@ -17,6 +17,7 @@ import HistoryPage from "../pages/mypage/HistoryPage";
 import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
+import RequestDetailPage from "../pages/community/RequestDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/community/request",
         element: <RequestPage />,
+      },
+      {
+        path: "/community/request/:id",
+        element: <RequestDetailPage />
       },
       {
         path: "/community/request/write",
