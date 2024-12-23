@@ -19,6 +19,14 @@ import ApprovalRequestPage from "../pages/admin/ApprovalRequestPage";
 import AdminNoticeDetailPage from "../pages/admin/AdminNoticeDetailPage";
 import AdminRequestDetailPage from "../pages/admin/AdminRequestDetailPage";
 import AdminNoticeWritePage from "../pages/admin/AdminNoticeWritePage";
+import DashboardPage from "../pages/mypage/DashboardPage";
+import RedcardPage from "../pages/mypage/RedcardPage";
+import ProfilePage from "../pages/mypage/ProfilePage";
+import HistoryPage from "../pages/mypage/HistoryPage";
+import RequestListPage from "../pages/mypage/RequestListPage";
+import FindAccountPage from "../pages/FindAccountPage";
+import FindResultPage from "../pages/FindResultPage";
+import RequestDetailPage from "../pages/community/RequestDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -45,12 +53,36 @@ const router = createBrowserRouter([
         element: <RequestPage />,
       },
       {
+        path: "/community/request/:id",
+        element: <RequestDetailPage />
+      },
+      {
         path: "/community/request/write",
         element: <RequestWritePage />,
       },
       {
         path: "/community/article",
         element: <ArticlePage />,
+      },
+      {
+        path: "/mypage/dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/mypage/redcard",
+        element: <RedcardPage />,
+      },
+      {
+        path: "/mypage/profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/mypage/request",
+        element: <RequestListPage />,
+      },
+      {
+        path: "/mypage/history",
+        element: <HistoryPage />,
       },
     ],
   },
@@ -64,6 +96,14 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignupPage />,
+      },
+      {
+        path: "/find/account",
+        element: <FindAccountPage />,
+      },
+      {
+        path: "/find/result",
+        element: <FindResultPage />,
       },
     ],
   },

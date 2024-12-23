@@ -4,8 +4,13 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import axios from "axios";
+
+//const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request/write"
+const url = "http://localhost:8080/community/request/write"
 
 const RequestWritePage = () => {
+
   // 날짜를 YYYY-MM-DD 형식으로 변환하는 함수
   const formatDate = (date) => {
     return date.toISOString().split("T")[0];
@@ -22,7 +27,7 @@ const RequestWritePage = () => {
     formatDate(new Date())
   );
   const [donationAmount, setDonationAmount] = useState("1");
-  const [attachFile, setAttachFile] = useState("");
+  const [attachFile, setAttachFile] = useState("선택된 파일 없음");
 
   const handleTitleInput = (e) => {
     setTitle(e.target.value);
@@ -45,22 +50,55 @@ const RequestWritePage = () => {
   };
 
   const handleAttachFileInput = (e) => {
-    setAttachFile(e.target.value);
+    const file = e.target.files[0]; // 선택한 파일 가져오기
+    setAttachFile(file ? file.name : "선택된 파일 없음");
   };
 
   const handleSaveButton = async () => {
     try {
       const content = editorRef.current?.getInstance().getHTML();
+      const file = fileInputRef.current?.files[0];
 
-      console.log(content);
+      if (!title || !content) {
+        alert("제목과 내용을 입력해주세요");
+        return;
+      }
 
-      // TODO: API 호출로 데이터 저장
-      // const response = await axios.post("http://localhost:8080/boards", {
-      //   title,
-      //   content,
-      // });
+      // FormData 생성
+      const formData = new FormData();
 
-      // navigate("/community/request");
+      const postData = {
+        request_title: title,
+        request_content: content,
+        target_amount: donationAmount,
+        donation_start_date: donationStartDate,
+        donation_end_date: donationEndDate,
+      };
+      formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      // FormData 내용 확인
+      for (const [key, value] of formData.entries()) {
+        console.log("FormData 내용 확인")
+        console.log(key, value);
+      }
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        alert("등록 완료");
+        navigate("/community/request");
+      } else {
+        alert("등록 실패");
+      }
+
     } catch (error) {
       console.error("Error saving post:", error);
     }
@@ -141,16 +179,16 @@ const RequestWritePage = () => {
                   type="file"
                   className="hidden"
                   accept="image/*,.pdf,.doc,.docx"
+                  onChange={handleAttachFileInput}
                 />
                 <button
                   onClick={handleFileButton}
-                  onChange={handleAttachFileInput}
                   className="px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
                   파일 선택
                 </button>
                 <span className="ml-3 text-sm text-gray-500">
-                  선택된 파일 없음
+                  {attachFile}
                 </span>
               </div>
             </div>
