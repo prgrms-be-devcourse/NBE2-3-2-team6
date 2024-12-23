@@ -1,11 +1,13 @@
 package com.redbox.domain.user.entity;
 
+import com.redbox.domain.user.exception.EmptyPasswordException;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,6 +56,20 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.roleType = roleType;
         this.status = status;
+    }
+
+    // 테스트용 생성자
+    public User(String email, String name, String password) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+    }
+
+    public void changePassword(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) {
+            throw new EmptyPasswordException();
+        }
+        this.password = newPassword;
     }
 
 }
