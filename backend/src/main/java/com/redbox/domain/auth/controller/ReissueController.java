@@ -10,17 +10,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @ResponseBody
 @RequiredArgsConstructor
+@RequestMapping("/auth") // /auth 경로로 공통 매핑
 public class ReissueController {
 
     private final ReissueService reissueService;
 
     // 토큰 갱신
-    @PostMapping("/reissue")
+    @PostMapping("/reissue") // /auth/reissue 경로로 매핑
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         try {
             // Refresh 토큰 가져오기

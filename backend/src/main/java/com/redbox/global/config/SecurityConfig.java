@@ -61,7 +61,6 @@ public class SecurityConfig {
                         .requestMatchers("/auth/email/**").permitAll()
                         // 회원가입, 로그인 관련 엔드포인트 허용
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Form 로그인 방식 disable
