@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import { Search } from 'lucide-react';
 
 const AdminRequestPage = () => {

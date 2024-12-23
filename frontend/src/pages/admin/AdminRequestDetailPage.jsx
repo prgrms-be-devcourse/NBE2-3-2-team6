@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import axios from "axios";
 import { ThumbsUp } from 'lucide-react';
 import { HandHeart } from 'lucide-react';
