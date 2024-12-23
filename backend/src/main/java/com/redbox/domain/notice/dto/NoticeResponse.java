@@ -25,9 +25,7 @@ public class NoticeResponse {
         private final String filename;
 
         public AttachFileResponse(AttachFile file) {
-            this.filename = file.getNewFilename() +
-                    '.' +
-                    file.getAttachFileType();
+            this.filename = file.getNewFilename();
         }
     }
 

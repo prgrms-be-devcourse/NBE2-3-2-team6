@@ -5,6 +5,7 @@ import com.redbox.domain.attach.exception.NullAttachFileException;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +33,14 @@ public class Notice extends BaseEntity {
 
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AttachFile> attachFiles = new ArrayList<>();
+
+    @Builder
+    public Notice(Long userId, String noticeTitle, String noticeContent, int noticeHits) {
+        this.userId = userId;
+        this.noticeTitle = noticeTitle;
+        this.noticeContent = noticeContent;
+        this.noticeHits = noticeHits;
+    }
 
     // 연관관계 편의 메서드
     // 비즈니스 로직 상 글 기준으로 움직이기 때문에 여기에 선언

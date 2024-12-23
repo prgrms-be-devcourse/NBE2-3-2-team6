@@ -1,5 +1,8 @@
 package com.redbox.domain.notice.service;
 
+import com.redbox.domain.attach.entity.AttachFile;
+import com.redbox.domain.attach.entity.Category;
+import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
 import com.redbox.domain.notice.dto.NoticeResponse;
 import com.redbox.domain.notice.entity.Notice;
@@ -8,11 +11,16 @@ import com.redbox.domain.notice.repository.NoticeQueryRepository;
 import com.redbox.domain.notice.repository.NoticeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.entity.PageResponse;
+import com.redbox.global.infra.s3.S3Service;
+import com.redbox.global.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +29,7 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final NoticeQueryRepository noticeQueryRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     public PageResponse<NoticeListResponse> getNotices(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -37,9 +46,51 @@ public class NoticeService {
                 .orElseThrow(NoticeNotFoundException::new);
 
         // 글쓴이 조회
-        String writer = userRepository.findNameById(notice.getUserId())
-                .orElse("Unknown");
+        String writer = getWriter(notice);
 
         return new NoticeResponse(notice, writer);
+    }
+
+    @Transactional
+    public NoticeResponse createNotice(CreateNoticeRequest request, List<MultipartFile> files) {
+        Notice notice = Notice.builder()
+                // 로그인 구현 되면 추가
+//                .userId()
+                .noticeTitle(request.getTitle())
+                .noticeContent(request.getContent())
+                .build();
+
+        noticeRepository.save(notice);
+
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                // S3에 파일 업로드하고 URL 받아오기
+                String newFilename = FileUtils.generateNewFilename();
+                String extension = FileUtils.getExtension(file);
+                String fullFilename = newFilename + "." + extension;
+                String fileUrl = s3Service.uploadFile(file, Category.NOTICE, notice.getId(), fullFilename);
+
+                // 파일 데이터 저장
+                AttachFile attachFile = AttachFile.builder()
+                        .category(Category.NOTICE)
+                        .notice(notice)
+                        .originalFilename(file.getOriginalFilename())
+                        .newFilename(fullFilename)
+                        .fileUrl(fileUrl)  // S3 URL 저장
+                        .build();
+
+                notice.addAttachFiles(attachFile);
+            }
+        }
+
+        // 글쓴이
+        String writer = getWriter(notice);
+
+        return new NoticeResponse(notice, writer);
+    }
+
+    private String getWriter(Notice notice) {
+        return userRepository.findNameById(notice.getUserId())
+                .orElse("Unknown");
     }
 }
