@@ -15,6 +15,8 @@ import RedcardPage from "../pages/mypage/RedcardPage";
 import ProfilePage from "../pages/mypage/ProfilePage";
 import HistoryPage from "../pages/mypage/HistoryPage";
 import RequestListPage from "../pages/mypage/RequestListPage";
+import FindAccountPage from "../pages/FindAccountPage";
+import FindResultPage from "../pages/FindResultPage";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +82,14 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignupPage />,
+      },
+      {
+        path: "/find/account",
+        element: <FindAccountPage />,
+      },
+      {
+        path: "/find/result",
+        element: <FindResultPage />,
       },
     ],
   },
