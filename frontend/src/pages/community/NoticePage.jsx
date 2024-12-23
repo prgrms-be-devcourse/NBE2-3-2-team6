@@ -59,7 +59,7 @@ const NoticePage = () => {
       <div className="flex">
         <CommunitySideBar />
         <div className="flex-1 p-8">
-          <div className="bg-white rounded-lg shadow-md p-6 h-[800px] max-w-6xl">
+          <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
             <h1 className="text-2xl font-bold mb-6">공지사항</h1>
             <div className="border rounded-lg">
               <div className="flex bg-gray-50 py-3 border-b">

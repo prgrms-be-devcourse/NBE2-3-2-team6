@@ -30,7 +30,7 @@ const NoticeDetailPage = () => {
         <div className="flex-1 p-8">
           {notice && (
             <>
-              <div className="bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
+              <div className="bg-white rounded-lg shadow-md p-6">
                 <h1 className="text-2xl font-bold mb-6">공지사항</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
                 <div className="flex bg-gray-50 py-3 border-b">
@@ -44,10 +44,13 @@ const NoticeDetailPage = () => {
                   <div className="w-20 text-right text-sm font-medium text-gray-500">조회수</div>
                   <div className="w-20 text-center text-sm font-medium">{notice.views}</div>
                 </div>
-                <p className="mt-4 pl-4">{notice.content}</p>
+                <div
+                  className="mt-4 pl-4 h-[500px]"
+                  dangerouslySetInnerHTML={{ __html: notice.content }}
+                ></div>
               </div>
 
-              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
+              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
                 <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                 <div className="bg-gray-50 p-4 rounded-md">
                   {notice.attachments && notice.attachments.map((attachment, index) => (

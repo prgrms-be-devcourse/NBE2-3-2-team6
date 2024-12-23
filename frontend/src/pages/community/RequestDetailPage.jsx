@@ -80,7 +80,7 @@ const RequestDetailPage = () => {
         <div className="flex-1 p-8">
           {request && ( // 요청 데이터가 있을 때만 렌더링
             <>
-              <div className="bg-white rounded-lg shadow-md p-6 max-w-6xl">
+              <div className="bg-white rounded-lg shadow-md p-6">
                 <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
                 <div className="flex bg-gray-50 py-3 border-b">
@@ -135,7 +135,7 @@ const RequestDetailPage = () => {
                 <span className="mx-2">{likes} 따봉</span> {/* 좋아요 수 표시 */}
               </div>
 
-              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
+              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
                 <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                 <div className="bg-gray-50 p-4 rounded-md">
                   {request.attachments &&
