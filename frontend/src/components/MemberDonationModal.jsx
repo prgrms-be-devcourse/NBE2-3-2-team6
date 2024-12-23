@@ -50,7 +50,7 @@ const Modal = ({ onSubmit, onClose }) => {
       <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
         <label className="block text-sm font-medium text-gray-700 mb-1">
-                따뜻한 마음을 나누어요
+          따뜻한 마음을 나누어요
         </label>
         <div className="flex items-center mb-4 space-x-4">
         <input

@@ -84,11 +84,11 @@ const DonatePage = () => {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-3 gap-8 text-center">
             <div className="p-6 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_donate}</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_donate} 명</p>
               <p className="text-gray-600">현재까지 기부된 현혈증</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_receive_users}</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">{data.cnt_receive_users} 명</p>
               <p className="text-gray-600">도움을 받은 환자</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg">

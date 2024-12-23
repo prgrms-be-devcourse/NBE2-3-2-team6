@@ -23,14 +23,14 @@ const Modal = ({ onSubmit, onClose }) => {
             min="1"
             value={quantity}
             placeholder="기부할 헌혈증 개수"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full px-3 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             onChange={(e) => setQuantity(e.target.value)}
           />
         <input
             type="text"
             value={comment}
             placeholder="따뜻한 나눔의 말"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full px-3 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             onChange={(e) => setComment(e.target.value)}
         />
         </div>
@@ -42,10 +42,10 @@ const Modal = ({ onSubmit, onClose }) => {
             나눔
           </button>
         <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
             onClick={onClose}
           >
-            취소~
+            취소
         </button>
         </div>
         </div>
