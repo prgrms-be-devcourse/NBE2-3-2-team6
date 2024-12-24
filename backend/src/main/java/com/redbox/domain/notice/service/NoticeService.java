@@ -2,12 +2,11 @@ package com.redbox.domain.notice.service;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.entity.Category;
-import com.redbox.domain.attach.exception.AttachFileNotFoundException;
-import com.redbox.domain.attach.exception.FileNotBelongException;
 import com.redbox.domain.attach.repository.AttachFileRepository;
 import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
 import com.redbox.domain.notice.dto.NoticeResponse;
+import com.redbox.domain.notice.dto.UpdateNoticeRequest;
 import com.redbox.domain.notice.entity.Notice;
 import com.redbox.domain.notice.exception.NoticeNotFoundException;
 import com.redbox.domain.notice.repository.NoticeQueryRepository;
@@ -46,20 +45,17 @@ public class NoticeService {
         noticeRepository.increaseHit(noticeId);
 
         // 공지사항 조회
-        Notice notice = noticeRepository.findWithAttachFilesById(noticeId)
+        Notice notice = noticeRepository.findForDetail(noticeId)
                 .orElseThrow(NoticeNotFoundException::new);
 
-        // 글쓴이 조회
-        String writer = getWriter(notice);
-
-        return new NoticeResponse(notice, writer);
+        return new NoticeResponse(notice);
     }
 
     @Transactional
     public NoticeResponse createNotice(CreateNoticeRequest request, List<MultipartFile> files) {
         Notice notice = Notice.builder()
                 // 로그인 구현 되면 추가
-//                .userId()
+//                .user()
                 .noticeTitle(request.getTitle())
                 .noticeContent(request.getContent())
                 .build();
@@ -86,16 +82,15 @@ public class NoticeService {
             }
         }
 
-        // 글쓴이
-        String writer = getWriter(notice);
-
-        return new NoticeResponse(notice, writer);
+        return new NoticeResponse(notice);
     }
 
-    private String getWriter(Notice notice) {
-        return userRepository.findNameById(notice.getUserId())
-                .orElse("Unknown");
+    @Transactional
+    public NoticeResponse updateNotice(Long noticeId, UpdateNoticeRequest request) {
+        Notice notice = noticeRepository.findForUpdate(noticeId)
+                .orElseThrow(NoticeNotFoundException::new);
+        notice.updateNotice(request);
+
+        return new NoticeResponse(notice);
     }
-
-
 }

@@ -2,6 +2,8 @@ package com.redbox.domain.notice.entity;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.exception.NullAttachFileException;
+import com.redbox.domain.notice.dto.UpdateNoticeRequest;
+import com.redbox.domain.user.entity.User;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,7 +25,9 @@ public class Notice extends BaseEntity {
     @Column(name = "notice_id")
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
     private String noticeTitle;
 
     @Lob
@@ -35,8 +39,8 @@ public class Notice extends BaseEntity {
     private List<AttachFile> attachFiles = new ArrayList<>();
 
     @Builder
-    public Notice(Long userId, String noticeTitle, String noticeContent, int noticeHits) {
-        this.userId = userId;
+    public Notice(User user, String noticeTitle, String noticeContent, int noticeHits) {
+        this.user = user;
         this.noticeTitle = noticeTitle;
         this.noticeContent = noticeContent;
         this.noticeHits = noticeHits;
@@ -68,5 +72,10 @@ public class Notice extends BaseEntity {
 
     private boolean isDuplicateAttachFile(AttachFile attachFile) {
         return this.attachFiles.contains(attachFile);
+    }
+
+    public void updateNotice(UpdateNoticeRequest request) {
+        this.noticeTitle = request.getTitle();
+        this.noticeContent = request.getContent();
     }
 }

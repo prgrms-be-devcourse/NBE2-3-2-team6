@@ -12,10 +12,18 @@ import java.util.Optional;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    @Query("select n from Notice n left join fetch n.attachFiles where n.id = :noticeId")
-    Optional<Notice> findWithAttachFilesById(@Param("noticeId") Long id);
-
     @Modifying
     @Query("UPDATE Notice n SET n.noticeHits = n.noticeHits + 1 WHERE n.id = :id")
     void increaseHit(@Param("id") Long id);
+
+    @Query("select n from Notice n" +
+            " left join fetch n.attachFiles af" +
+            " left join fetch n.user u" +
+            " where n.id = :noticeId")
+    Optional<Notice> findForDetail(@Param("noticeId") Long id);
+
+    @Query("select n from Notice n" +
+            " left join fetch n.user u" +
+            " where n.id = :noticeId")
+    Optional<Notice> findForUpdate(@Param("noticeId") Long id);
 }

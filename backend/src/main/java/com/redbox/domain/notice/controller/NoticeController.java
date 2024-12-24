@@ -4,6 +4,7 @@ import com.redbox.domain.attach.service.AttachFileService;
 import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
 import com.redbox.domain.notice.dto.NoticeResponse;
+import com.redbox.domain.notice.dto.UpdateNoticeRequest;
 import com.redbox.domain.notice.service.NoticeService;
 import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
@@ -53,6 +54,15 @@ public class NoticeController {
         return ResponseEntity
                 .created(location)
                 .body(response);
+    }
+
+    @PutMapping("/notices/{noticeId}")
+    public ResponseEntity<NoticeResponse> updateNotice(
+            @PathVariable Long noticeId,
+            @RequestBody @Valid UpdateNoticeRequest request) {
+        return ResponseEntity
+                .ok()
+                .body(noticeService.updateNotice(noticeId, request));
     }
 
     @GetMapping("/notices/{noticeId}/files/{fileId}")

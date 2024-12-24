@@ -33,12 +33,12 @@ public class NoticeResponse {
         }
     }
 
-    public NoticeResponse(Notice notice, String writer) {
+    public NoticeResponse(Notice notice) {
         this.noticeNo = notice.getId();
         this.title = notice.getNoticeTitle();
         this.content = notice.getNoticeContent();
         this.createdDate = notice.getCreatedAt().toLocalDate();
-        this.writer = writer;
+        this.writer = notice.getUser().getName();
         this.views = notice.getNoticeHits();
         this.attachFileResponses = notice.getAttachFiles()
                 .stream().map(AttachFileResponse::new).toList();
