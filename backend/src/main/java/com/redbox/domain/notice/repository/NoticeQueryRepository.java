@@ -29,11 +29,11 @@ public class NoticeQueryRepository {
                         notice.id.as("noticeNo"),
                         notice.noticeTitle.as("title"),
                         notice.createdAt.as("createdDate"),
-                        user.name.as("writer"),
+                        user.name.coalesce("Unknown").as("writer"),
                         notice.noticeHits.as("views"),
                         notice.attachFiles.isNotEmpty().as("hasAttachFiles")
                         )).from(notice)
-                        .leftJoin(user).on(notice.userId.eq(user.id))
+                        .leftJoin(notice.user, user)
                         .orderBy(notice.createdAt.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())

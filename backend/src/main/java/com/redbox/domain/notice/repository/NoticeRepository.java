@@ -26,4 +26,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
             " left join fetch n.user u" +
             " where n.id = :noticeId")
     Optional<Notice> findForUpdate(@Param("noticeId") Long id);
+
+    @Query("select n from Notice n" +
+            " left join fetch n.attachFiles af" +
+            " where n.id = :noticeId")
+    Optional<Notice> findForDelete(@Param("noticeId") Long id);
 }

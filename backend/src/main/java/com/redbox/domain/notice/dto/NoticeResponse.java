@@ -2,11 +2,13 @@ package com.redbox.domain.notice.dto;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.notice.entity.Notice;
+import com.redbox.domain.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor
@@ -38,7 +40,9 @@ public class NoticeResponse {
         this.title = notice.getNoticeTitle();
         this.content = notice.getNoticeContent();
         this.createdDate = notice.getCreatedAt().toLocalDate();
-        this.writer = notice.getUser().getName();
+        this.writer = Optional.ofNullable(notice.getUser())
+                .map(User::getName)
+                .orElse("Unknown");
         this.views = notice.getNoticeHits();
         this.attachFileResponses = notice.getAttachFiles()
                 .stream().map(AttachFileResponse::new).toList();

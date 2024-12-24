@@ -93,4 +93,17 @@ public class NoticeService {
 
         return new NoticeResponse(notice);
     }
+
+    @Transactional
+    public void deleteNotice(Long noticeId) {
+        Notice notice = noticeRepository.findForDelete(noticeId)
+                .orElseThrow(NoticeNotFoundException::new);
+
+        // 파일 삭제
+        for (AttachFile attachFile : notice.getAttachFiles()) {
+            s3Service.deleteFile(attachFile.getCategory(), notice.getId(), attachFile.getNewFilename());
+        }
+
+        noticeRepository.delete(notice);
+    }
 }

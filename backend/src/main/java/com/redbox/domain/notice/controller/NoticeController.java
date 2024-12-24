@@ -65,6 +65,12 @@ public class NoticeController {
                 .body(noticeService.updateNotice(noticeId, request));
     }
 
+    @DeleteMapping("/notices/{noticeId}")
+    public ResponseEntity<Void> deleteNotice(@PathVariable Long noticeId) {
+        noticeService.deleteNotice(noticeId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/notices/{noticeId}/files/{fileId}")
     public ResponseEntity<String> downloadFile(
             @PathVariable Long noticeId,
