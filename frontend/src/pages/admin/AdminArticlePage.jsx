@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
 
@@ -19,7 +19,7 @@ const AdminArticlePage = () => {
     source: "",
   });
 
-  const baseUrl = "http://localhost:8080/articles";
+  const baseUrl = "/articles";
 
   const PAGE_GROUP_SIZE = 10;
   const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
@@ -32,7 +32,7 @@ const AdminArticlePage = () => {
 
   const fetchBoards = async (page, size) => {
     try {
-      const response = await axios.get(baseUrl, {
+      const response = await api.get(baseUrl, {
         params: {
           page: page,
           size,
@@ -54,7 +54,7 @@ const AdminArticlePage = () => {
     if (mode === "edit" && articleId) {
       try {
         // 개별 게시글 조회 API 호출
-        const response = await axios.get(`${baseUrl}/${articleId}`);
+        const response = await api.get(`${baseUrl}/${articleId}`);
         const articleDetail = response.data;
 
         setArticleData({
@@ -99,9 +99,9 @@ const AdminArticlePage = () => {
     e.preventDefault();
     try {
       if (modalMode === "edit") {
-        await axios.put(`${baseUrl}/${selectedArticleId}`, articleData);
+        await api.put(`${baseUrl}/${selectedArticleId}`, articleData);
       } else {
-        await axios.post(baseUrl, articleData);
+        await api.post(baseUrl, articleData);
       }
 
       handleCloseModal();
@@ -114,7 +114,7 @@ const AdminArticlePage = () => {
   const handleDelete = async (articleId) => {
     if (window.confirm("정말로 이 기사를 삭제하시겠습니까?")) {
       try {
-        await axios.delete(`${baseUrl}/${articleId}`);
+        await api.delete(`${baseUrl}/${articleId}`);
         fetchBoards(page, size);
       } catch (error) {
         console.error("Error deleting article:", error);

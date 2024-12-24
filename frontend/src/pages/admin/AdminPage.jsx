@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const AdminPage = () => {
   const [data, setData] = useState([]);
   const [hotList, setHotList] = useState([]);
   const [likedList, setLikeList] = useState([]);
 
-  const url = "https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/main";
+  const url =
+    "https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/main";
 
   const fetchData = async () => {
     try {
-      const { data: result } = await axios.get(url);
-      const { data: resultHot } = await axios.get(`${url}/hot`);
-      const { data: resultLiked } = await axios.get(`${url}/like`);
+      const { data: result } = await api.get(url);
+      const { data: resultHot } = await api.get(`${url}/hot`);
+      const { data: resultLiked } = await api.get(`${url}/like`);
       setData(result);
       setHotList(resultHot.articles);
       setLikeList(resultLiked.articles);
@@ -38,11 +39,23 @@ const AdminPage = () => {
           <div
             key={idx}
             className={`w-[17rem] p-6 text-center rounded-lg shadow-md ${
-              item.link ? "border-2 border-red-600 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300" : "bg-white"
+              item.link
+                ? "border-2 border-red-600 cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                : "bg-white"
             }`}
-            onClick={item.link ? () => (window.location.href = "/admin/approve") : undefined}
+            onClick={
+              item.link
+                ? () => (window.location.href = "/admin/approve")
+                : undefined
+            }
           >
-            <h2 className={`text-sm ${item.link ? "text-red-600 font-semibold" : "text-gray-400 font-medium"}`}>
+            <h2
+              className={`text-sm ${
+                item.link
+                  ? "text-red-600 font-semibold"
+                  : "text-gray-400 font-medium"
+              }`}
+            >
               {item.title}
             </h2>
             <p className="text-3xl font-bold text-red-600">{item.value}</p>
@@ -62,18 +75,33 @@ const AdminPage = () => {
 const ContentSection = ({ title, list }) => (
   <div className="border rounded-lg">
     <div className="flex bg-gray-50 py-3 border-b">
-      <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
+      <div className="w-16 text-center text-sm font-medium text-gray-500">
+        번호
+      </div>
       <div className="flex-1 px-6 text-sm font-medium text-gray-500">제목</div>
-      <div className="w-24 text-center text-sm font-medium text-gray-500">작성일</div>
-      <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
+      <div className="w-24 text-center text-sm font-medium text-gray-500">
+        작성일
+      </div>
+      <div className="w-20 text-center text-sm font-medium text-gray-500">
+        조회수
+      </div>
     </div>
     <div className="divide-y">
       {list.map((article) => (
-        <div key={article.id} className="flex items-center py-3 hover:bg-gray-50">
-          <div className="w-16 text-center text-sm text-gray-500">{article.id}</div>
+        <div
+          key={article.id}
+          className="flex items-center py-3 hover:bg-gray-50"
+        >
+          <div className="w-16 text-center text-sm text-gray-500">
+            {article.id}
+          </div>
           <div className="flex-1 px-6">{article.title}</div>
-          <div className="w-24 text-center text-sm text-gray-500">{article.date}</div>
-          <div className="w-20 text-center text-sm text-gray-500">{article.views}</div>
+          <div className="w-24 text-center text-sm text-gray-500">
+            {article.date}
+          </div>
+          <div className="w-20 text-center text-sm text-gray-500">
+            {article.views}
+          </div>
         </div>
       ))}
     </div>

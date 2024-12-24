@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
@@ -20,15 +20,12 @@ const RequestListPage = () => {
 
   const fetchBoards = async (page, size) => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/mypage/requests",
-        {
-          params: {
-            page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
-            size,
-          },
-        }
-      );
+      const response = await api.get("/mypage/requests", {
+        params: {
+          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+          size,
+        },
+      });
 
       const { content, totalPages, totalElements } = response.data;
       setContent(content);

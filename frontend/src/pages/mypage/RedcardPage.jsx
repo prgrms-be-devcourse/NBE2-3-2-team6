@@ -1,5 +1,5 @@
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 
 const RedCardPage = () => {
@@ -75,7 +75,7 @@ const RedCardPage = () => {
 
   const fetchRedcards = async (page, size) => {
     try {
-      const response = await axios.get("http://localhost:8080/boards", {
+      const response = await api.get("/boards", {
         params: {
           page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
           size,
@@ -140,7 +140,7 @@ const RedCardPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/redcards", redCardData);
+      await api.post("/redcards", redCardData);
       handleCloseModal();
       // 데이터 새로고침을 위해 현재 페이지 다시 불러오기
       fetchRedcards(page, size);

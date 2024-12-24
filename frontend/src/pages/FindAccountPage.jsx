@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../lib/axios";
 import logo from "../assets/image.png";
 
 const FindAccountPage = () => {
@@ -45,7 +45,7 @@ const FindAccountPage = () => {
     setError("");
 
     try {
-      const response = await axios.post("/find/id", {
+      const response = await api.post("/find/id", {
         name: idFormData.name,
         phone: idFormData.phone.replace, // 하이픈 제거
       });
@@ -74,7 +74,7 @@ const FindAccountPage = () => {
     setError("");
 
     try {
-      const response = await axios.post("/find/password", {
+      const response = await api.post("/find/password", {
         email: passwordFormData.email,
         name: passwordFormData.name,
       });

@@ -4,13 +4,12 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import axios from "axios";
+import api from "../../lib/axios";
 
 //const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request/write"
-const url = "http://localhost:8080/community/request/write"
+const url = "/community/request/write";
 
 const RequestWritePage = () => {
-
   // 날짜를 YYYY-MM-DD 형식으로 변환하는 함수
   const formatDate = (date) => {
     return date.toISOString().split("T")[0];
@@ -74,7 +73,10 @@ const RequestWritePage = () => {
         donation_start_date: donationStartDate,
         donation_end_date: donationEndDate,
       };
-      formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
+      formData.append(
+        "post",
+        new Blob([JSON.stringify(postData)], { type: "application/json" })
+      );
 
       if (file) {
         formData.append("file", file);
@@ -82,11 +84,11 @@ const RequestWritePage = () => {
 
       // FormData 내용 확인
       for (const [key, value] of formData.entries()) {
-        console.log("FormData 내용 확인")
+        console.log("FormData 내용 확인");
         console.log(key, value);
       }
 
-      const response = await axios.post(url, formData, {
+      const response = await api.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -98,7 +100,6 @@ const RequestWritePage = () => {
       } else {
         alert("등록 실패");
       }
-
     } catch (error) {
       console.error("Error saving post:", error);
     }
@@ -187,9 +188,7 @@ const RequestWritePage = () => {
                 >
                   파일 선택
                 </button>
-                <span className="ml-3 text-sm text-gray-500">
-                  {attachFile}
-                </span>
+                <span className="ml-3 text-sm text-gray-500">{attachFile}</span>
               </div>
             </div>
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import Notice from "../../components/Notice";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const AdminNoticeDetailPage = () => {
   const { id } = useParams();
@@ -10,13 +10,14 @@ const AdminNoticeDetailPage = () => {
   const [notice, setNotice] = useState(null);
   const [isAdmin, setIsAdmin] = useState(true);
 
-  const url = 'https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices/${id}';
+  const url =
+    "https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices/${id}";
   //const url = https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices/${id};
 
   useEffect(() => {
     const fetchNotice = async () => {
       try {
-        const response = await axios.get(url);
+        const response = await api.get(url);
         setNotice(response.data);
         setIsAdmin(isAdmin);
       } catch (error) {
@@ -31,7 +32,7 @@ const AdminNoticeDetailPage = () => {
     <div className="flex-1 bg-gray-50">
       <div className="flex">
         <AdminSideBar />
-        <Notice notice={notice} isAdmin={isAdmin} url={url}/>
+        <Notice notice={notice} isAdmin={isAdmin} url={url} />
       </div>
     </div>
   );

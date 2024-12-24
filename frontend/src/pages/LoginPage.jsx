@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../lib/axios";
 import logo from "../assets/image.png";
 
 const LoginPage = () => {
@@ -14,18 +14,15 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      const response = await api.post("/auth/login", {
         email,
         password,
       });
 
-      const { accessToken, refreshToken } = response.data;
-
-      // 토큰을 로컬 스토리지에 저장
+      // 헤더에서 access 토큰을 가져와서 localStorage에 저장
+      const accessToken = response.headers["access"];
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
 
-      // 로그인 성공 후 리다이렉트
       navigate("/");
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);

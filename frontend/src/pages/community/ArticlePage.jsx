@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 
-const url = "http://localhost:8080/articles";
+const url = "/articles";
 
 const ArticlePage = () => {
   const size = 10;
@@ -23,7 +23,7 @@ const ArticlePage = () => {
 
   const fetchArticles = async (page, size) => {
     try {
-      const response = await axios.get(url, {
+      const response = await api.get(url, {
         params: {
           page: page,
           size,
