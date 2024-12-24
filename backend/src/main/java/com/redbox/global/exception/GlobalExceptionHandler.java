@@ -1,5 +1,6 @@
 package com.redbox.global.exception;
 
+import com.redbox.global.infra.s3.S3Exception;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,12 @@ public class GlobalExceptionHandler {
     // 비즈니스 관련 예러 처리
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(BusinessException e) {
-        ErrorCode error = e.getErrorCodes();
         return ResponseEntity
-                .status(error.getStatus())
-                .body(new ErrorResponse(error.getMessage(), error.getStatus().toString()));
+                .status(e.getErrorCodes().getStatus())
+                .body(new ErrorResponse(
+                        e.getErrorCodes().getMessage(),
+                        e.getErrorCodes().getStatus().toString()
+                ));
     }
 
     // DB 관련 예외 처리
@@ -26,19 +29,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("데이터베이스 오류가 발생했습니다."
-                        , HttpStatus.INTERNAL_SERVER_ERROR.toString()));
+                        , HttpStatus.INTERNAL_SERVER_ERROR.toString()
+                ));
     }
 
     // @Valid 검증 실패 시 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
-
-        ErrorResponse response = new ErrorResponse(message, HttpStatus.BAD_REQUEST.toString());
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        ex.getBindingResult()
+                                .getFieldErrors()
+                                .get(0)
+                                .getDefaultMessage(),
+                        HttpStatus.BAD_REQUEST.toString()
+                ));
     }
 
     // JSON 파싱 실패 시 (잘못된 데이터 형식) 처리
@@ -46,9 +52,22 @@ public class GlobalExceptionHandler {
     // 날짜 형식이 잘못된 경우
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        String message = "잘못된 형식의 요청입니다.";
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        "잘못된 형식의 요청입니다.",
+                        HttpStatus.BAD_REQUEST.toString()
+                ));
+    }
 
-        ErrorResponse response = new ErrorResponse(message, HttpStatus.BAD_REQUEST.toString());
-        return ResponseEntity.badRequest().body(response);
+    // S3 관련 예외 처리
+    @ExceptionHandler(S3Exception.class)
+    protected ResponseEntity<ErrorResponse> handleS3Exception(S3Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        "파일 처리 중 오류가 발생했습니다.",
+                        HttpStatus.INTERNAL_SERVER_ERROR.toString()
+                ));
     }
 }
