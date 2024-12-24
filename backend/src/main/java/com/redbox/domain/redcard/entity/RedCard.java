@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -21,15 +21,16 @@ public class RedCard {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private Date donation_date;
-    private String serial_number;
+    private LocalDate donationDate;
+    private String serialNumber;
+
     private Status redCardStatus;
 
     @Builder
-    public RedCard(User user, Date donation_date, String serial_number, Status redCardStatus) {
+    public RedCard(User user, LocalDate donation_date, String serial_number, Status redCardStatus) {
         this.user = user;
-        this.donation_date = donation_date;
-        this.serial_number = serial_number;
+        this.donationDate = donation_date;
+        this.serialNumber = serial_number;
         this.redCardStatus = redCardStatus;
     }
 
