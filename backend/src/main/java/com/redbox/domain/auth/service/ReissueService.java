@@ -1,5 +1,7 @@
 package com.redbox.domain.auth.service;
 
+import com.redbox.domain.auth.exception.ExpiredRefreshTokenException;
+import com.redbox.domain.auth.exception.RefreshTokenNotFoundException;
 import com.redbox.domain.auth.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,20 +37,20 @@ public class ReissueService {
 
     private void validateRefreshToken(String refreshToken) {
         if (refreshToken == null) {
-            throw new IllegalArgumentException("Refresh token is missing");
+            throw new RefreshTokenNotFoundException(); // 커스텀 예외
         }
 
         if (jwtUtil.isExpired(refreshToken)) {
-            throw new IllegalArgumentException("Refresh token has expired");
+            throw new ExpiredRefreshTokenException(); // 커스텀 예외
         }
 
         if (!"refresh".equals(jwtUtil.getCategory(refreshToken))) {
             throw new IllegalArgumentException("Invalid refresh token category");
         }
 
-        // 존재 여부 확인
-        if (!refreshTokenService.existsByRefreshToken(refreshToken)) { // Redis에서 확인
-            throw new IllegalArgumentException("Refresh token does not exist");
+        if (!refreshTokenService.existsByRefreshToken(refreshToken)) {
+            throw new RefreshTokenNotFoundException(); // 커스텀 예외
         }
     }
 }
+
