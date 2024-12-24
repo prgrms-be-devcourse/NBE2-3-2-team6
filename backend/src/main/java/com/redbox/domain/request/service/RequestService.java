@@ -48,7 +48,7 @@ public class RequestService {
     }
 
     @Transactional
-    public void saveRequest(WriteRequest writeRequest, MultipartFile file) {
+    public Long saveRequest(WriteRequest writeRequest, MultipartFile file) {
         String filePath = null;
         if (file != null && !file.isEmpty()) {
             filePath = saveFile(file);
@@ -71,7 +71,8 @@ public class RequestService {
                 0 // 파일 다운로드 초기값
         );
 
-        requestRepository.save(request);
+        Request savedRequest = requestRepository.save(request);
+        return savedRequest.getRequestId();
     }
 
     @Transactional
@@ -132,7 +133,7 @@ public class RequestService {
     }
 
     @Transactional
-    public void modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
+    public Long modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
         Request request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
 
         request.setRequestTitle(writeRequest.getRequest_title());
@@ -146,7 +147,8 @@ public class RequestService {
             request.setRequestAttachFile(filePath);
         }
 
-        requestRepository.save(request);
+        Request modifyRequest = requestRepository.save(request);
+        return modifyRequest.getRequestId();
     }
 
     private String saveFile(MultipartFile file) {

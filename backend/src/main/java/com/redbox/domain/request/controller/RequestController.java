@@ -20,15 +20,15 @@ public class RequestController {
 
     // 게시글 등록
     @PostMapping("/write")
-    public ResponseEntity<String> requestWrite(
+    public ResponseEntity<DetailResponse> requestWrite(
             @RequestPart("post") @Valid WriteRequest writeRequest,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
-            requestService.saveRequest(writeRequest, file);
-            return ResponseEntity.status(HttpStatus.OK).body("게시글이 성공적으로 등록되었습니다");
+            Long requestId = requestService.saveRequest(writeRequest, file);
+            return handleDetailRequest(requestId, true);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 등록 중 오류가 발생했습니다");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -77,16 +77,16 @@ public class RequestController {
 
     // 내용 수정
     @PutMapping("/modify/{requestId}")
-    public ResponseEntity<String> requestModify(
+    public ResponseEntity<DetailResponse> requestModify(
             @PathVariable Long requestId,
             @RequestPart("post") @Valid WriteRequest writeRequest,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
-            requestService.modifyRequest(requestId, writeRequest, file);
-            return ResponseEntity.status(HttpStatus.OK).body("게시글이 성공적으로 등록되었습니다");
+            Long requestModifyId = requestService.modifyRequest(requestId, writeRequest, file);
+            return handleDetailRequest(requestModifyId, true);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 등록 중 오류가 발생했습니다");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
