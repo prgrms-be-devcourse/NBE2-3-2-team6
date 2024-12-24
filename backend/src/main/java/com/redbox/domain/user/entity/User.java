@@ -65,4 +65,8 @@ public class User extends BaseEntity {
         this.redCards.addRedCard(redCard);
     }
 
+    public int countRedCards() {
+        return redCards.getRedCardsCount();
+    }
+
 }
