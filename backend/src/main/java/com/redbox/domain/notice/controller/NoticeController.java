@@ -87,4 +87,12 @@ public class NoticeController {
     ) {
         return ResponseEntity.ok(attachFileService.addFile(Category.NOTICE, noticeId, file));
     }
+
+    @DeleteMapping("/notices/{noticeId}/files/{fileId}")
+    public ResponseEntity<Void> removeFile(
+            @PathVariable Long noticeId,
+            @PathVariable Long fileId) {
+        attachFileService.removeFile(Category.NOTICE, noticeId, fileId);
+        return ResponseEntity.ok().build();
+    }
 }

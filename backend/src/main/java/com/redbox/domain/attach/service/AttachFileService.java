@@ -13,6 +13,7 @@ import com.redbox.global.infra.s3.S3Service;
 import com.redbox.global.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -54,6 +55,7 @@ public class AttachFileService {
         }
     }
 
+    @Transactional
     public AttachFileResponse addFile(Category category, Long postId, MultipartFile file) {
         // S3에 파일 업로드
         String newFilename = FileUtils.generateNewFilename();
@@ -67,5 +69,17 @@ public class AttachFileService {
         attachFileRepository.save(attachFile);
 
         return new AttachFileResponse(attachFile);
+    }
+
+    @Transactional
+    public void removeFile(Category category, Long postId, Long fileId) {
+        AttachFile attachFile = attachFileRepository.findById(fileId)
+                .orElseThrow(AttachFileNotFoundException::new);
+
+        validateFileOwnership(attachFile, postId);
+
+        s3Service.deleteFile(category, postId, attachFile.getNewFilename());
+
+        attachFileRepository.delete(attachFile);
     }
 }
