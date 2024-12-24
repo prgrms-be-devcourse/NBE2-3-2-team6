@@ -1,19 +1,15 @@
 package com.redbox.domain.auth.service;
 
-import com.redbox.domain.auth.entity.RefreshEntity;
 import com.redbox.domain.auth.util.JWTUtil;
-import com.redbox.domain.auth.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class ReissueService {
 
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public String reissueAccessToken(String refreshToken) {
         validateRefreshToken(refreshToken);
@@ -31,8 +27,8 @@ public class ReissueService {
         String role = jwtUtil.getRole(refreshToken);
 
         String newRefreshToken = jwtUtil.createJwt("refresh", email, role, 86_400_000L); // 1일
-        refreshRepository.deleteByRefresh(refreshToken);
-        addRefreshEntity(email, newRefreshToken, 86_400_000L);
+        refreshTokenService.deleteRefreshToken(refreshToken); // 기존 토큰 삭제
+        refreshTokenService.saveRefreshToken(email, newRefreshToken, 86_400_000L); // 새 토큰 저장
 
         return newRefreshToken;
     }
@@ -50,17 +46,9 @@ public class ReissueService {
             throw new IllegalArgumentException("Invalid refresh token category");
         }
 
-        if (!refreshRepository.existsByRefresh(refreshToken)) {
+        // 존재 여부 확인
+        if (!refreshTokenService.existsByRefreshToken(refreshToken)) { // Redis에서 확인
             throw new IllegalArgumentException("Refresh token does not exist");
         }
-    }
-
-    private void addRefreshEntity(String email, String refreshToken, Long expirationMs) {
-        RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefresh(refreshToken);
-        refreshEntity.setExpiration(new Date(System.currentTimeMillis() + expirationMs).toString());
-
-        refreshRepository.save(refreshEntity);
     }
 }

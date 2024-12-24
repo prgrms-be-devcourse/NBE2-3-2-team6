@@ -2,9 +2,8 @@ package com.redbox.domain.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.user.dto.LoginRequest;
-import com.redbox.domain.auth.entity.RefreshEntity;
 import com.redbox.domain.auth.util.JWTUtil;
-import com.redbox.domain.auth.repository.RefreshRepository;
+import com.redbox.domain.auth.service.RefreshTokenService;
 import com.redbox.global.exception.BusinessException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
@@ -22,19 +21,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService; // 변경: RefreshTokenService 사용
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshTokenService = refreshTokenService;
 
         // 필터 경로를 "/auth/login"으로 설정
         setFilterProcessesUrl("/auth/login");
@@ -65,10 +63,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
-    // 로그인 성공 시 실행하는 메소드 (여기서 JWT 발급하면 됨)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-
         // 사용자 정보 추출
         String email = authentication.getName();
 
@@ -82,7 +78,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 1일
 
         // Refresh 토큰 저장
-        addRefreshEntity(email, refresh, 86400000L);
+        refreshTokenService.saveRefreshToken(email, refresh, 86400000L); // 변경: 서비스 사용
 
         // 응답 헤더에 토큰 추가
         response.setHeader("access", access);
@@ -92,22 +88,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpStatus.OK.value());
     }
 
-    // 로그인 실패 시 실행
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         ErrorResponseUtil.handleAuthenticationError(response, failed);
-    }
-
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        Date expirationDate = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(expirationDate.toString());
-
-        refreshRepository.save(refreshEntity);
     }
 
     // 쿠키 생성 메소드

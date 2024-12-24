@@ -2,7 +2,7 @@ package com.redbox.domain.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.auth.util.JWTUtil;
-import com.redbox.domain.auth.repository.RefreshRepository;
+import com.redbox.domain.auth.service.RefreshTokenService;
 import com.redbox.global.exception.BusinessException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.exception.ErrorResponse;
@@ -22,11 +22,11 @@ import java.io.IOException;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService;
 
-    public CustomLogoutFilter(JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomLogoutFilter(JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -57,13 +57,14 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 throw new BusinessException(ErrorCode.INVALID_TOKEN);
             }
 
-            // DB에서 Refresh 토큰 존재 여부 확인
-            if (!refreshRepository.existsByRefresh(refresh)) {
+            // Redis에서 Refresh 토큰 존재 여부 확인
+            if (!refreshTokenService.existsByRefreshToken(refresh)) {
                 throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
             }
 
             // 로그아웃 처리: 토큰 삭제 및 쿠키 무효화
-            refreshRepository.deleteByRefresh(refresh);
+            String email = refreshTokenService.getEmailByRefreshToken(refresh);
+            refreshTokenService.deleteRefreshToken(email);
             invalidateCookie(response, "refresh");
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -95,16 +96,5 @@ public class CustomLogoutFilter extends GenericFilterBean {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    // 예외 처리 응답 생성
-    private void handleException(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        response.setStatus(errorCode.getStatus().value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getMessage(), errorCode.name());
-        String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);
-        response.getWriter().write(jsonResponse);
     }
 }
