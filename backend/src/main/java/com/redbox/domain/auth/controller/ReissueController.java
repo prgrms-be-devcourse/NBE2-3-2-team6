@@ -1,13 +1,9 @@
 package com.redbox.domain.auth.controller;
 
-import com.redbox.domain.auth.exception.ExpiredRefreshTokenException;
 import com.redbox.domain.auth.exception.RefreshTokenNotFoundException;
-import com.redbox.domain.auth.exception.TokenReissueFailedException;
 import com.redbox.domain.auth.service.ReissueService;
 import com.redbox.global.exception.AuthException;
 import com.redbox.global.util.error.ErrorResponseUtil;
-
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
