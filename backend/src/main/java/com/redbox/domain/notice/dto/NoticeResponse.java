@@ -22,9 +22,13 @@ public class NoticeResponse {
 
     @Getter
     private static class AttachFileResponse {
+        private final Long fileNo;
+        private final String originFilename;
         private final String filename;
 
         public AttachFileResponse(AttachFile file) {
+            this.fileNo = file.getId();
+            this.originFilename = file.getOriginalFilename();
             this.filename = file.getNewFilename();
         }
     }

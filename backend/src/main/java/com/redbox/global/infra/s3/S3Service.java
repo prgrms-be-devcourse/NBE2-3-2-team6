@@ -9,22 +9,25 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
 public class S3Service {
 
     private final S3Client s3Client;
-
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    private final S3Presigner s3Presigner;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String uploadFile(MultipartFile file, Category category, Long id, String fileName) {
+    public void uploadFile(MultipartFile file, Category category, Long id, String fileName) {
         try {
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -34,9 +37,6 @@ public class S3Service {
 
             s3Client.putObject(request,
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-
-            return String.format("https://%s.s3.%s.amazonaws.com/%s",
-                    bucket, region, getKey(category, id, fileName));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -60,5 +60,24 @@ public class S3Service {
         }
 
         return key;
+    }
+
+    public String generatePresignedUrl(Category category, Long id, String fileName, String originalFilename) {
+        try {
+            String encodedFilename = URLEncoder.encode(originalFilename, StandardCharsets.UTF_8);
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(b -> b.bucket(bucket)
+                            .key(getKey(category, id, fileName))
+                            .responseContentDisposition("attachment; filename=\"" + encodedFilename + "\""))
+                    .build();
+
+            return s3Presigner.presignGetObject(presignRequest)
+                    .url()
+                    .toString();
+        } catch (Exception e) {
+            throw new S3Exception("Failed to generate presigned URL", e);
+        }
     }
 }

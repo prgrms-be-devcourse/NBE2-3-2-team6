@@ -2,6 +2,9 @@ package com.redbox.domain.notice.service;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.entity.Category;
+import com.redbox.domain.attach.exception.AttachFileNotFoundException;
+import com.redbox.domain.attach.exception.FileNotBelongException;
+import com.redbox.domain.attach.repository.AttachFileRepository;
 import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
 import com.redbox.domain.notice.dto.NoticeResponse;
@@ -30,6 +33,7 @@ public class NoticeService {
     private final NoticeQueryRepository noticeQueryRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final AttachFileRepository attachFileRepository;
 
     public PageResponse<NoticeListResponse> getNotices(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -64,11 +68,11 @@ public class NoticeService {
 
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
-                // S3에 파일 업로드하고 URL 받아오기
+                // S3에 파일 업로드
                 String newFilename = FileUtils.generateNewFilename();
                 String extension = FileUtils.getExtension(file);
                 String fullFilename = newFilename + "." + extension;
-                String fileUrl = s3Service.uploadFile(file, Category.NOTICE, notice.getId(), fullFilename);
+                s3Service.uploadFile(file, Category.NOTICE, notice.getId(), fullFilename);
 
                 // 파일 데이터 저장
                 AttachFile attachFile = AttachFile.builder()
@@ -76,7 +80,6 @@ public class NoticeService {
                         .notice(notice)
                         .originalFilename(file.getOriginalFilename())
                         .newFilename(fullFilename)
-                        .fileUrl(fileUrl)  // S3 URL 저장
                         .build();
 
                 notice.addAttachFiles(attachFile);
@@ -93,4 +96,6 @@ public class NoticeService {
         return userRepository.findNameById(notice.getUserId())
                 .orElse("Unknown");
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.redbox.domain.notice.controller;
 
+import com.redbox.domain.attach.service.AttachFileService;
 import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
 import com.redbox.domain.notice.dto.NoticeResponse;
@@ -21,6 +22,7 @@ import java.util.List;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final AttachFileService attachFileService;
 
     @GetMapping("/notices")
     public ResponseEntity<PageResponse<NoticeListResponse>> getNotices(
@@ -51,5 +53,12 @@ public class NoticeController {
         return ResponseEntity
                 .created(location)
                 .body(response);
+    }
+
+    @GetMapping("/notices/{noticeId}/files/{fileId}")
+    public ResponseEntity<String> downloadFile(
+            @PathVariable Long noticeId,
+            @PathVariable Long fileId) {
+        return ResponseEntity.ok(attachFileService.getFileDownloadUrl(noticeId, fileId));
     }
 }
