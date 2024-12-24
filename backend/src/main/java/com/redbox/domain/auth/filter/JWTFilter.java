@@ -1,9 +1,13 @@
 package com.redbox.domain.auth.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.auth.dto.CustomUserDetails;
+import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.user.entity.RoleType;
 import com.redbox.domain.user.entity.User;
-import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.global.exception.ErrorResponse;
+import com.redbox.global.exception.ErrorCode;
+import com.redbox.global.util.error.ErrorResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -37,52 +40,42 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰 만료 여부 확인, 만료 시 응답 종료
         try {
+            // 토큰 만료 여부 확인
             jwtUtil.isExpired(accessToken);
+
+            // 토큰의 카테고리가 'access'인지 확인
+            String category = jwtUtil.getCategory(accessToken);
+            if (!"access".equals(category)) {
+                throw new IllegalArgumentException("Invalid token category");
+            }
+
+            // email과 role 값을 토큰에서 가져옴
+            String email = jwtUtil.getEmail(accessToken);
+            String role = jwtUtil.getRole(accessToken);
+
+            User user = User.builder()
+                    .email(email)
+                    .roleType(RoleType.valueOf(role)) // RoleType 설정
+                    .build();
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+            // 인증 정보 생성 후 SecurityContext에 저장
+            Authentication authToken = new UsernamePasswordAuthenticationToken(
+                    customUserDetails, null, customUserDetails.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            // 다음 필터로 전달
+            filterChain.doFilter(request, response);
+
         } catch (ExpiredJwtException e) {
-
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
-
-            // response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            ErrorResponseUtil.handleException(response, ErrorCode.INVALID_TOKEN);
+        } catch (Exception e) {
+            ErrorResponseUtil.handleException(response, ErrorCode.INTERNAL_SERVER_ERROR);
         }
-
-        // 토큰의 카테고리가 'access'인지 확인 (발급 시 페이로드에 명시)
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals("access")) {
-
-            //response body
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
-
-            //response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        // email과 role 값을 토큰에서 가져옴
-        String email = jwtUtil.getEmail(accessToken);
-        String role = jwtUtil.getRole(accessToken);
-
-        User user = User.builder()
-                .email(email)
-                .roleType(RoleType.valueOf(role)) // RoleType 설정
-                .build();
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-
-        Authentication authToken = new UsernamePasswordAuthenticationToken(
-                customUserDetails, null, customUserDetails.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        // 다음 필터로 전달
-        filterChain.doFilter(request, response);
     }
 }

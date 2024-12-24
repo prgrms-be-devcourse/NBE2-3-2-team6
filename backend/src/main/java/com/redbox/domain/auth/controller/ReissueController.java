@@ -1,20 +1,22 @@
 package com.redbox.domain.auth.controller;
 
 import com.redbox.domain.auth.service.ReissueService;
+import com.redbox.global.exception.BusinessException;
+import com.redbox.global.exception.ErrorCode;
+import com.redbox.global.util.error.ErrorResponseUtil;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@ResponseBody
+
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth") // /auth 경로로 공통 매핑
 public class ReissueController {
@@ -29,7 +31,7 @@ public class ReissueController {
             String refreshToken = extractRefreshTokenFromCookie(request);
 
             if (refreshToken == null) {
-                return new ResponseEntity<>("Refresh token is missing", HttpStatus.BAD_REQUEST);
+                throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
             }
 
             // 토큰 재발급
@@ -42,10 +44,12 @@ public class ReissueController {
 
             return ResponseEntity.ok().build();
 
+        } catch (BusinessException e) {
+            return ErrorResponseUtil.createErrorResponse(e.getErrorCodes());
         } catch (ExpiredJwtException e) {
-            return new ResponseEntity<>("Refresh token expired", HttpStatus.BAD_REQUEST);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ErrorResponseUtil.createErrorResponse(ErrorCode.EXPIRED_TOKEN);
+        } catch (Exception e) {
+            return ErrorResponseUtil.createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -58,7 +62,7 @@ public class ReissueController {
                 }
             }
         }
-        return null;
+        throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
     }
 
     private Cookie createCookie(String key, String value) {
