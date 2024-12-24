@@ -1,6 +1,7 @@
 package com.redbox.global.exception;
 
 import com.redbox.global.infra.s3.S3Exception;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -69,5 +71,16 @@ public class GlobalExceptionHandler {
                         "파일 처리 중 오류가 발생했습니다.",
                         HttpStatus.INTERNAL_SERVER_ERROR.toString()
                 ));
+    }
+
+    // 시스템 관련 에러 처리
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+        log.error("System Error occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        "시스템 오류가 발생했습니다",
+                        "SYSTEM_ERROR"));
     }
 }

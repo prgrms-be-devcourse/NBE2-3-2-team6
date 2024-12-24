@@ -1,39 +1,24 @@
 package com.redbox.domain.notice.dto;
 
-import com.redbox.domain.attach.entity.AttachFile;
+import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.notice.entity.Notice;
 import com.redbox.domain.user.entity.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Getter
-@NoArgsConstructor
 public class NoticeResponse {
 
-    private Long noticeNo;
-    private String title;
-    private String content;
-    private LocalDate createdDate;
-    private String writer;
-    private int views;
-    private List<AttachFileResponse> attachFileResponses;
-
-    @Getter
-    private static class AttachFileResponse {
-        private final Long fileNo;
-        private final String originFilename;
-        private final String filename;
-
-        public AttachFileResponse(AttachFile file) {
-            this.fileNo = file.getId();
-            this.originFilename = file.getOriginalFilename();
-            this.filename = file.getNewFilename();
-        }
-    }
+    private final Long noticeNo;
+    private final String title;
+    private final String content;
+    private final LocalDate createdDate;
+    private final String writer;
+    private final int views;
+    private final List<AttachFileResponse> attachFileResponses;
 
     public NoticeResponse(Notice notice) {
         this.noticeNo = notice.getId();

@@ -1,5 +1,7 @@
 package com.redbox.domain.notice.controller;
 
+import com.redbox.domain.attach.dto.AttachFileResponse;
+import com.redbox.domain.attach.entity.Category;
 import com.redbox.domain.attach.service.AttachFileService;
 import com.redbox.domain.notice.dto.CreateNoticeRequest;
 import com.redbox.domain.notice.dto.NoticeListResponse;
@@ -76,5 +78,13 @@ public class NoticeController {
             @PathVariable Long noticeId,
             @PathVariable Long fileId) {
         return ResponseEntity.ok(attachFileService.getFileDownloadUrl(noticeId, fileId));
+    }
+
+    @PostMapping(value = "/notices/{noticeId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AttachFileResponse> addFile(
+            @PathVariable Long noticeId,
+            @RequestPart(value = "file") MultipartFile file
+    ) {
+        return ResponseEntity.ok(attachFileService.addFile(Category.NOTICE, noticeId, file));
     }
 }
