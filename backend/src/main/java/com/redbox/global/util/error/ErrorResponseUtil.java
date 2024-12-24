@@ -1,6 +1,7 @@
 package com.redbox.global.util.error;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.BusinessException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.exception.ErrorResponse;
@@ -34,9 +35,9 @@ public class ErrorResponseUtil {
     public static void handleAuthenticationError(HttpServletResponse response, Exception exception) throws IOException {
         ErrorResponse errorResponse;
 
-        if (exception.getCause() instanceof BusinessException) {
-            BusinessException businessException = (BusinessException) exception.getCause();
-            ErrorCode errorCode = businessException.getErrorCodes();
+        if (exception.getCause() instanceof AuthException) {
+            AuthException authException = (AuthException) exception.getCause();
+            ErrorCode errorCode = authException.getErrorCode(); // 수정된 부분
 
             errorResponse = new ErrorResponse(errorCode.getMessage(), errorCode.name());
         } else {
