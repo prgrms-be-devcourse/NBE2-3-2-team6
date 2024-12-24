@@ -12,12 +12,10 @@ public class RefreshTokenService {
 
     private final StringRedisTemplate redisTemplate;
 
-    private static final String REFRESH_TOKEN_KEY = "refresh_token_key";
-
     // Refresh Token 저장
     public void saveRefreshToken(String email, String refreshToken, long ttl) {
         // Redis에 RefreshToken 저장 (key: RefreshToken, value: email)
-        redisTemplate.opsForValue().set(REFRESH_TOKEN_KEY, email, ttl, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(refreshToken, email, ttl, TimeUnit.MILLISECONDS);
     }
 
     // Refresh Token 존재 여부 확인
