@@ -3,10 +3,12 @@ package com.redbox.domain.auth.dto;
 import com.redbox.domain.user.entity.Status;
 import com.redbox.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -19,9 +21,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> user.getRoleType().getFullRole()); // "ROLE_ADMIN" 또는 "ROLE_USER"
-        return authorities;
+        return List.of(new SimpleGrantedAuthority(user.getRoleType().getFullRole()));
     }
 
     @Override
