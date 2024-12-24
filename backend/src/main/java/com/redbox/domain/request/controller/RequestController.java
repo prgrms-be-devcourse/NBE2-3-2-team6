@@ -47,22 +47,32 @@ public class RequestController {
     // 요청 게시글 상세 조회
     @GetMapping("/{requestId}")
     public ResponseEntity<DetailResponse> requestDetail(@PathVariable Long requestId) {
-        return handleDetailRequest(requestId);
+        return handleDetailRequest(requestId, true);
     }
 
-    /// todo : 파일 다운로드 처리
+    // todo : 파일 다운로드 처리
     /// url 로 get 받으면 다운 받을 수 있도록 (download url 확인하기)
 
-    /// todo : 기부 API URL 처리
+    // todo : 기부 API URL 처리
     /// 기부 정보 전송( 수량, id, comment )
 
-    /// todo : like 에 대한 요청 처리 ( 요청 오면 ok 는 날릴 수 있는데 )
-    /// like 를 가지고 있는 테이블 존재 ( 사용자 ID, 게시글 ID, 좋아요 여부 )
+    // todo : (사용자 추가) like 에 대한 요청 처리 (사용자 id 필요)
+    @PostMapping("/{requestId}/like")
+    public ResponseEntity<LikeResponse> requestLike(@PathVariable Long requestId) {
+        try {
+            // 업데이트 로직
+            requestService.likeRequest(requestId);
+            LikeResponse likeResponse = new LikeResponse("처리되었습니다");
+            return ResponseEntity.status(HttpStatus.OK).body(likeResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LikeResponse());
+        }
+    }
 
     // 내용 불러오기
     @GetMapping("/modify/{requestId}")
     public ResponseEntity<DetailResponse> requestModify(@PathVariable Long requestId) {
-        return handleDetailRequest(requestId);
+        return handleDetailRequest(requestId, false);
     }
 
     // 내용 수정
@@ -73,7 +83,7 @@ public class RequestController {
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
-            requestService.modifyBoard(requestId, writeRequest, file);
+            requestService.modifyRequest(requestId, writeRequest, file);
             return ResponseEntity.status(HttpStatus.OK).body("게시글이 성공적으로 등록되었습니다");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 등록 중 오류가 발생했습니다");
@@ -81,9 +91,9 @@ public class RequestController {
     }
 
     // 요청 게시글 상세 조회 및 수정 공통 처리 메서드
-    private ResponseEntity<DetailResponse> handleDetailRequest(Long requestId) {
+    private ResponseEntity<DetailResponse> handleDetailRequest(Long requestId, boolean incrementHits) {
         try {
-            DetailResponse detailResponse = requestService.getRequestDetails(requestId);
+            DetailResponse detailResponse = requestService.getRequestDetails(requestId, incrementHits);
             return ResponseEntity.ok(detailResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

@@ -4,9 +4,11 @@ import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
 import com.redbox.domain.request.dto.RequestFilter;
 import com.redbox.domain.request.dto.RequestResponse;
+import com.redbox.domain.request.entity.Likes;
 import com.redbox.domain.request.entity.Priority;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.Status;
+import com.redbox.domain.request.repository.LikesRepository;
 import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.redbox.domain.request.entity.QRequest.request;
+
 @Service
 @RequiredArgsConstructor
 public class RequestService {
@@ -33,6 +37,7 @@ public class RequestService {
     private String uploadDir;
 
     private final RequestRepository requestRepository;
+    private final LikesRepository likesRepository;
 
     public PageResponse<RequestResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
@@ -70,12 +75,14 @@ public class RequestService {
     }
 
     @Transactional
-    public DetailResponse getRequestDetails(Long requestId) {
+    public DetailResponse getRequestDetails(Long requestId, boolean incrementHits) {
         Request request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
 
-        // 조회수 증가
-        request.setRequestHits(request.getRequestHits() + 1);
-        requestRepository.save(request);
+        // 조회수 증가(modify 에서는 조회수 증가하면 안됨)
+        if(incrementHits) {
+            request.setRequestHits(request.getRequestHits() + 1);
+            requestRepository.save(request);
+        }
 
         List<DetailResponse.AttachmentResponse> attachments = new ArrayList<>();
         if (request.getRequestAttachFile() != null) {
@@ -104,8 +111,28 @@ public class RequestService {
         );
     }
 
+    // 좋아요 상태 변경
     @Transactional
-    public void modifyBoard(Long requestId, WriteRequest writeRequest, MultipartFile file) {
+    public void likeRequest(Long requestId) {
+
+        // userId, requestId 없으면 추가, 있으면 상태 변경
+        // todo : userId 추가
+        // user_id, request_id 에 해당하는 DetailResponse 에서의 isLiked 도 수정
+        Likes likes = likesRepository.findById(requestId).orElse(null);
+
+        if (likes == null) {
+            Likes like = new Likes();
+            like.setRequestId(requestId);
+            like.setUserId(1L); // 임의값 넣음
+            like.setLiked(true);
+            likesRepository.save(like);
+        } else {
+            likes.setLiked(!likes.isLiked());
+        }
+    }
+
+    @Transactional
+    public void modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
         Request request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
 
         request.setRequestTitle(writeRequest.getRequest_title());
