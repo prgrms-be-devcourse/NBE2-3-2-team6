@@ -1,11 +1,12 @@
 package com.redbox.domain.auth.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.domain.auth.exception.ExpiredRefreshTokenException;
+import com.redbox.domain.auth.exception.InvalidRefreshTokenException;
+import com.redbox.domain.auth.exception.RefreshTokenNotFoundException;
 import com.redbox.domain.auth.service.RefreshTokenService;
-import com.redbox.global.exception.BusinessException;
+import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.ErrorCode;
-import com.redbox.global.exception.ErrorResponse;
 import com.redbox.global.util.error.ErrorResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -53,13 +54,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
             // 토큰의 카테고리 확인
             String category = jwtUtil.getCategory(refresh);
-            if (!category.equals("refresh")) {
-                throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            if (!"refresh".equals(category)) {
+                throw new InvalidRefreshTokenException(); // 잘못된 Refresh 토큰
             }
 
             // Redis에서 Refresh 토큰 존재 여부 확인
             if (!refreshTokenService.existsByRefreshToken(refresh)) {
-                throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
+                throw new RefreshTokenNotFoundException(); // Redis에 토큰 없음
             }
 
             // 로그아웃 처리: 토큰 삭제 및 쿠키 무효화
@@ -68,10 +69,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
             invalidateCookie(response, "refresh");
             response.setStatus(HttpServletResponse.SC_OK);
 
-        } catch (BusinessException e) {
-            ErrorResponseUtil.handleException(response, e.getErrorCodes());
+        } catch (AuthException e) {
+            ErrorResponseUtil.handleException(response, e.getErrorCode());
         } catch (ExpiredJwtException e) {
-            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);
+            throw new ExpiredRefreshTokenException();
         } catch (Exception e) {
             ErrorResponseUtil.handleException(response, ErrorCode.INTERNAL_SERVER_ERROR);
         }
@@ -87,7 +88,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 }
             }
         }
-        throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
+        throw new RefreshTokenNotFoundException();
     }
 
     // 쿠키 무효화 처리

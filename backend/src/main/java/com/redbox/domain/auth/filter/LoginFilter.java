@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.user.dto.LoginRequest;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.service.RefreshTokenService;
+import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.BusinessException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
@@ -41,27 +42,24 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            // JSON 요청을 파싱
             LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
 
             String email = loginRequest.getEmail();
             String password = loginRequest.getPassword();
 
             if (email == null || password == null) {
-                throw new BusinessException(ErrorCode.EMAIL_OR_PASSWORD_MISSING);
+                throw new AuthException(ErrorCode.EMAIL_OR_PASSWORD_MISSING);
             }
 
-            // 인증 토큰 생성
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
-
-            // AuthenticationManager로 전달하여 인증 시도
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
+            throw new AuthException(ErrorCode.AUTHENTICATION_FAILED);
         } catch (AuthenticationException e) {
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
+
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {

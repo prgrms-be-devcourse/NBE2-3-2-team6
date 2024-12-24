@@ -1,8 +1,10 @@
 package com.redbox.domain.auth.controller;
 
+import com.redbox.domain.auth.exception.ExpiredRefreshTokenException;
+import com.redbox.domain.auth.exception.RefreshTokenNotFoundException;
+import com.redbox.domain.auth.exception.TokenReissueFailedException;
 import com.redbox.domain.auth.service.ReissueService;
-import com.redbox.global.exception.BusinessException;
-import com.redbox.global.exception.ErrorCode;
+import com.redbox.global.exception.AuthException;
 import com.redbox.global.util.error.ErrorResponseUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class ReissueController {
             String refreshToken = extractRefreshTokenFromCookie(request);
 
             if (refreshToken == null) {
-                throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
+                throw new RefreshTokenNotFoundException(); // 커스텀 예외 사용
             }
 
             // 토큰 재발급
@@ -44,12 +45,12 @@ public class ReissueController {
 
             return ResponseEntity.ok().build();
 
-        } catch (BusinessException e) {
-            return ErrorResponseUtil.createErrorResponse(e.getErrorCodes());
+        } catch (AuthException e) {
+            return ErrorResponseUtil.createErrorResponse(e.getErrorCode());
         } catch (ExpiredJwtException e) {
-            return ErrorResponseUtil.createErrorResponse(ErrorCode.EXPIRED_TOKEN);
+            throw new ExpiredRefreshTokenException();
         } catch (Exception e) {
-            return ErrorResponseUtil.createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new TokenReissueFailedException();
         }
     }
 
@@ -62,7 +63,7 @@ public class ReissueController {
                 }
             }
         }
-        throw new BusinessException(ErrorCode.TOKEN_NOT_FOUND);
+        throw new RefreshTokenNotFoundException(); // 커스텀 예외 사용
     }
 
     private Cookie createCookie(String key, String value) {

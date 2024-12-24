@@ -2,10 +2,12 @@ package com.redbox.domain.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.auth.dto.CustomUserDetails;
+import com.redbox.domain.auth.exception.ExpiredAccessTokenException;
+import com.redbox.domain.auth.exception.InvalidTokenException;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.user.entity.RoleType;
 import com.redbox.domain.user.entity.User;
-import com.redbox.global.exception.ErrorResponse;
+import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,7 +49,7 @@ public class JWTFilter extends OncePerRequestFilter {
             // 토큰의 카테고리가 'access'인지 확인
             String category = jwtUtil.getCategory(accessToken);
             if (!"access".equals(category)) {
-                throw new IllegalArgumentException("Invalid token category");
+                throw new InvalidTokenException();
             }
 
             // email과 role 값을 토큰에서 가져옴
@@ -71,9 +73,9 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
-            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);
-        } catch (IllegalArgumentException e) {
-            ErrorResponseUtil.handleException(response, ErrorCode.INVALID_TOKEN);
+            throw new ExpiredAccessTokenException();
+        } catch (AuthException e) {
+            ErrorResponseUtil.handleException(response, e.getErrorCode());
         } catch (Exception e) {
             ErrorResponseUtil.handleException(response, ErrorCode.INTERNAL_SERVER_ERROR);
         }
