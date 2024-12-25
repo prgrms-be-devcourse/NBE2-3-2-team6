@@ -1,5 +1,13 @@
 import axios from "axios";
 
+export const decodeJWT = (token) => {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (error) {
+    return null;
+  }
+};
+
 const instance = axios.create({
   baseURL: "http://localhost:8080",
   withCredentials: true, // refresh token이 쿠키에 있으므로 필수

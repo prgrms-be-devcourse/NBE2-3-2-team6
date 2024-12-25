@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import api from "../lib/axios";
+import api, { decodeJWT } from "../lib/axios";
 import logo from "../assets/image.png";
+import { getRedirectPath } from "../utils/roleRedirect";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,11 +20,15 @@ const LoginPage = () => {
         password,
       });
 
-      // 헤더에서 access 토큰을 가져와서 localStorage에 저장
       const accessToken = response.headers["access"];
       localStorage.setItem("accessToken", accessToken);
 
-      navigate("/");
+      // JWT 디코딩
+      const decodedToken = decodeJWT(accessToken);
+      const userRole = decodedToken?.role;
+
+      // 권한에 따른 리다이렉션
+      navigate(getRedirectPath(userRole));
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.");
