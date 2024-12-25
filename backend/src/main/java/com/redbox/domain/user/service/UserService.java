@@ -1,9 +1,6 @@
 package com.redbox.domain.user.service;
 
-import com.redbox.domain.user.dto.SignupRequest;
-import com.redbox.domain.user.dto.SignupResponse;
-import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
-import com.redbox.domain.user.dto.VerificationCodeRequest;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
@@ -85,5 +82,11 @@ public class UserService {
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    @Transactional
+    public void updatePassword(UpdatePasswordRequest request) {
+        // find-account 브랜치에 비밀번호 초기화하는 로직이 있으므로 겹침 방지를 위해
+        // find-account merge이후 작업예정
     }
 }

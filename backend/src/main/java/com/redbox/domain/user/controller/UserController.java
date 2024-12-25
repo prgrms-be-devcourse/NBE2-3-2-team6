@@ -2,10 +2,7 @@ package com.redbox.domain.user.controller;
 
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.dto.SignupRequest;
-import com.redbox.domain.user.dto.SignupResponse;
-import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
-import com.redbox.domain.user.dto.VerificationCodeRequest;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +44,12 @@ public class UserController {
     @PostMapping("/users/me/redcards")
     public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedcardRequest request) {
         redCardService.registerRedCard(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/users/my-info/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
+        userService.updatePassword(request);
         return ResponseEntity.ok().build();
     }
 }
