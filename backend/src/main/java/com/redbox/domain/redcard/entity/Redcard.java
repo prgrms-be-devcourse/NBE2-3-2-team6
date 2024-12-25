@@ -12,28 +12,32 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
+@Table(name = "redcards")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RedCard {
+public class Redcard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "redcard_id")
     private Long id;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
     private LocalDate donationDate;
     private String serialNumber;
 
-    private Status redCardStatus;
+    private RedcardStatus redcardStatus;
 
     @Builder
-    public RedCard(User user, LocalDate donation_date, String serial_number, Status redCardStatus) {
+    public Redcard(User user, LocalDate donation_date, String serialNumber, RedcardStatus redcardStatus) {
         this.user = user;
         this.donationDate = donation_date;
-        this.serialNumber = serial_number;
-        this.redCardStatus = redCardStatus;
+        this.serialNumber = serialNumber;
+        this.redcardStatus = redcardStatus;
     }
 
+    // 헌혈증 소지자가 바뀔때 사용하는 메서드
     public void updateUser(User user) {
         this.user = user;
     }

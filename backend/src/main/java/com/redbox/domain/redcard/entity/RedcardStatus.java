@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Status {
+public enum RedcardStatus {
 
     USED("사용 완료"), AVAILABLE("사용 가능");
 

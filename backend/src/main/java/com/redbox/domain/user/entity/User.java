@@ -1,7 +1,7 @@
 package com.redbox.domain.user.entity;
 
-import com.redbox.domain.redcard.entity.RedCard;
-import com.redbox.domain.redcard.entity.RedCards;
+import com.redbox.domain.redcard.entity.Redcard;
+import com.redbox.domain.redcard.entity.Redcards;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -44,7 +45,7 @@ public class User extends BaseEntity {
     private LocalDateTime lastLoginAt;
 
     @Embedded
-    private RedCards redCards = new RedCards();
+    private Redcards redcards = new Redcards();
 
     @Builder
     public User(String email, String password, String name, LocalDate birth, String phoneNumber, String roadAddress, String extraAddress, String detailAddress, Gender gender, RoleType roleType, Status status) {
@@ -61,12 +62,12 @@ public class User extends BaseEntity {
         this.status = status;
     }
 
-    public void registerRedCard(RedCard redCard) {
-        this.redCards.addRedCard(redCard);
+    public void registerRedCard(Redcard redCard) {
+        this.redcards.addRedcard(redCard);
     }
 
     public int countRedCards() {
-        return redCards.getRedCardsCount();
+        return redcards.getRedcardsCount();
     }
 
 }

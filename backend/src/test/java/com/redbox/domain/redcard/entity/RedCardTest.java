@@ -1,6 +1,6 @@
 package com.redbox.domain.redcard.entity;
 
-import com.redbox.domain.redcard.repository.RedCardRepository;
+import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.user.entity.RoleType;
 import com.redbox.domain.user.entity.Status;
 import com.redbox.domain.user.entity.User;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
@@ -24,7 +23,7 @@ class RedCardTest {
     @Autowired
     private  UserRepository userRepository;
     @Autowired
-    private  RedCardRepository redCardRepository;
+    private RedcardRepository redcardRepository;
 
     @Test
     @DisplayName("레드카드 생성 테스트")
@@ -42,16 +41,16 @@ class RedCardTest {
         User user = userRepository.findByEmail("s111b@gmail.com");
 
         //When & Then
-        RedCard cardData = RedCard.builder().
-                                 user(user).
-                                 donation_date(LocalDate.of(1990, 1, 1)).
-                                 serial_number("12").
-                                 redCardStatus(com.redbox.domain.redcard.entity.Status.AVAILABLE).
-                                 build();
+        Redcard cardData = Redcard.builder()
+                        .user(user)
+                        .donation_date(LocalDate.of(1990, 1, 1))
+                        .serialNumber("12")
+                        .redcardStatus(RedcardStatus.AVAILABLE)
+                        .build();
 
-        redCardRepository.save(cardData);
+        redcardRepository.save(cardData);
 
-        RedCard redCard = redCardRepository.findBySerialNumber("12");
+        Redcard redCard = redcardRepository.findBySerialNumber("12");
 
         assertThat(redCard.getUser().getId()).isEqualTo(user.getId());
     }
@@ -72,15 +71,15 @@ class RedCardTest {
         User user = userRepository.findByEmail("s111b@gmail.com");
 
         //When & Then
-        RedCard cardData = RedCard.builder().
-                                  user(user).
-                                  donation_date(LocalDate.of(1990, 1, 1)).
-                                  serial_number("12").
-                                  redCardStatus(com.redbox.domain.redcard.entity.Status.AVAILABLE).
-                                  build();
+        Redcard cardData = Redcard.builder()
+                        .user(user)
+                        .donation_date(LocalDate.of(1990, 1, 1))
+                        .serialNumber("12")
+                        .redcardStatus(RedcardStatus.AVAILABLE)
+                        .build();
 
-        redCardRepository.save(cardData);
-        RedCard redCard = redCardRepository.findBySerialNumber("12");
+        redcardRepository.save(cardData);
+        Redcard redCard = redcardRepository.findBySerialNumber("12");
 
         user.registerRedCard(redCard);
 

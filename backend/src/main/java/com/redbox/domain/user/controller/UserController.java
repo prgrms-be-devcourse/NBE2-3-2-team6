@@ -1,7 +1,7 @@
 package com.redbox.domain.user.controller;
 
-import com.redbox.domain.redcard.dto.RegisterRedCardRequest;
-import com.redbox.domain.redcard.service.RedCardService;
+import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
+import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.dto.SignupRequest;
 import com.redbox.domain.user.dto.SignupResponse;
 import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final RedCardService redCardService;
+    private final RedcardService redCardService;
 
     @PostMapping("/auth/email/verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody @Valid VerificationCodeRequest request) {
@@ -45,7 +45,7 @@ public class UserController {
 
     //개인적으로 uri 가 조금 적합하지 않은것 같아용 (프론트와 같이 수정 필요)
     @PostMapping("/users/me/redcards")
-    public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedCardRequest request) {
+    public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedcardRequest request) {
         redCardService.registerRedCard(request);
         return ResponseEntity.ok().build();
     }
