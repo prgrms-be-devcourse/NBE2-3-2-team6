@@ -50,7 +50,7 @@ class RedCardTest {
 
         redcardRepository.save(cardData);
 
-        Redcard redCard = redcardRepository.findBySerialNumber("12");
+        Redcard redCard = redcardRepository.findBySerialNumber("12").get();
 
         assertThat(redCard.getUser().getId()).isEqualTo(user.getId());
     }
@@ -79,7 +79,7 @@ class RedCardTest {
                         .build();
 
         redcardRepository.save(cardData);
-        Redcard redCard = redcardRepository.findBySerialNumber("12");
+        Redcard redCard = redcardRepository.findBySerialNumber("12").get();
 
         user.registerRedCard(redCard);
 
