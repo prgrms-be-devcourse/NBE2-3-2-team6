@@ -62,11 +62,11 @@ public class User extends BaseEntity {
         this.status = status;
     }
 
-    public void registerRedCard(Redcard redCard) {
-        this.redcards.addRedcard(redCard);
+    public void registerRedcard(Redcard redcard) {
+        this.redcards.addRedcard(redcard);
     }
 
-    public int countRedCards() {
+    public int countRedcards() {
         return redcards.getRedcardsCount();
     }
 

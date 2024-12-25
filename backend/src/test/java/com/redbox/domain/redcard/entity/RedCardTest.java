@@ -81,8 +81,8 @@ class RedCardTest {
         redcardRepository.save(cardData);
         Redcard redCard = redcardRepository.findBySerialNumber("12").get();
 
-        user.registerRedCard(redCard);
+        user.registerRedcard(redCard);
 
-        assertThat(user.countRedCards()).isEqualTo(1);
+        assertThat(user.countRedcards()).isEqualTo(1);
     }
 }

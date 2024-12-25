@@ -35,6 +35,6 @@ public class RedcardService {
         Redcard redcard = new Redcard(
                 user, request.getDonationDate(), request.getCardNumber(), RedcardStatus.USED);
         // Redcard 등록
-        user.registerRedCard(redcard);
+        user.registerRedcard(redcard);
     }
 }
