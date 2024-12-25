@@ -347,13 +347,13 @@ const CenterFindPage = () => {
     <div className="flex bg-gray-50">
       <CenterSideBar />
       <div className="flex-1 p-8">
-        <div className="bg-white rounded-lg shadow-md p-6 h-full flex">
-          {/* 왼쪽: 지도 */}
-          <div className="w-3/4 pr-4 ml-[1rem]">
+        <div className="bg-white rounded-lg shadow-md p-6 min-h-screen flex flex-col">
+          {/* 지도 섹션 */}
+          <div className="flex flex-col w-full flex-1">
             <h1 className="text-[1.2rem] font-bold mb-6">
               <span className="text-red-500">✔</span> 헌혈의 집 조회
             </h1>
-            <div className="flex space-x-4 mb-4 ml-[4.2rem]">
+            <div className="flex space-x-4 mb-4">
               <select
                 className="border rounded p-2"
                 value={selectedCity}
@@ -391,28 +391,20 @@ const CenterFindPage = () => {
             </div>
             <div
               ref={mapRef}
-              style={{
-                width: "1350px",
-                height: "500px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                position: "relative",
-                left: "70px",
-              }}
+              className="w-full h-[500px] border border-solid border-[#ddd] rounded-lg"
             ></div>
 
             {/* 헌혈의 집 정보 표시 테이블 */}
-            <div className="w-[1500px] mt-2 p-4">
+            <div className="w-full flex-1 mt-2 p-4 flex items-center justify-center">
               {filteredCenters.length > 0 ? (
                 <div className="w-full p-2 rounded-lg shadow">
                   {/* 헤더 섹션 */}
-                  <section className="bg-gray-100 text-gray-900 font-bold text-center grid grid-cols-[1fr,1fr,3fr,1fr,1fr,1fr] gap-4 p-3">
+                  <section className="bg-gray-100 text-gray-900 font-bold text-center grid grid-cols-[1fr,1fr,3fr,1fr,1fr] gap-4 p-3">
                     <div>지역</div>
                     <div>헌혈의 집</div>
                     <div>주소</div>
                     <div>혈액원</div>
                     <div>전화번호</div>
-                    <div></div> {/* 예약 버튼 열 */}
                   </section>
 
                   {/* 내용 섹션 */}
@@ -420,7 +412,7 @@ const CenterFindPage = () => {
                     {filteredCenters.map((center, index) => (
                       <div
                         key={index}
-                        className="hover:bg-gray-50 grid grid-cols-[1fr,1fr,3fr,1fr,1fr,1fr] gap-4 items-center text-center p-3"
+                        className="hover:bg-gray-50 grid grid-cols-[1fr,1fr,3fr,1fr,1fr] gap-4 items-center text-center p-3"
                       >
                         <div>
                           {selectedCity} {selectedDistrict}
@@ -429,14 +421,6 @@ const CenterFindPage = () => {
                         <div className="text-left">{center.주소지}</div>
                         <div>{center.혈액원}</div>
                         <div>{center.전화번호}</div>
-                        <div>
-                          <button
-                            className="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-1 px-3 rounded shadow transition duration-200"
-                            onClick={() => handleReservation(center)}
-                          >
-                            예약하기
-                          </button>
-                        </div>
                       </div>
                     ))}
                   </section>

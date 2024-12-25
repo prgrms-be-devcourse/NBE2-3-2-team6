@@ -79,14 +79,14 @@ const Header = () => {
                   to="/center"
                   className="block px-4 py-2 hover:bg-red-50 hover:text-red-600"
                 >
-                  조회
+                  헌혈의 집 찾기
                 </Link>
-                <Link
+                {/* <Link
                   to="/center/reservation"
                   className="block px-4 py-2 hover:bg-red-50 hover:text-red-600"
                 >
                   예약
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
