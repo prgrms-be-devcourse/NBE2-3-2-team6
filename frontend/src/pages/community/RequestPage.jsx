@@ -13,23 +13,29 @@ const RequestPage = () => {
   const [requests, setRequests] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get(
-          `${url}?page=${page - 1}&size=${PAGE_SIZE}`
-        );
-        setRequests(response.data.requests); // requests 배열 설정
-        setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
-        setTotalElements(response.data.totalElements); // 전체 요청 수 설정
-      } catch (error) {
-        console.error("데이터를 가져오는 중 오류 발생: ", error);
-      }
-    };
-
     fetchData(); // 데이터 가져오기
   }, [page]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await api.get(
+        `${url}?page=${page - 1}&size=${PAGE_SIZE}`
+      );
+      setRequests(response.data.requests); // requests 배열 설정
+      setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+      setTotalElements(response.data.totalElements); // 전체 요청 수 설정
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생: ", error);
+    }
+  };
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -59,6 +65,11 @@ const RequestPage = () => {
   };
 
   const handleRequestWrite = () => {
+    if (!isLoggedIn) {
+      alert("로그인이 필요한 서비스입니다.");
+      navigate("/login");
+      return;
+    }
     navigate("/community/request/write");
   };
 
@@ -87,30 +98,36 @@ const RequestPage = () => {
               </div>
 
               <div className="divide-y">
-                {requests.map((request) => (
-                  <div
-                    key={request.id}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {request.id}
+                {requests.length > 0 ? (
+                  requests.map((request) => (
+                    <div
+                      key={request.id}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {request.id}
+                      </div>
+                      <div className="flex-1 px-6">
+                        <Link
+                          to={`/community/request/${request.id}`}
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {request.title}
+                        </Link>
+                      </div>
+                      <div className="w-24 text-center text-sm text-gray-500">
+                        {new Date(request.date).toLocaleDateString()}
+                      </div>
+                      <div className="w-20 text-center text-sm text-gray-500">
+                        {request.views}
+                      </div>
                     </div>
-                    <div className="flex-1 px-6">
-                      <Link
-                        to={`/community/request/${request.id}`}
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {request.title}
-                      </Link>
-                    </div>
-                    <div className="w-24 text-center text-sm text-gray-500">
-                      {new Date(request.date).toLocaleDateString()}
-                    </div>
-                    <div className="w-20 text-center text-sm text-gray-500">
-                      {request.views}
-                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 글이 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

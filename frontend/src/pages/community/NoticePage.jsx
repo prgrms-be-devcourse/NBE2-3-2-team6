@@ -79,34 +79,41 @@ const NoticePage = () => {
                   조회수
                 </div>
               </div>
+
               <div className="divide-y">
-                {notices.map(
-                  (
-                    notice // notices 상태를 사용
-                  ) => (
-                    <div
-                      key={notice.id}
-                      className="flex items-center py-3 hover:bg-gray-50"
-                    >
-                      <div className="w-16 text-center text-sm text-gray-500">
-                        {notice.id}
+                {notices.length > 0 ? (
+                  notices.map(
+                    (
+                      notice // notices 상태를 사용
+                    ) => (
+                      <div
+                        key={notice.id}
+                        className="flex items-center py-3 hover:bg-gray-50"
+                      >
+                        <div className="w-16 text-center text-sm text-gray-500">
+                          {notice.id}
+                        </div>
+                        <div className="flex-1 px-6">
+                          <Link
+                            to={`/community/notice/${notice.id}`}
+                            className="text-gray-900 hover:text-red-600"
+                          >
+                            {notice.title}
+                          </Link>
+                        </div>
+                        <div className="w-24 text-center text-sm text-gray-500">
+                          {new Date(notice.date).toLocaleDateString()}
+                        </div>
+                        <div className="w-20 text-center text-sm text-gray-500">
+                          {notice.views}
+                        </div>
                       </div>
-                      <div className="flex-1 px-6">
-                        <Link
-                          to={`/community/notice/${notice.id}`}
-                          className="text-gray-900 hover:text-red-600"
-                        >
-                          {notice.title}
-                        </Link>
-                      </div>
-                      <div className="w-24 text-center text-sm text-gray-500">
-                        {new Date(notice.date).toLocaleDateString()}
-                      </div>
-                      <div className="w-20 text-center text-sm text-gray-500">
-                        {notice.views}
-                      </div>
-                    </div>
+                    )
                   )
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 공지사항이 없습니다.
+                  </div>
                 )}
               </div>
             </div>

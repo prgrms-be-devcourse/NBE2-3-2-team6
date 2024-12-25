@@ -22,28 +22,26 @@ const AdminNoticePage = () => {
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
   useEffect(() => {
-    const fetchBoards = async (page, size) => {
-      try {
-        console.log("<0");
-        const response = await api.get(url, {
-          params: {
-            page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
-            size,
-          },
-        });
-        console.log("<1");
-
-        const { data, totalPages, totalElements } = response.data;
-        setData(response.data);
-        setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
-        setTotalElements(response.data.totalElements); // 전체 요청 수 설정
-      } catch (error) {
-        console.error("Error fetching boards:", error);
-      }
-    };
-
     fetchBoards(page, size);
   }, [page, size]);
+
+  const fetchBoards = async (page, size) => {
+    try {
+      const response = await api.get(url, {
+        params: {
+          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+          size,
+        },
+      });
+
+      const { data, totalPages, totalElements } = response.data;
+      setData(data);
+      setTotalPages(totalPages); // 전체 페이지 수 설정
+      setTotalElements(totalElements); // 전체 요청 수 설정
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+    }
+  };
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -76,7 +74,7 @@ const AdminNoticePage = () => {
         {/* 사이드바 */}
         <AdminSideBar />
         <div className="flex-1 p-8">
-          <div className="bg-white rounded-lg shadow-md p-6 h-[800px] max-w-6xl">
+          <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
             <h1 className="text-2xl font-bold mb-6">공지사항</h1>
             <div className="border rounded-lg">
               <div className="flex bg-gray-50 py-3 border-b">
@@ -94,30 +92,36 @@ const AdminNoticePage = () => {
                 </div>
               </div>
               <div className="divide-y">
-                {data.notices.map((notice) => (
-                  <div
-                    key={notice.id}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {notice.id}
+                {data.notices.length > 0 ? (
+                  data.notices.map((notice) => (
+                    <div
+                      key={notice.id}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {notice.id}
+                      </div>
+                      <div className="flex-1 px-6">
+                        <Link
+                          to={`/community/notice/${notice.id}`}
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {notice.title}
+                        </Link>
+                      </div>
+                      <div className="w-24 text-center text-sm text-gray-500">
+                        {new Date(notice.date).toLocaleDateString()}
+                      </div>
+                      <div className="w-20 text-center text-sm text-gray-500">
+                        {notice.views}
+                      </div>
                     </div>
-                    <div className="flex-1 px-6">
-                      <Link
-                        to={`/community/notice/${notice.id}`}
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {notice.title}
-                      </Link>
-                    </div>
-                    <div className="w-24 text-center text-sm text-gray-500">
-                      {new Date(notice.date).toLocaleDateString()}
-                    </div>
-                    <div className="w-20 text-center text-sm text-gray-500">
-                      {notice.views}
-                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 공지사항이 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

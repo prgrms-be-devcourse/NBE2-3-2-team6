@@ -166,45 +166,51 @@ const AdminArticlePage = () => {
               </div>
 
               <div className="divide-y">
-                {articles.map((article) => (
-                  <div
-                    key={article.articleNo}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {article.articleNo}
+                {articles.length > 0 ? (
+                  articles.map((article) => (
+                    <div
+                      key={article.articleNo}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {article.articleNo}
+                      </div>
+                      <div className="flex-1 px-6">
+                        <a
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {article.subject}
+                        </a>
+                      </div>
+                      <div className="w-32 text-center text-sm text-gray-500">
+                        {article.source}
+                      </div>
+                      <div className="w-32 text-center text-sm flex justify-center space-x-2">
+                        <button
+                          onClick={() =>
+                            handleOpenModal("edit", article.articleNo)
+                          }
+                          className="px-2 py-1 text-blue-600 hover:text-blue-800"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => handleDelete(article.articleNo)}
+                          className="px-2 py-1 text-red-600 hover:text-red-800"
+                        >
+                          삭제
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex-1 px-6">
-                      <a
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {article.subject}
-                      </a>
-                    </div>
-                    <div className="w-32 text-center text-sm text-gray-500">
-                      {article.source}
-                    </div>
-                    <div className="w-32 text-center text-sm flex justify-center space-x-2">
-                      <button
-                        onClick={() =>
-                          handleOpenModal("edit", article.articleNo)
-                        }
-                        className="px-2 py-1 text-blue-600 hover:text-blue-800"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(article.articleNo)}
-                        className="px-2 py-1 text-red-600 hover:text-red-800"
-                      >
-                        삭제
-                      </button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 헌혈 기사 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
