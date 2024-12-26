@@ -18,7 +18,7 @@ instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = token;
     }
     return config;
   },
@@ -54,7 +54,7 @@ instance.interceptors.response.use(
         localStorage.setItem("accessToken", newAccessToken);
 
         // 원래 요청의 Authorization 헤더를 새 토큰으로 업데이트
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = newAccessToken;
 
         // 실패했던 요청 재시도
         return instance(originalRequest);
