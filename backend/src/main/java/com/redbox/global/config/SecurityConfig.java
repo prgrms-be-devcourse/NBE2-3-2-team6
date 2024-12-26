@@ -2,6 +2,7 @@ package com.redbox.global.config;
 
 import com.redbox.domain.auth.filter.CustomLogoutFilter;
 import com.redbox.domain.auth.filter.JWTFilter;
+import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.service.RefreshTokenService;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.filter.LoginFilter;
@@ -30,11 +31,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService; // 변경: RefreshTokenService 주입
+    private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService,CustomUserDetailsService userDetailsService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService; // 주입
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -59,7 +62,7 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .logout(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil, userDetailsService), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
