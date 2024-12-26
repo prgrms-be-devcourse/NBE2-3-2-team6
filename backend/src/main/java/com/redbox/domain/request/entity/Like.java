@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "likes")
-public class Likes {
+public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class Likes {
     @Column(nullable = false)
     private boolean isLiked;
 
-    public Likes(Long likeId, Long requestId, Long userId, boolean isLiked) {
+    public Like(Long likeId, Long requestId, Long userId, boolean isLiked) {
         this.likeId = likeId;
         this.requestId = requestId;
         this.userId = userId;

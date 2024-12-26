@@ -3,11 +3,12 @@ package com.redbox.domain.request.service;
 import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
 import com.redbox.domain.request.dto.RequestFilter;
-import com.redbox.domain.request.dto.RequestResponse;
-import com.redbox.domain.request.entity.Likes;
+import com.redbox.domain.request.dto.ListResponse;
+import com.redbox.domain.request.entity.Like;
 import com.redbox.domain.request.entity.Priority;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.Status;
+import com.redbox.domain.request.exception.RequestNotFoundException;
 import com.redbox.domain.request.repository.LikesRepository;
 import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.global.entity.PageResponse;
@@ -23,11 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.redbox.domain.request.entity.QRequest.request;
 
 @Service
 @RequiredArgsConstructor
@@ -39,48 +37,49 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
 
-    public PageResponse<RequestResponse> getRequests(int page, int size, RequestFilter request) {
+    public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
         // 동적쿼리로 처리하기
         Page<Request> boardPage = requestRepository.findAll(pageable);
-        Page<RequestResponse> responsePage = boardPage.map(RequestResponse::new);
+        Page<ListResponse> responsePage = boardPage.map(ListResponse::new);
         return new PageResponse<>(responsePage);
     }
 
     @Transactional
-    public Long saveRequest(WriteRequest writeRequest, MultipartFile file) {
+    public Long createRequest(WriteRequest writeRequest, MultipartFile file) {
         String filePath = null;
         if (file != null && !file.isEmpty()) {
             filePath = saveFile(file);
         }
 
-        Request request = new Request(
-                null, // ID 자동 생성
-                1L, // user_id, 등록자 (임의 값)
-                writeRequest.getRequest_title(),
-                writeRequest.getRequest_content(),
-                writeRequest.getTarget_amount(),
-                0, // current_amount 초기값
-                Status.REQUEST,
-                writeRequest.getDonation_start_date(),
-                writeRequest.getDonation_end_date(),
-                filePath,
-                Priority.MEDIUM,
-                0, // 조회수 초기값
-                0, // 좋아요 초기값
-                0 // 파일 다운로드 초기값
-        );
+        // 빌더 패턴을 사용하여 Request 객체 생성
+        Request request = Request.builder()
+                .userId(1L) // user_id (현재 임의 값 설정)
+                .requestTitle(writeRequest.getRequestTitle())
+                .requestContent(writeRequest.getRequestContent())
+                .targetAmount(writeRequest.getTargetAmount())
+                .currentAmount(0) // 초기값
+                .status(Status.REQUEST)
+                .donationStartDate(writeRequest.getDonationStartDate())
+                .donationEndDate(writeRequest.getDonationEndDate())
+                .requestAttachFile(filePath) // 저장된 파일 경로
+                .priority(Priority.MEDIUM) // 초기 중요도
+                .requestHits(0) // 초기 조회수
+                .requestLikes(0) // 초기 좋아요 수
+                .fileDownloads(0) // 초기 다운로드 수
+                .build();
 
         Request savedRequest = requestRepository.save(request);
         return savedRequest.getRequestId();
     }
 
     @Transactional
-    public DetailResponse getRequestDetails(Long requestId, boolean incrementHits) {
-        Request request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
+    public DetailResponse getRequestDetails(Long requestId, boolean isIncrement) {
+        // todo: 게시판 err 처리
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         // 조회수 증가(modify 에서는 조회수 증가하면 안됨)
-        if(incrementHits) {
+        if(isIncrement) {
             request.setRequestHits(request.getRequestHits() + 1);
             requestRepository.save(request);
         }
@@ -119,10 +118,10 @@ public class RequestService {
         // userId, requestId 없으면 추가, 있으면 상태 변경
         // todo : userId 추가
         // user_id, request_id 에 해당하는 DetailResponse 에서의 isLiked 도 수정
-        Likes likes = likesRepository.findById(requestId).orElse(null);
+        Like likes = likesRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         if (likes == null) {
-            Likes like = new Likes();
+            Like like = new Like();
             like.setRequestId(requestId);
             like.setUserId(1L); // 임의값 넣음
             like.setLiked(true);
@@ -134,13 +133,13 @@ public class RequestService {
 
     @Transactional
     public Long modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
-        Request request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
-        request.setRequestTitle(writeRequest.getRequest_title());
-        request.setRequestContent(writeRequest.getRequest_content());
-        request.setDonationStartDate(writeRequest.getDonation_start_date());
-        request.setDonationEndDate(writeRequest.getDonation_end_date());
-        request.setTargetAmount(writeRequest.getTarget_amount());
+        request.setRequestTitle(writeRequest.getRequestTitle());
+        request.setRequestContent(writeRequest.getRequestContent());
+        request.setDonationStartDate(writeRequest.getDonationStartDate());
+        request.setDonationEndDate(writeRequest.getDonationEndDate());
+        request.setTargetAmount(writeRequest.getTargetAmount());
 
         if (file != null && !file.isEmpty()) {
             String filePath = saveFile(file);

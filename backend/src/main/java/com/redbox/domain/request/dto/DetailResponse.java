@@ -1,8 +1,6 @@
 package com.redbox.domain.request.dto;
 
-import com.redbox.domain.request.entity.Likes;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
+import com.redbox.domain.request.entity.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +28,7 @@ public class DetailResponse {
     // todo : Likes 와 관계 추가 필요 (user_id, request_id 포함돼서 연결해야함)
     private boolean isLiked; // 좋아요 여부
 
+    // todo : 파일 로직 처리시 추가 수정
     private List<AttachmentResponse> attachments; // 첨부 파일 리스트
 
     @Getter

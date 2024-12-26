@@ -2,6 +2,7 @@ package com.redbox.domain.request.entity;
 
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,8 +49,8 @@ public class Request extends BaseEntity {
 
     private int fileDownloads;
 
-    public Request(Long requestId, Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, Status status, LocalDate donationStartDate, LocalDate donationEndDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes, int fileDownloads) {
-        this.requestId = requestId;
+    @Builder
+    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, Status status, LocalDate donationStartDate, LocalDate donationEndDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes, int fileDownloads) {
         this.userId = userId;
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
