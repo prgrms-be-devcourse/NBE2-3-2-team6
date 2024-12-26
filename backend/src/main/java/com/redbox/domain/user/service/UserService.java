@@ -4,7 +4,9 @@ import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
+import com.redbox.domain.user.exception.InvalidUserInfoException;
 import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.UserIdNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -111,4 +113,25 @@ public class UserService {
         context.setVariable("tempPassword", tempPassword);
         return templateEngine.process("temp-password-email", context);
     }
+
+    public FindIdResponse findUserId(FindIdRequest request) {
+        String name = request.getUserName();
+        String phoneNumber = request.getPhoneNumber();
+
+        // 사용자 이름과 전화번호가 올바르게 입력되었는지 확인
+        if (name == null || phoneNumber == null || name.trim().isEmpty() || phoneNumber.trim().isEmpty()) {
+            throw new InvalidUserInfoException(); // 잘못된 사용자 정보 처리
+        }
+
+        // 해당 정보로 사용자를 찾고, 없으면 예외 던짐
+        String email = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(UserIdNotFoundException::new) // 해당 정보로 가입된 사용자가 없으면 예외 던짐
+                .getEmail();
+
+        // 이메일을 담은 응답 객체 생성 후 반환
+        return new FindIdResponse(email);
+    }
+
+
+
 }

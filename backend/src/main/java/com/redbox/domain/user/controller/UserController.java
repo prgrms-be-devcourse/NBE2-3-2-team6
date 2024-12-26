@@ -42,4 +42,12 @@ public class UserController {
         userService.resetPassword(request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/auth/find/id")
+    public ResponseEntity<FindIdResponse> findUserId(@RequestBody @Valid FindIdRequest request) {
+        // 요청 객체를 그대로 서비스에 넘김
+        FindIdResponse response = userService.findUserId(request);
+        return ResponseEntity.ok(response);
+    }
+
 }
