@@ -88,7 +88,7 @@ public class UserService {
     }
 
     @Transactional
-    public void resetPassword(PasswordResetRequest request) {
+    public void resetPassword(ResetPasswordRequest request) {
         // 사용자 조회
         User user = userRepository.findByEmailAndName(request.getEmail(), request.getUsername())
                 .orElseThrow(UserNotFoundException::new);
@@ -131,7 +131,5 @@ public class UserService {
         // 이메일을 담은 응답 객체 생성 후 반환
         return new FindIdResponse(email);
     }
-
-
 
 }

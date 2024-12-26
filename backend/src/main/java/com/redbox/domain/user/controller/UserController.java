@@ -37,13 +37,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/auth/password/reset")
-    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordResetRequest request) {
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         userService.resetPassword(request);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/auth/find/id")
+    @PostMapping("/auth/find-id")
     public ResponseEntity<FindIdResponse> findUserId(@RequestBody @Valid FindIdRequest request) {
         // 요청 객체를 그대로 서비스에 넘김
         FindIdResponse response = userService.findUserId(request);

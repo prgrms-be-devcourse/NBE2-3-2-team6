@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordResetRequest {
+public class ResetPasswordRequest {
 
     @Email(message = "이메일 형식이 맞지 않습니다.")
     @NotBlank(message = "이메일을 입력해주세요.")
