@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
 
@@ -19,7 +19,7 @@ const AdminArticlePage = () => {
     source: "",
   });
 
-  const baseUrl = "http://localhost:8080/articles";
+  const baseUrl = "/articles";
 
   const PAGE_GROUP_SIZE = 10;
   const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
@@ -32,7 +32,7 @@ const AdminArticlePage = () => {
 
   const fetchBoards = async (page, size) => {
     try {
-      const response = await axios.get(baseUrl, {
+      const response = await api.get(baseUrl, {
         params: {
           page: page,
           size,
@@ -54,7 +54,7 @@ const AdminArticlePage = () => {
     if (mode === "edit" && articleId) {
       try {
         // 개별 게시글 조회 API 호출
-        const response = await axios.get(`${baseUrl}/${articleId}`);
+        const response = await api.get(`${baseUrl}/${articleId}`);
         const articleDetail = response.data;
 
         setArticleData({
@@ -99,9 +99,9 @@ const AdminArticlePage = () => {
     e.preventDefault();
     try {
       if (modalMode === "edit") {
-        await axios.put(`${baseUrl}/${selectedArticleId}`, articleData);
+        await api.put(`${baseUrl}/${selectedArticleId}`, articleData);
       } else {
-        await axios.post(baseUrl, articleData);
+        await api.post(baseUrl, articleData);
       }
 
       handleCloseModal();
@@ -114,7 +114,7 @@ const AdminArticlePage = () => {
   const handleDelete = async (articleId) => {
     if (window.confirm("정말로 이 기사를 삭제하시겠습니까?")) {
       try {
-        await axios.delete(`${baseUrl}/${articleId}`);
+        await api.delete(`${baseUrl}/${articleId}`);
         fetchBoards(page, size);
       } catch (error) {
         console.error("Error deleting article:", error);
@@ -166,45 +166,51 @@ const AdminArticlePage = () => {
               </div>
 
               <div className="divide-y">
-                {articles.map((article) => (
-                  <div
-                    key={article.articleNo}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {article.articleNo}
+                {articles.length > 0 ? (
+                  articles.map((article) => (
+                    <div
+                      key={article.articleNo}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {article.articleNo}
+                      </div>
+                      <div className="flex-1 px-6">
+                        <a
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {article.subject}
+                        </a>
+                      </div>
+                      <div className="w-32 text-center text-sm text-gray-500">
+                        {article.source}
+                      </div>
+                      <div className="w-32 text-center text-sm flex justify-center space-x-2">
+                        <button
+                          onClick={() =>
+                            handleOpenModal("edit", article.articleNo)
+                          }
+                          className="px-2 py-1 text-blue-600 hover:text-blue-800"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => handleDelete(article.articleNo)}
+                          className="px-2 py-1 text-red-600 hover:text-red-800"
+                        >
+                          삭제
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex-1 px-6">
-                      <a
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {article.subject}
-                      </a>
-                    </div>
-                    <div className="w-32 text-center text-sm text-gray-500">
-                      {article.source}
-                    </div>
-                    <div className="w-32 text-center text-sm flex justify-center space-x-2">
-                      <button
-                        onClick={() =>
-                          handleOpenModal("edit", article.articleNo)
-                        }
-                        className="px-2 py-1 text-blue-600 hover:text-blue-800"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(article.articleNo)}
-                        className="px-2 py-1 text-red-600 hover:text-red-800"
-                      >
-                        삭제
-                      </button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 헌혈 기사 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

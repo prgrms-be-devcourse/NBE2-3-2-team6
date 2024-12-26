@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 
-const url = "http://localhost:8080/articles";
+const url = "/articles";
 
 const ArticlePage = () => {
   const size = 10;
@@ -23,7 +23,7 @@ const ArticlePage = () => {
 
   const fetchArticles = async (page, size) => {
     try {
-      const response = await axios.get(url, {
+      const response = await api.get(url, {
         params: {
           page: page,
           size,
@@ -89,33 +89,39 @@ const ArticlePage = () => {
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {articles.map((article) => (
-                  <div
-                    key={article.articleNo}
-                    className="flex items-center py-3 hover:bg-gray-50"
-                  >
-                    <div className="w-16 text-center text-sm text-gray-500">
-                      {article.articleNo}
+                {articles.length > 0 ? (
+                  articles.map((article) => (
+                    <div
+                      key={article.articleNo}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {article.articleNo}
+                      </div>
+                      <div className="flex-1 px-6">
+                        <a
+                          href={article.url}
+                          target="_blank" // 새 탭에서 열기
+                          rel="noopener noreferrer" // 보안을 위한 추가 속성
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {article.subject}
+                        </a>
+                      </div>
+                      <div className="w-32 text-center text-sm text-gray-500">
+                        {article.source}
+                      </div>
+                      <div className="w-24 text-center text-sm text-gray-500">
+                        {article.createdDate}
+                      </div>
+                      {/* 출처 추가 */}
                     </div>
-                    <div className="flex-1 px-6">
-                      <a
-                        href={article.url}
-                        target="_blank" // 새 탭에서 열기
-                        rel="noopener noreferrer" // 보안을 위한 추가 속성
-                        className="text-gray-900 hover:text-red-600"
-                      >
-                        {article.subject}
-                      </a>
-                    </div>
-                    <div className="w-32 text-center text-sm text-gray-500">
-                      {article.source}
-                    </div>
-                    <div className="w-24 text-center text-sm text-gray-500">
-                      {article.createdDate}
-                    </div>
-                    {/* 출처 추가 */}
+                  ))
+                ) : (
+                  <div className="flex justify-center items-center py-20 text-gray-500">
+                    등록된 헌혈 기사 없습니다.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

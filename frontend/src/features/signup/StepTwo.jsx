@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../lib/axios";
 
 const StepTwo = ({
   userInfo,
@@ -78,10 +78,7 @@ const StepTwo = ({
         verified: userInfo.isEmailVerified,
       };
 
-      const response = await axios.post(
-        "http://localhost:8080/auth/signup",
-        signupData
-      );
+      const response = await api.post("/auth/signup", signupData);
 
       if (response.status === 200) {
         handleNext(); // 성공 시 다음 단계로

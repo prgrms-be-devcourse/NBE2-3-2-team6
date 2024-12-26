@@ -4,7 +4,7 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const AdminNoticeWritePage = () => {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const AdminNoticeWritePage = () => {
         return;
       }
 
-      // FormData 생성 
+      // FormData 생성
       const formData = new FormData();
       formData.append("title", title);
       formData.append("content", content);
@@ -47,14 +47,14 @@ const AdminNoticeWritePage = () => {
       }
 
       // FormData 내용 확인
-    //   for (const [key, value] of formData.entries()) {
-    //     console.log("FormData 내용 확인")
-    //     console.log(key, value);
-    //   }
+      //   for (const [key, value] of formData.entries()) {
+      //     console.log("FormData 내용 확인")
+      //     console.log(key, value);
+      //   }
 
       // API 호출
       // TODO : formdata로 제목, 내용, 파일을 다 넣었음(erd에서는 구분되어 있음)
-      const response = await axios.post(url, formData, {
+      const response = await api.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -66,7 +66,6 @@ const AdminNoticeWritePage = () => {
       } else {
         console.log(error);
       }
-
     } catch (error) {
       console.error("Error saving post:", error);
     }
@@ -115,9 +114,7 @@ const AdminNoticeWritePage = () => {
                 >
                   파일 선택
                 </button>
-                <span className="ml-3 text-sm text-gray-500">
-                  {attachFile}
-                </span>
+                <span className="ml-3 text-sm text-gray-500">{attachFile}</span>
               </div>
             </div>
 

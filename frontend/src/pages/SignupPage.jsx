@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/axios";
 import StepOne from "../features/signup/StepOne";
 import StepTwo from "../features/signup/StepTwo";
 import StepThree from "../features/signup/StepThree";
@@ -59,7 +59,7 @@ const SignupPage = () => {
     setTimer(300);
 
     try {
-      await axios.post("http://localhost:8080/auth/email/verification-code", {
+      await api.post("/auth/email/verification-code", {
         email: userInfo.email,
       });
     } catch (error) {
@@ -82,13 +82,10 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/auth/email/verify-code",
-        {
-          email: userInfo.email,
-          verificationCode: userInfo.verificationCode,
-        }
-      );
+      const response = await api.post("/auth/email/verify-code", {
+        email: userInfo.email,
+        verificationCode: userInfo.verificationCode,
+      });
 
       if (response.status === 200) {
         setUserInfo((prev) => {

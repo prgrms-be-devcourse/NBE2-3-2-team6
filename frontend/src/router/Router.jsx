@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
@@ -28,6 +28,17 @@ import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
 import RequestDetailPage from "../pages/community/RequestDetailPage";
+import { decodeJWT } from "../lib/axios";
+
+const requireAdmin = () => {
+  const token = localStorage.getItem("accessToken");
+  const decodedToken = token ? decodeJWT(token) : null;
+
+  if (decodedToken?.role !== "ROLE_ADMIN") {
+    return redirect("/");
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
   {
@@ -55,7 +66,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/community/request/:id",
-        element: <RequestDetailPage />
+        element: <RequestDetailPage />,
       },
       {
         path: "/community/request/write",
@@ -114,41 +125,42 @@ const router = createBrowserRouter([
   },
   {
     element: <AdminLayout />,
+    loader: requireAdmin,
     children: [
       {
         path: "/admin",
-        element: <AdminPage/>,
+        element: <AdminPage />,
       },
       {
         path: "/admin/community/request",
-        element: <AdminRequestPage/>,
+        element: <AdminRequestPage />,
       },
       {
         path: "/admin/community/article",
-        element: <AdminArticlePage/>,
+        element: <AdminArticlePage />,
       },
       {
         path: "/admin/community/notice",
-        element: <AdminNoticePage/>,
+        element: <AdminNoticePage />,
       },
       {
         path: "/admin/approve",
-        element: <ApprovalRequestPage/>,
+        element: <ApprovalRequestPage />,
       },
       {
-        path: "admin/community/notice/:id",
+        path: "/admin/community/notice/:id",
         element: <AdminNoticeDetailPage />,
       },
       {
-        path: "admin/community/notice/write",
+        path: "/admin/community/notice/write",
         element: <AdminNoticeWritePage />,
       },
       {
-        path: "admin/community/request/:id",
+        path: "/admin/community/request/:id",
         element: <AdminRequestDetailPage />,
       },
     ],
-  }
+  },
 ]);
 
 export default router;

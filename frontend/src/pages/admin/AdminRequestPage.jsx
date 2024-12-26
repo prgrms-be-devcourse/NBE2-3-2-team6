@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
 const AdminRequestPage = () => {
-
   const PAGE_SIZE = 10;
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -22,17 +21,18 @@ const AdminRequestPage = () => {
   // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
   const fetchData = async (page, size, status, option, start, end) => {
     try {
-      const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request"
+      const url =
+        "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request";
 
       const params = {
-        page: page-1,
+        page: page - 1,
         size: size,
         status: status || "최신순",
         option: option || "전체글",
         startDate: start || "전체",
         endDate: end || "전체",
-      }
-      const response = await axios.get(url, {params});
+      };
+      const response = await api.get(url, { params });
 
       if (response.status === 200) {
         if (response.data && response.data.requests) {
@@ -42,7 +42,7 @@ const AdminRequestPage = () => {
         } else {
           setContent([]);
         }
-      }   
+      }
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생: ", error);
       setContent([]);
@@ -51,7 +51,14 @@ const AdminRequestPage = () => {
 
   // 기본 데이터 로드
   useEffect(() => {
-    fetchData(page, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate);
+    fetchData(
+      page,
+      PAGE_SIZE,
+      selectedStatus,
+      selectedOption,
+      startDate,
+      endDate
+    );
   }, [page, selectedStatus, selectedOption, startDate, endDate]);
 
   // 현재 페이지 그룹 계산을 위한 상수
@@ -95,7 +102,6 @@ const AdminRequestPage = () => {
 
   // 필터 버튼 클릭 시
   const handleFilterClick = () => {
-
     console.log("옵션:", selectedOption);
     console.log("시작 날짜:", startDate || "전체");
     console.log("종료 날짜:", endDate || "전체");
@@ -141,20 +147,24 @@ const AdminRequestPage = () => {
                 <div className="flex items-center space-x-4">
                   {/* 옵션 선택 */}
                   <div className="w-[230px] border p-1 rounded text-center">
-                    <label htmlFor="dropdown" className="me-2" style={{ fontSize: "15px", fontWeight: "bold" }} >
-                      옵션 선택 
+                    <label
+                      htmlFor="dropdown"
+                      className="me-2"
+                      style={{ fontSize: "15px", fontWeight: "bold" }}
+                    >
+                      옵션 선택
                     </label>
                     <select
                       id="dropdown"
                       className="form-select"
                       value={selectedOption}
                       onChange={(e) => setSelectedOption(e.target.value)}
-                      style={{ 
+                      style={{
                         width: "110px",
                         fontSize: "15px", // 글씨 크기 조정
                         textAlignLast: "center", // 드롭다운 화살표 오른쪽 정렬 유지
                         padding: "5px", // 패딩 조정
-                       }}
+                      }}
                     >
                       <option value="" disabled>
                         선택
@@ -182,7 +192,7 @@ const AdminRequestPage = () => {
                       type="date"
                       id="endDate"
                       className="form-control me-3"
-                      style={{ width: "120px", fontSize: "15px"  }}
+                      style={{ width: "120px", fontSize: "15px" }}
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
@@ -194,43 +204,62 @@ const AdminRequestPage = () => {
                       className="btn btn-dark flex items-center justify-center"
                       onClick={handleFilterClick}
                     >
-                      <Search className="w- h-6 text-red-500 mx-auto"/>
+                      <Search className="w- h-6 text-red-500 mx-auto" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-
             {/* 게시판 리스트 */}
             <div className="border rounded-lg">
               {/* 헤더 */}
               <div className="flex bg-gray-50 py-3 border-b">
-                <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
-                <div className="flex-1 px-6 text-sm font-medium text-gray-500">제목</div>
-                <div className="w-32 text-center text-sm font-medium text-gray-500">작성일</div>
-                <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
+                <div className="w-16 text-center text-sm font-medium text-gray-500">
+                  번호
+                </div>
+                <div className="flex-1 px-6 text-sm font-medium text-gray-500">
+                  제목
+                </div>
+                <div className="w-32 text-center text-sm font-medium text-gray-500">
+                  작성일
+                </div>
+                <div className="w-20 text-center text-sm font-medium text-gray-500">
+                  조회수
+                </div>
               </div>
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
                 {content && content.length > 0 ? (
                   content.map((request) => (
-                    <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
-                      <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
+                    <div
+                      key={request.id}
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {request.id}
+                      </div>
                       <div className="flex-1 px-6">
-                        <Link to={`/community/request/${request.id}`} className="text-gray-900 hover:text-red-600">
+                        <Link
+                          to={`/community/request/${request.id}`}
+                          className="text-gray-900 hover:text-red-600"
+                        >
                           {request.title}
                         </Link>
                       </div>
                       <div className="w-32 text-center text-sm text-gray-500">
                         {new Date(request.date).toLocaleDateString()}
                       </div>
-                      <div className="w-20 text-center text-sm text-gray-500">{request.views}</div>
+                      <div className="w-20 text-center text-sm text-gray-500">
+                        {request.views}
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-4 text-gray-500">데이터가 없습니다.</div>
+                  <div className="text-center py-4 text-gray-500">
+                    데이터가 없습니다.
+                  </div>
                 )}
               </div>
             </div>
