@@ -14,8 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class RedCardTest {
@@ -30,59 +32,23 @@ class RedCardTest {
     @Transactional
     void createRedCardTest() {
         //Given
-        User data = User.builder()
-                        .name("sb")
-                        .birth(LocalDate.of(1990, 1, 1))
-                        .email("s111b@gmail.com")
-                        .roleType(RoleType.USER)
-                        .status(Status.ACTIVE).build();
+        Long userId = 1L;
+        LocalDate donationDate = LocalDate.of(2024, 12, 25);
+        String serialNumber = "12";
+        RedcardStatus status = RedcardStatus.AVAILABLE;
 
-        userRepository.save(data);
-        User user = userRepository.findByEmail("s111b@gmail.com");
-
-        //When & Then
+        //When
         Redcard cardData = Redcard.builder()
-                        .user(user)
-                        .donation_date(LocalDate.of(1990, 1, 1))
-                        .serialNumber("12")
-                        .redcardStatus(RedcardStatus.AVAILABLE)
+                        .userId(userId)
+                        .donation_date(donationDate)
+                        .serialNumber(serialNumber)
+                        .redcardStatus(status)
                         .build();
 
-        redcardRepository.save(cardData);
-
-        Redcard redCard = redcardRepository.findBySerialNumber("12").get();
-
-        assertThat(redCard.getUser().getId()).isEqualTo(user.getId());
-    }
-
-    @Test
-    @DisplayName("유저에서 레드카드 등록 테스트")
-    @Transactional
-    void registerRedCardTest() {
-        //Given
-        User data = User.builder()
-                        .name("sb")
-                        .birth(LocalDate.of(1990, 1, 1))
-                        .email("s111b@gmail.com")
-                        .roleType(RoleType.USER)
-                        .status(Status.ACTIVE).build();
-
-        userRepository.save(data);
-        User user = userRepository.findByEmail("s111b@gmail.com");
-
-        //When & Then
-        Redcard cardData = Redcard.builder()
-                        .user(user)
-                        .donation_date(LocalDate.of(1990, 1, 1))
-                        .serialNumber("12")
-                        .redcardStatus(RedcardStatus.AVAILABLE)
-                        .build();
-
-        redcardRepository.save(cardData);
-        Redcard redCard = redcardRepository.findBySerialNumber("12").get();
-
-        user.registerRedCard(redCard);
-
-        assertThat(user.countRedCards()).isEqualTo(1);
+        // Then
+        assertEquals(userId, cardData.getUserId());
+        assertEquals(donationDate, cardData.getDonationDate());
+        assertEquals(serialNumber, cardData.getSerialNumber());
+        assertEquals(status, cardData.getRedcardStatus());
     }
 }
