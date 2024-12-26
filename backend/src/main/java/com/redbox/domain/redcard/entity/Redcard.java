@@ -1,7 +1,5 @@
 package com.redbox.domain.redcard.entity;
 
-import com.redbox.domain.user.entity.User;
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
