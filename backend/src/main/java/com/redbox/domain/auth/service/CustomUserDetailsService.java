@@ -1,5 +1,6 @@
 package com.redbox.domain.auth.service;
 
+import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getRoleType().name())
-                .build();
+        return new CustomUserDetails(user);
     }
 }
 

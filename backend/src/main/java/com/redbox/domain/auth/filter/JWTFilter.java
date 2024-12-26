@@ -1,12 +1,10 @@
 package com.redbox.domain.auth.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.auth.exception.ExpiredAccessTokenException;
 import com.redbox.domain.auth.exception.InvalidTokenException;
+import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.util.JWTUtil;
-import com.redbox.domain.user.entity.RoleType;
-import com.redbox.domain.user.entity.User;
 import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
@@ -25,9 +23,11 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
-    public JWTFilter(JWTUtil jwtUtil) {
+    public JWTFilter(JWTUtil jwtUtil,CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -54,18 +54,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // email과 role 값을 토큰에서 가져옴
             String email = jwtUtil.getEmail(accessToken);
-            String role = jwtUtil.getRole(accessToken);
 
-            User user = User.builder()
-                    .email(email)
-                    .roleType(RoleType.valueOf(role)) // RoleType 설정
-                    .build();
-
-            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+            // DB에서 실제 사용자 정보를 가져와 CustomUserDetails 생성
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) userDetailsService.loadUserByUsername(email);
 
             // 인증 정보 생성 후 SecurityContext에 저장
             Authentication authToken = new UsernamePasswordAuthenticationToken(
-                    customUserDetails, null, customUserDetails.getAuthorities()
+                    userDetails, null, userDetails.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
 

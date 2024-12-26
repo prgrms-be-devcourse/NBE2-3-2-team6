@@ -2,14 +2,15 @@ package com.redbox.domain.auth.dto;
 
 import com.redbox.domain.user.entity.Status;
 import com.redbox.domain.user.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -17,6 +18,10 @@ public class CustomUserDetails implements UserDetails {
     // User 객체를 생성자로 주입받음
     public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     @Override
