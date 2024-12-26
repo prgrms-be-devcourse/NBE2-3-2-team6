@@ -39,51 +39,52 @@ const FindAccountPage = () => {
   };
 
   // 아이디 찾기 제출
-  const handleFindId = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleFindId = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const response = await api.post("/find/id", {
-        name: idFormData.name,
-        phone: idFormData.phone.replace, // 하이픈 제거
-      });
+  try {
+    // Axios 요청
+    const response = await api.post("/auth/find-id", {
+      userName: idFormData.name,
+      phoneNumber: idFormData.phone, // 하이픈 포함된 전화번호 그대로 전송
+    });
 
-      // 성공 시 결과 페이지로 이동
-      navigate("/find/result", {
-        state: {
-          type: "id",
-          foundId: response.data.userId,
-        },
-      });
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "아이디를 찾을 수 없습니다. 입력하신 정보를 다시 확인해주세요."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 성공 시 결과 페이지로 이동
+    navigate("/find/result", {
+      state: {
+        type: "id",
+        foundId: response.data.email, // FindIdResponse의 email 필드 사용
+      },
+    });
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+        "아이디를 찾을 수 없습니다. 입력하신 정보를 다시 확인해주세요."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   // 비밀번호 찾기 제출
   const handleFindPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
+  
     try {
-      const response = await api.post("/find/password", {
+      const response = await api.post("/auth/reset-password", {
         email: passwordFormData.email,
-        name: passwordFormData.name,
+        username: passwordFormData.name,
       });
-
+  
       // 성공 시 결과 페이지로 이동
       navigate("/find/result", {
         state: {
           type: "password",
-          email: passwordFormData.email,
+          email: passwordFormData.email, // 이메일을 통해 비밀번호 재설정 안내
         },
       });
     } catch (err) {
@@ -95,6 +96,7 @@ const FindAccountPage = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
