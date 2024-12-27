@@ -67,4 +67,7 @@ public class User extends BaseEntity {
         return redcards.getRedcardsCount();
     }
 
+    // 회원 탈퇴 상태 변경
+    public void inactive() { this.status = Status.INACTIVE; }
+
 }
