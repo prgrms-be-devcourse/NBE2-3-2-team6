@@ -46,10 +46,26 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: 10MB        # 단일 파일 최대 크기
+      max-request-size: 50MB     # 요청당 전체 파일 크기
+      enabled: true
 logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
 ---
 spring:
   config:
