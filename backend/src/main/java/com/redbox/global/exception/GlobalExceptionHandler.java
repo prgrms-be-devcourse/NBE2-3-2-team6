@@ -25,6 +25,15 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    // 인증 관련 예외 처리
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(AuthException e) {
+        ErrorCode error = e.getErrorCode();
+        return ResponseEntity
+                .status(error.getStatus())
+                .body(new ErrorResponse(error.getMessage(), error.getStatus().toString()));
+    }
+
     // DB 관련 예외 처리
     @ExceptionHandler(DataAccessException.class)
     protected ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {

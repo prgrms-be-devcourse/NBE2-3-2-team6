@@ -14,8 +14,13 @@ spring:
             enable: true
   config:
     import: optional:file:.env[.properties]
+  session:
+    store-type: none
 server:
   shutdown: graceful
+  servlet:
+    session:
+      timeout: 0
 ---
 spring:
   config:
