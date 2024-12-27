@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";  
 import { Mail, Phone, User, MapPin, Lock } from "lucide-react";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const [userInfo, setUserInfo] = useState({
     email: "user@example.com",
@@ -125,6 +130,40 @@ export default function ProfilePage() {
     }
   };
 
+  // 회원 탈퇴 처리 함수
+  const handleConfirmDelete = async () => {
+    if (!userInfo.currentPassword) {
+      alert("현재 비밀번호를 입력해주세요.");
+      return;
+    }
+  
+    try {
+      // TODO : 회원 탈퇴 API 호출
+      // const response = await axios.delete('/auth/drop-info', {
+      //   password: userInfo.currentPassword
+      // });
+
+      // if (response.status === 200) {
+      //   alert("회원 탈퇴가 완료되었습니다.");
+      //   setIsModalOpen(false);
+      //   navigate("/"");
+      // }
+  
+      // API 호출이 성공했다고 가정한 처리
+      alert("회원 탈퇴가 완료되었습니다.");
+      setIsModalOpen(false);
+      
+    } catch (error) {
+      console.error("회원 탈퇴 중 오류 발생:", error);
+      if (error.response?.status === 401) {
+        alert("비밀번호가 올바르지 않습니다.");
+      } else {
+        alert("회원 탈퇴 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-full">
@@ -139,6 +178,7 @@ export default function ProfilePage() {
               >
                 {isEditing ? "수정 완료" : "정보 수정"}
               </button>
+
             </div>
 
             <div className="space-y-6">
@@ -345,10 +385,62 @@ export default function ProfilePage() {
                   </div>
                 )}
               </section>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleOpenModal}
+                  className="text-red-600 hover:text-red-700 text-sm font-medium"
+                >
+                  회원 탈퇴
+                </button>
+
+                {/* 모달 */}
+                {isModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                      <h2 className="text-lg font-bold mb-4">회원 탈퇴</h2>
+                      <p className="text-sm mb-4">정말로 회원 탈퇴하시겠습니까?</p>
+                      <div className="mb-4">
+                        <label htmlFor="password" className="block text-sm font-medium mb-1">
+                          비밀번호 입력:
+                        </label>
+                        <input
+                          type="password"
+                          id="password"
+                          value={userInfo.currentPassword}
+                          onChange={(e) =>
+                            setUserInfo((prev) => ({
+                              ...prev,
+                              currentPassword: e.target.value,
+                            }))
+                          }
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={handleCloseModal}
+                          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+                        >
+                          취소
+                        </button>
+                        <button
+                          onClick={handleConfirmDelete}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        >
+                          탈퇴
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>   
             </div>
           </div>
+
+          
         </div>
       </div>
     </div>
+    
   );
 }
