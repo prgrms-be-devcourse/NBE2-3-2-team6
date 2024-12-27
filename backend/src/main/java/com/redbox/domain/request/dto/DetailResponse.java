@@ -17,10 +17,10 @@ public class DetailResponse {
     private Long id; // 게시글 ID
     private String title; // 제목
     private int views; // 조회수
-    private LocalDate start_date; // 기부 시작일
-    private LocalDate end_date; // 기부 종료일
-    private int target_amount; // 목표 수량
-    private int current_amount; // 현재 모금된 수량
+    private LocalDate startDate; // 기부 시작일
+    private LocalDate endDate; // 기부 종료일
+    private int targetAmount; // 목표 수량
+    private int currentAmount; // 현재 모금된 수량
     private int likes; // 좋아요 수
     private String status; // 상태
     private String content; // 내용
