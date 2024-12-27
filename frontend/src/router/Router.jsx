@@ -11,6 +11,7 @@ import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
 import RequestDetailPage from "../pages/community/RequestDetailPage";
+import RequestModifyPage from "../pages/community/RequestModifyPage"
 
 const router = createBrowserRouter([
   {
@@ -33,16 +34,20 @@ const router = createBrowserRouter([
         element: <NoticeDetailPage />,
       },
       {
-        path: "/community/request",
+        path: "/community/requests",
         element: <RequestPage />,
       },
       {
-        path: "/community/request/:id",
+        path: "/community/requests/:id",
         element: <RequestDetailPage />
       },
       {
-        path: "/community/request/write",
+        path: "/community/requests/write",
         element: <RequestWritePage />,
+      },
+      {
+        path: "/community/requests/modify/:id",
+        element: <RequestModifyPage/>
       },
       {
         path: "/community/article",
