@@ -37,7 +37,7 @@ const Header = () => {
                   공지사항
                 </Link>
                 <Link
-                  to="/community/request"
+                  to="/community/requests"
                   className="block px-4 py-2 hover:bg-red-50 hover:text-red-600"
                 >
                   요청게시판

@@ -11,7 +11,7 @@ export default function CommunitySideBar() {
     {
       key: "request",
       name: "요청게시판",
-      url: "/community/request",
+      url: "/community/requests",
     },
     {
       key: "article",

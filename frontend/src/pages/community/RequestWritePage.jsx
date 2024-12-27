@@ -6,8 +6,7 @@ import { Editor } from "@toast-ui/react-editor";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios";
 
-//const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request/write"
-const url = "http://localhost:8080/community/request/write"
+const url = "http://localhost:8080/requests";
 
 const RequestWritePage = () => {
 
@@ -19,7 +18,7 @@ const RequestWritePage = () => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("")  ;
   const [donationStartDate, setDonationStartDate] = useState(
     formatDate(new Date())
   );
@@ -68,11 +67,11 @@ const RequestWritePage = () => {
       const formData = new FormData();
 
       const postData = {
-        request_title: title,
-        request_content: content,
-        target_amount: donationAmount,
-        donation_start_date: donationStartDate,
-        donation_end_date: donationEndDate,
+        requestTitle: title,
+        requestContent: content,
+        targetAmount: donationAmount,
+        donationStartDate: donationStartDate,
+        donationEndDate: donationEndDate,
       };
       formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
 
@@ -92,9 +91,10 @@ const RequestWritePage = () => {
         },
       });
 
-      if (response.status === 200) {
-        alert("등록 완료");
-        navigate("/community/request");
+      if (response.status === 201) {
+        const { id } = response.data;
+        alert("등록 완료"); 
+        navigate(`/community/requests/${id}`);
       } else {
         alert("등록 실패");
       }
@@ -105,7 +105,7 @@ const RequestWritePage = () => {
   };
 
   const handleCancelButton = () => {
-    navigate("/community/request");
+    navigate("/community/requests");
   };
 
   return (

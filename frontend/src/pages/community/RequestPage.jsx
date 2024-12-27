@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios"; // axios 임포트
 
+//const url = "http://localhost:8080/requests"
 const url = 'https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request';
 const PAGE_SIZE = 10; // 페이지 크기 상수화
 
@@ -16,7 +17,7 @@ const RequestPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${url}?page=${page - 1}&size=${PAGE_SIZE}`);
+        const response = await axios.get(`${url}?page=${page}&size=${PAGE_SIZE}`);
         setRequests(response.data.requests); // requests 배열 설정
         setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
         setTotalElements(response.data.totalElements); // 전체 요청 수 설정
@@ -30,7 +31,7 @@ const RequestPage = () => {
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
-  const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
+  const currentGroup = Math.floor((page) / PAGE_GROUP_SIZE);
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
@@ -56,7 +57,7 @@ const RequestPage = () => {
   };
 
   const handleRequestWrite = () => {
-    navigate("/community/request/write");
+    navigate("/community/requests/write");
   };
 
   return (
@@ -80,7 +81,7 @@ const RequestPage = () => {
                   <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
                     <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
                     <div className="flex-1 px-6">
-                      <Link to={`/community/request/${request.id}`} className="text-gray-900 hover:text-red-600">
+                      <Link to={`/community/requests/${request.id}`} className="text-gray-900 hover:text-red-600">
                         {request.title}
                       </Link>
                     </div>
