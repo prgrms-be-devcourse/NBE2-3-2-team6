@@ -43,7 +43,7 @@ public class UserService {
         return userDetails.getUserId();
     }
 
-    private static CustomUserDetails getCustomUserDetails() {
+    private CustomUserDetails getCustomUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (CustomUserDetails) authentication.getPrincipal();
     }
