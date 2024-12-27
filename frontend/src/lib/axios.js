@@ -18,7 +18,10 @@ instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.access = token;
+    }
+    if (config.data instanceof FormData) {
+      config.headers["Content-Type"] = "multipart/form-data";
     }
     return config;
   },
