@@ -22,10 +22,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
 
     // 사용자 정보가 잘못된 경우
-    INVALID_USER_INFO(HttpStatus.BAD_REQUEST, "사용자 이름과 전화번호를 모두 입력해야 합니다."),
+    INVALID_USER_INFO(HttpStatus.BAD_REQUEST, "사용자 이름과 전화번호를 모두 입력해야 합니다.");
 
-    // 아이디 찾기 관련 에러
-    USER_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 정보로 가입된 사용자가 없습니다.");
     private final HttpStatus status;
     private final String message;
 }

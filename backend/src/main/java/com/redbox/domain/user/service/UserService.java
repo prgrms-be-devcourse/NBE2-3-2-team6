@@ -6,7 +6,6 @@ import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
 import com.redbox.domain.user.exception.InvalidUserInfoException;
 import com.redbox.domain.user.exception.UserNotFoundException;
-import com.redbox.domain.user.exception.UserIdNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -125,7 +124,7 @@ public class UserService {
 
         // 해당 정보로 사용자를 찾고, 없으면 예외 던짐
         String email = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
-                .orElseThrow(UserIdNotFoundException::new) // 해당 정보로 가입된 사용자가 없으면 예외 던짐
+                .orElseThrow(UserNotFoundException::new) // 해당 정보로 가입된 사용자가 없으면 예외 던짐
                 .getEmail();
 
         // 이메일을 담은 응답 객체 생성 후 반환
