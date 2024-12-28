@@ -139,9 +139,32 @@ public class UserService {
         return new FindIdResponse(email);
     }
 
-    // 회원 정보 조회
     public UserInfoResponse getUserInfo() {
         User user = getCurrentUser();
+        return new UserInfoResponse(user);
+    }
+
+    @Transactional
+    public UserInfoResponse updateUserInfo(UpdateUserInfoRequest updateRequest) {
+        User user = getCurrentUser();
+
+        if (updateRequest.getName() != null) {
+            user.changeName(updateRequest.getName());
+        }
+        if (updateRequest.getPhoneNumber() != null) {
+            user.changePhoneNumber(updateRequest.getPhoneNumber());
+        }
+        if (updateRequest.getRoadAddress() != null) {
+            user.changeRoadAddress(updateRequest.getRoadAddress());
+        }
+        if (updateRequest.getExtraAddress() != null) {
+            user.changeExtraAddress(updateRequest.getExtraAddress());
+        }
+        if (updateRequest.getDetailAddress() != null) {
+            user.changeDetailAddress(updateRequest.getDetailAddress());
+        }
+
+        userRepository.save(user);
         return new UserInfoResponse(user);
     }
 
