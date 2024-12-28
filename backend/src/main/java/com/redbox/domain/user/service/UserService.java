@@ -1,13 +1,12 @@
 package com.redbox.domain.user.service;
 
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.auth.dto.CustomUserDetails;
-import com.redbox.domain.user.dto.SignupRequest;
-import com.redbox.domain.user.dto.SignupResponse;
-import com.redbox.domain.user.dto.ValidateVerificationCodeRequest;
-import com.redbox.domain.user.dto.VerificationCodeRequest;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
+import com.redbox.domain.user.exception.InvalidUserInfoException;
+import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -48,10 +47,10 @@ public class UserService {
         return (CustomUserDetails) authentication.getPrincipal();
     }
 
-    private String createAuthCodeEmailContent(String verificationCode) {
+    private String createEmailContent(String templateName, String variableName, String variableValue) {
         Context context = new Context();
-        context.setVariable("verificationCode", verificationCode);
-        return templateEngine.process("verification-code-email", context);
+        context.setVariable(variableName, variableValue);
+        return templateEngine.process(templateName, context);
     }
 
     public void sendVerificationCode(VerificationCodeRequest request) {
@@ -61,7 +60,7 @@ public class UserService {
         }
         String verificationCode = RandomCodeGenerator.generateRandomCode();
         String subject = "[Redbox] 이메일 인증 코드입니다.";
-        String content = createAuthCodeEmailContent(verificationCode);
+        String content = createEmailContent("verification-code-email", "verificationCode", verificationCode);
         emailSender.sendMail(request.getEmail(), subject, content);
         emailVerificationCodeRepository.save(request.getEmail(), verificationCode);
     }
@@ -106,4 +105,39 @@ public class UserService {
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        // 사용자 조회
+        User user = userRepository.findByEmailAndName(request.getEmail(), request.getUsername())
+                .orElseThrow(UserNotFoundException::new);
+
+        // 임시 비밀번호 생성
+        String tempPassword = RandomCodeGenerator.generateRandomCode();
+        String encodedPassword = encodePassword(tempPassword);
+        System.out.println("Generated temporary password: " + tempPassword);
+
+        // 비밀번호 변경
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+
+        // 이메일 전송
+        String subject = "[Redbox] 임시 비밀번호 안내";
+        String content = createEmailContent("temp-password-email", "tempPassword", tempPassword);
+        emailSender.sendMail(request.getEmail(), subject, content);
+    }
+
+    @Transactional
+    public FindIdResponse findUserId(FindIdRequest request) {
+        String name = request.getUserName();
+        String phoneNumber = request.getPhoneNumber();
+
+        // 해당 정보로 사용자를 찾고, 없으면 예외 던짐
+        String email = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(UserNotFoundException::new)
+                .getEmail();
+
+        return new FindIdResponse(email);
+    }
+
 }
