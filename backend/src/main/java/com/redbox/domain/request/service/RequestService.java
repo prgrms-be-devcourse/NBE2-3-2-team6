@@ -7,10 +7,13 @@ import com.redbox.domain.request.dto.ListResponse;
 import com.redbox.domain.request.entity.Like;
 import com.redbox.domain.request.entity.Priority;
 import com.redbox.domain.request.entity.Request;
-import com.redbox.domain.request.entity.Status;
+import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
+import com.redbox.domain.request.exception.UserNotFoundException;
 import com.redbox.domain.request.repository.LikesRepository;
 import com.redbox.domain.request.repository.RequestRepository;
+import com.redbox.domain.user.entity.User;
+import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.entity.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +42,15 @@ public class RequestService {
 
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
+    private final UserRepository userRepository;
+
+    // 현재 로그인한 사용자 정보 가져오기
+    private Long getCurrentUserId() {
+        // Spring Security 로 로그인한 사용자 email -> id 얻기
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        return user.getId();
+    }
 
     public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
@@ -54,12 +69,14 @@ public class RequestService {
 
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
+                //.userId(getCurrentUserId())
                 .userId(1L) // user_id (현재 임의 값 설정)
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
                 .currentAmount(0) // 초기값
-                .status(Status.REQUEST)
+                .requestStatus(RequestStatus.REQUEST)
+                .progress(RequestStatus.IN_PROGRESS)
                 .donationStartDate(writeRequest.getDonationStartDate())
                 .donationEndDate(writeRequest.getDonationEndDate())
                 .requestAttachFile(filePath) // 저장된 파일 경로
@@ -75,7 +92,6 @@ public class RequestService {
 
     @Transactional
     public DetailResponse getRequestDetails(Long requestId, boolean isIncrement) {
-        // todo: 게시판 err 처리
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         // 조회수 증가(modify 에서는 조회수 증가하면 안됨)
@@ -95,6 +111,14 @@ public class RequestService {
             ));
         }
 
+        //Long userId = getCurrentUserId();
+        Long userId = 1L; // 임의값 설정
+
+        // 좋아요 여부 조회
+        boolean isLiked = likesRepository.findByUserIdAndRequestId(userId, requestId)
+                .map(Like::isLiked)
+                .orElse(false);
+
         return new DetailResponse(
                 request.getRequestId(),
                 request.getRequestTitle(),
@@ -104,9 +128,9 @@ public class RequestService {
                 request.getTargetAmount(),
                 request.getCurrentAmount(),
                 request.getRequestLikes(),
-                request.getStatus().getText(),
+                request.getRequestStatus().getText(),
                 request.getRequestContent(),
-                false,
+                isLiked,
                 attachments
         );
     }
@@ -115,19 +139,23 @@ public class RequestService {
     @Transactional
     public void likeRequest(Long requestId) {
 
-        // userId, requestId 없으면 추가, 있으면 상태 변경
-        // todo : userId 추가
-        // user_id, request_id 에 해당하는 DetailResponse 에서의 isLiked 도 수정
-        Like likes = likesRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+        //Long userId = getCurrentUserId();
+        Long userId = 1L;
 
-        if (likes == null) {
-            Like like = new Like();
-            like.setRequestId(requestId);
-            like.setUserId(1L); // 임의값 넣음
-            like.setLiked(true);
-            likesRepository.save(like);
+        Optional<Like> optionalLike = likesRepository.findByUserIdAndRequestId(userId, requestId);
+
+        if (optionalLike.isPresent()) {
+            // 존재하면 isLiked 상태 변경
+            Like like = optionalLike.get();
+            like.setLiked(!like.isLiked());
         } else {
-            likes.setLiked(!likes.isLiked());
+            // 존재하지 않으면 새로운 Like 엔티티 생성
+            Like newLike = Like.builder()
+                    .userId(userId)
+                    .requestId(requestId)
+                    .isLiked(true)
+                    .build();
+            likesRepository.save(newLike);
         }
     }
 

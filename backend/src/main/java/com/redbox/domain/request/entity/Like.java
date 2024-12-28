@@ -1,6 +1,7 @@
 package com.redbox.domain.request.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,19 +15,17 @@ public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "likeId")
-    private Long likeId;
+    @Column(name = "id")
+    private Long id; // 좋아요 ID
 
     private Long requestId; // 게시글 ID
-
-    // TODO : user 연결 필요
-    private Long userId;
+    private Long userId; // 사용자 ID
 
     @Column(nullable = false)
     private boolean isLiked;
 
-    public Like(Long likeId, Long requestId, Long userId, boolean isLiked) {
-        this.likeId = likeId;
+    @Builder
+    public Like(Long requestId, Long userId, boolean isLiked) {
         this.requestId = requestId;
         this.userId = userId;
         this.isLiked = isLiked;

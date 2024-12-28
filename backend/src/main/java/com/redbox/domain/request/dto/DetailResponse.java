@@ -21,11 +21,10 @@ public class DetailResponse {
     private LocalDate endDate; // 기부 종료일
     private int targetAmount; // 목표 수량
     private int currentAmount; // 현재 모금된 수량
+    // todo : 좋아요 수 증가 처리
     private int likes; // 좋아요 수
     private String status; // 상태
     private String content; // 내용
-
-    // todo : Likes 와 관계 추가 필요 (user_id, request_id 포함돼서 연결해야함)
     private boolean isLiked; // 좋아요 여부
 
     // todo : 파일 로직 처리시 추가 수정

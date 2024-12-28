@@ -11,6 +11,9 @@ public enum ErrorCode {
     // 요청 게시판 관련
     FAIL_TO_FIND_REQUEST(HttpStatus.NOT_FOUND,"해당 게시판을 찾을 수 없습니다."),
 
+    // 현재 로그인한 회원 찾기
+    FAIL_TO_FIND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),
+
     // 회원 가입 관련
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다."),
 

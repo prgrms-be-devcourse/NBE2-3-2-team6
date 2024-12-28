@@ -43,7 +43,6 @@ public class RequestController {
     // 요청 게시글 상세 조회
     @GetMapping("/requests/{requestId}")
     public ResponseEntity<DetailResponse> requestDetail(@PathVariable Long requestId) {
-        System.out.println("@@@@@ 요청 게시글 상세 조회 @@@@@");
         return handleDetailRequest(requestId, true);
     }
 
@@ -54,7 +53,6 @@ public class RequestController {
     // todo : 기부 API URL 처리
     // 기부 정보 전송( 수량, id, comment )
 
-    // todo : (사용자 추가) like 에 대한 요청 처리 (사용자 id 필요)
     @PostMapping("/requests/{requestId}")
     public ResponseEntity<LikeResponse> requestLike(@PathVariable Long requestId) {
         requestService.likeRequest(requestId);
