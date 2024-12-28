@@ -21,7 +21,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
+    if (config.url !== "/auth/reissue" && token) {
       config.headers.access = token;
     }
     if (config.data instanceof FormData) {
