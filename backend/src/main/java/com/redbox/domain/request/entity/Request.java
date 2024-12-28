@@ -21,21 +21,19 @@ public class Request extends BaseEntity {
     @Column(name = "request_id")
     private Long requestId; // 게시글 아이디
 
-    // TODO : user 관련 부분 수정 필요 (현재는 임의값 설정)
-    //@ManyToOne
-    //@JoinColumn(name = "user_id", nullable = false)
-    //private User user_id; // 외래키(사용자 아이디)
-
     private Long userId;
-
     private String requestTitle;
     private String requestContent;
     private int targetAmount;
     private int currentAmount;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private RequestStatus requestStatus;
 
+    @Enumerated(EnumType.STRING)
+    private RequestStatus progress;
+
+    private LocalDate requestDate;
     private LocalDate donationStartDate;
     private LocalDate donationEndDate;
 
@@ -50,15 +48,17 @@ public class Request extends BaseEntity {
     private int fileDownloads;
 
     @Builder
-    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, Status status, LocalDate donationStartDate, LocalDate donationEndDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes, int fileDownloads) {
+    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, RequestStatus requestStatus, RequestStatus progress, LocalDate donationStartDate, LocalDate donationEndDate, LocalDate requestDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes, int fileDownloads) {
         this.userId = userId;
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
         this.targetAmount = targetAmount;
         this.currentAmount = currentAmount;
-        this.status = status;
+        this.requestStatus = requestStatus;
+        this.progress = progress;
         this.donationStartDate = donationStartDate;
         this.donationEndDate = donationEndDate;
+        this.requestDate = LocalDate.now();
         this.requestAttachFile = requestAttachFile;
         this.priority = priority;
         this.requestHits = requestHits;

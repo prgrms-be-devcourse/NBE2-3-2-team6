@@ -1,15 +1,15 @@
 package com.redbox.domain.request.dto;
 
 import com.redbox.domain.request.entity.Request;
-import com.redbox.domain.request.entity.Status;
+import com.redbox.domain.request.entity.RequestStatus;
 
 import lombok.Getter;
+
+import java.time.LocalDate;
 
 @Getter
 public class ListResponse {
 
-    // 임시용 DTO
-    //TODO: 게시판 상세 페이지 확인하고 양식에 맞게 수정예정.
     private Long requestId; // 게시글 아이디
 
     private Long userId;
@@ -19,8 +19,10 @@ public class ListResponse {
     private int targetAmount;
     private int currentAmount;
 
-    private Status status;
+    private RequestStatus requestStatus;
+    private String progress;
 
+    private LocalDate requestDate;
     private int requestHits;
     private int requestLikes;
 
@@ -32,7 +34,9 @@ public class ListResponse {
         this.requestContent = request.getRequestContent();
         this.targetAmount = request.getTargetAmount();
         this.currentAmount = request.getCurrentAmount();
-        this.status = request.getStatus();
+        this.progress = request.getProgress().getText();
+        this.requestStatus = request.getRequestStatus();
+        this.requestDate = request.getRequestDate();
         this.requestHits = request.getRequestHits();
         this.requestLikes = request.getRequestLikes();
     }
