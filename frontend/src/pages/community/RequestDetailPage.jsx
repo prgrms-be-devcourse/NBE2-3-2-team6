@@ -24,7 +24,8 @@ const RequestDetailPage = () => {
       setRequest(response.data); // 요청 데이터 상태 업데이트
       setLikes(response.data.likes); // 좋아요 수 상태 업데이트
       setCurrentAmount(response.data.currentAmount); // 현재 기부 금액 상태 업데이트
-      setIsLiked(response.data.isLiked); // 좋아요 상태 업데이트
+      setIsLiked(response.data.liked); // 좋아요 상태 업데이트
+      console.log("좋아요 상태 업데이트 : ", response.data.liked);
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생: ", error); // 오류 처리
     }
