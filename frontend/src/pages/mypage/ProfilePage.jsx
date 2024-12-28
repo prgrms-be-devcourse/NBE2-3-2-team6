@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";  
 import { Mail, Phone, User, MapPin, Lock } from "lucide-react";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
+import axios from "axios";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -130,6 +131,8 @@ export default function ProfilePage() {
     }
   };
 
+  const drop_url = `http://localhost:8080/auth/drop-info`
+
   // 회원 탈퇴 처리 함수
   const handleConfirmDelete = async () => {
     if (!userInfo.currentPassword) {
@@ -138,16 +141,21 @@ export default function ProfilePage() {
     }
   
     try {
-      // TODO : 회원 탈퇴 API 호출
-      // const response = await axios.delete('/auth/drop-info', {
-      //   password: userInfo.currentPassword
-      // });
 
-      // if (response.status === 200) {
-      //   alert("회원 탈퇴가 완료되었습니다.");
-      //   setIsModalOpen(false);
-      //   navigate("/"");
-      // }
+      console.log("회원 탈퇴 시작");
+      
+      // TODO : 회원 탈퇴 API 호출
+      const response = await axios.delete(drop_url, {
+        data: { password: userInfo.currentPassword } // 데이터는 'data'에 넣어야 함
+      });
+
+      console.log("user password", userInfo.currentPassword);
+
+      if (response.status === 200) {
+        alert("회원 탈퇴가 완료되었습니다.");
+        setIsModalOpen(false);
+        navigate("/");
+      }
   
       // API 호출이 성공했다고 가정한 처리
       alert("회원 탈퇴가 완료되었습니다.");
