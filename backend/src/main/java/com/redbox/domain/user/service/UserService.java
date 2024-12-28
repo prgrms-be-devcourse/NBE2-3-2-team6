@@ -27,10 +27,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    private String createAuthCodeEmailContent(String verificationCode) {
+    private String createEmailContent(String templateName, String variableName, String variableValue) {
         Context context = new Context();
-        context.setVariable("verificationCode", verificationCode);
-        return templateEngine.process("verification-code-email", context);
+        context.setVariable(variableName, variableValue);
+        return templateEngine.process(templateName, context);
     }
 
     public void sendVerificationCode(VerificationCodeRequest request) {
@@ -40,7 +40,7 @@ public class UserService {
         }
         String verificationCode = RandomCodeGenerator.generateRandomCode();
         String subject = "[Redbox] 이메일 인증 코드입니다.";
-        String content = createAuthCodeEmailContent(verificationCode);
+        String content = createEmailContent("verification-code-email", "verificationCode", verificationCode);
         emailSender.sendMail(request.getEmail(), subject, content);
         emailVerificationCodeRepository.save(request.getEmail(), verificationCode);
     }
@@ -103,14 +103,8 @@ public class UserService {
 
         // 이메일 전송
         String subject = "[Redbox] 임시 비밀번호 안내";
-        String content = createTempPasswordEmailContent(tempPassword);
+        String content = createEmailContent("temp-password-email", "tempPassword", tempPassword);
         emailSender.sendMail(request.getEmail(), subject, content);
-    }
-
-    private String createTempPasswordEmailContent(String tempPassword) {
-        Context context = new Context();
-        context.setVariable("tempPassword", tempPassword);
-        return templateEngine.process("temp-password-email", context);
     }
 
     public FindIdResponse findUserId(FindIdRequest request) {
