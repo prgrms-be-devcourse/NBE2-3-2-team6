@@ -1,7 +1,7 @@
 package com.redbox.domain.request.controller;
 
 import com.redbox.domain.request.dto.*;
-import com.redbox.domain.request.service.RequestService;
+import com.redbox.domain.request.application.RequestService;
 import com.redbox.global.entity.PageResponse;
 
 import jakarta.validation.Valid;

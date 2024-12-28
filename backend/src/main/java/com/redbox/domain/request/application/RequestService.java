@@ -1,4 +1,4 @@
-package com.redbox.domain.request.service;
+package com.redbox.domain.request.application;
 
 import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,8 +54,9 @@ public class RequestService {
     // 페이지 처리
     public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
-        // 동적쿼리로 처리하기
-        Page<Request> boardPage = requestRepository.findAll(pageable);
+        Long userId = getCurrentUserId();
+
+        Page<Request> boardPage = requestRepository.searchBoards(userId, request, pageable);
         Page<ListResponse> responsePage = boardPage.map(ListResponse::new);
         return new PageResponse<>(responsePage);
     }
