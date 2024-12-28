@@ -24,11 +24,22 @@ const AdminRequestPage = () => {
     try {
       const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request"
 
+      const statusMap = {
+        "최신순": "NEW",
+        "만료순": "END",
+        "좋아요순": "HOT",
+      };
+
+      const optionMap = {
+        "전체글" : "TOTAL",
+        "관심글" : "LIKED",
+      }
+
       const params = {
         page: page-1,
         size: size,
-        status: status || "최신순",
-        option: option || "전체글",
+        sort: statusMap[status] || "NEW",
+        option: optionMap[option] || "TOTAL",
         startDate: start || "전체",
         endDate: end || "전체",
       }
