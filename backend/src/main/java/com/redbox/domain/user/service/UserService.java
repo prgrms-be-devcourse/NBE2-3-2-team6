@@ -1,6 +1,7 @@
 package com.redbox.domain.user.service;
 
 import com.redbox.domain.user.dto.*;
+import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
@@ -11,6 +12,8 @@ import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
 import com.redbox.global.util.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,23 @@ public class UserService {
     private final EmailVerificationCodeRepository emailVerificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
+    // 현재 로그인한 사용자 정보 조회
+    public User getCurrentUser() {
+        CustomUserDetails userDetails = getCustomUserDetails();
+        return userDetails.getUser();
+    }
+
+    // ID만 필요한 경우를 위한 메서드
+    public Long getCurrentUserId() {
+        CustomUserDetails userDetails = getCustomUserDetails();
+        return userDetails.getUserId();
+    }
+
+    private static CustomUserDetails getCustomUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (CustomUserDetails) authentication.getPrincipal();
+    }
 
     private String createEmailContent(String templateName, String variableName, String variableValue) {
         Context context = new Context();
