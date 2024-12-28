@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class RequestFilter {
     private int page;
     private int size;
-    private RequestStatus requestStatus;
+    private Filter sort;
     private Filter option;
     private LocalDate startDate;
     private LocalDate endDate;

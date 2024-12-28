@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Filter {
-    TOTAL("전체글"), LIKED("관심");
+    LIKED("관심글"), NEW("최신순"), END("만료순"), HOT("인기순") ;
     private final String filter;
 }
