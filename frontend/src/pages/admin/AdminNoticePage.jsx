@@ -100,7 +100,7 @@ const AdminNoticePage = () => {
                       </div>
                       <div className="flex-1 px-6">
                         <Link
-                          to={`/community/notice/${notice.noticeNo}`}
+                          to={`/admin/community/notice/${notice.noticeNo}`}
                           className="text-gray-900 hover:text-red-600"
                         >
                           {notice.title}

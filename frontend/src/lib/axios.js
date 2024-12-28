@@ -10,7 +10,11 @@ export const decodeJWT = (token) => {
 
 const instance = axios.create({
   baseURL: "http://localhost:8080",
-  withCredentials: true, // refresh token이 쿠키에 있으므로 필수
+  withCredentials: true,
+  headers: {
+    Accept: "application/json, text/plain, */*",
+    "Content-Type": "application/json",
+  },
 });
 
 // 요청 인터셉터
@@ -30,45 +34,30 @@ instance.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터
 instance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-
-    // 토큰이 만료되어 401 에러가 발생했고, 재시도하지 않은 요청일 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
       try {
-        // /auth/reissue 엔드포인트 호출
-        const response = await axios.post(
-          "http://localhost:8080/auth/reissue",
-          {},
-          {
-            withCredentials: true, // 쿠키 전송을 위해 필수
-          }
-        );
+        const reissueResponse = await instance.post("/auth/reissue");
+        const newToken = reissueResponse.headers["access"];
 
-        // 새로운 액세스 토큰을 localStorage에 저장
-        const newAccessToken = response.headers["access"];
-        localStorage.setItem("accessToken", newAccessToken);
+        if (!newToken) {
+          localStorage.removeItem("accessToken");
+          window.location.replace("/login");
+          return Promise.reject(error);
+        }
 
-        // 원래 요청의 Authorization 헤더를 새 토큰으로 업데이트
-        originalRequest.headers.Authorization = newAccessToken;
-
-        // 실패했던 요청 재시도
-        return instance(originalRequest);
-      } catch (error) {
-        // 토큰 재발급 실패시 (리프레시 토큰 만료 등)
+        localStorage.setItem("accessToken", newToken);
+        error.config.headers.access = newToken;
+        return instance(error.config);
+      } catch (e) {
         localStorage.removeItem("accessToken");
-        window.location.href = "/login";
-        return Promise.reject(error);
+        window.location.replace("/login");
+        return Promise.reject(e);
       }
     }
-
     return Promise.reject(error);
   }
 );
