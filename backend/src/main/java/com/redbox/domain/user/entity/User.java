@@ -1,5 +1,7 @@
 package com.redbox.domain.user.entity;
 
+import com.redbox.domain.user.exception.EmptyPasswordException;
+import org.springframework.util.StringUtils;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -53,5 +55,12 @@ public class User extends BaseEntity {
         this.gender = gender;
         this.roleType = roleType;
         this.status = status;
+    }
+
+    public void changePassword(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) {
+            throw new EmptyPasswordException();
+        }
+        this.password = newPassword;
     }
 }

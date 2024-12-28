@@ -8,6 +8,7 @@ import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,9 +56,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/email/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                    // 회원가입, 이메일, 로그인 관련 엔드포인트 허용
+                    .requestMatchers("/auth/**").permitAll()
+                    // 헌혈기사 목록 조회만 엔드포인트 허용
+                    .requestMatchers(HttpMethod.GET, "/articles").permitAll()
+                    .anyRequest().authenticated()
                 )
                 .formLogin(auth -> auth.disable())
                 .logout(auth -> auth.disable())
