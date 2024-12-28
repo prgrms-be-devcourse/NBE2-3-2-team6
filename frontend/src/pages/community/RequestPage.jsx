@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import axios from "axios"; // axios 임포트
 
-//const url = "http://localhost:8080/requests"
-const url = 'https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/request';
+const url = "http://localhost:8080/requests"
 const PAGE_SIZE = 10; // 페이지 크기 상수화
 
 const RequestPage = () => {
@@ -18,7 +17,7 @@ const RequestPage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${url}?page=${page}&size=${PAGE_SIZE}`);
-        setRequests(response.data.requests); // requests 배열 설정
+        setRequests(response.data.content); // requests 배열 설정
         setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
         setTotalElements(response.data.totalElements); // 전체 요청 수 설정
       } catch (error) {
@@ -70,23 +69,32 @@ const RequestPage = () => {
 
             <div className="border rounded-lg">
               <div className="flex bg-gray-50 py-3 border-b">
-                <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
-                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">제목</div>
-                <div className="w-24 text-center text-sm font-medium text-gray-500">작성일</div>
-                <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">번호</div>
+                <div className="flex-1 px-6 pl-1 text-center text-sm font-medium text-gray-500">제목</div>
+                <div className="w-36 text-center text-sm font-medium text-gray-500">작성자</div>
+                <div className="w-36 text-center text-sm font-medium text-gray-500">작성일</div>
+                <div className="w-36 text-center text-sm font-medium text-gray-500">상태</div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">조회</div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">추천</div>
               </div>
 
               <div className="divide-y">
                 {requests.map((request) => (
-                  <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
-                    <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
+                  <div key={request.requestId} className="flex items-center py-3 hover:bg-gray-50">
+                    <div className="w-24 text-center text-sm text-gray-500">{request.requestId}</div>
                     <div className="flex-1 px-6">
-                      <Link to={`/community/requests/${request.id}`} className="text-gray-900 hover:text-red-600">
-                        {request.title}
+                      <Link to={`/community/requests/${request.requestId}`} className="text-gray-900 hover:text-red-600">
+                        {request.requestTitle}
                       </Link>
                     </div>
-                    <div className="w-24 text-center text-sm text-gray-500">{new Date(request.date).toLocaleDateString()}</div>
-                    <div className="w-20 text-center text-sm text-gray-500">{request.views}</div>
+                    <div className="w-36 text-center text-sm text-gray-500">{request.userId}</div>
+                    <div className="w-36 text-center text-sm text-gray-500">{request.requestDate}</div>
+                    {/* <div className="w-36 text-center text-sm text-gray-500">{new Date(request.requestDate).toLocaleDateString()}</div> */}
+                    <div className="w-36 text-center text-sm text-red-600">{request.progress}</div>
+                    <div className="w-24 text-center text-sm text-gray-500">{request.requestHits}</div>
+                    <div className="w-24 text-center text-sm text-gray-500">{request.requestLikes}</div>
+
+
                   </div>
                 ))}
               </div>
