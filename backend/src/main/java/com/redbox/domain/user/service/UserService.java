@@ -5,7 +5,6 @@ import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
-import com.redbox.domain.user.exception.InvalidUserInfoException;
 import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
@@ -138,6 +137,12 @@ public class UserService {
                 .getEmail();
 
         return new FindIdResponse(email);
+    }
+
+    // 회원 정보 조회
+    public UserInfoResponse getUserInfo() {
+        User user = getCurrentUser();
+        return new UserInfoResponse(user);
     }
 
 }
