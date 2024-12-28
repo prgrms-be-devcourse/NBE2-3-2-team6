@@ -107,21 +107,16 @@ public class UserService {
         emailSender.sendMail(request.getEmail(), subject, content);
     }
 
+    @Transactional
     public FindIdResponse findUserId(FindIdRequest request) {
         String name = request.getUserName();
         String phoneNumber = request.getPhoneNumber();
 
-        // 사용자 이름과 전화번호가 올바르게 입력되었는지 확인
-        if (name == null || phoneNumber == null || name.trim().isEmpty() || phoneNumber.trim().isEmpty()) {
-            throw new InvalidUserInfoException(); // 잘못된 사용자 정보 처리
-        }
-
         // 해당 정보로 사용자를 찾고, 없으면 예외 던짐
         String email = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
-                .orElseThrow(UserNotFoundException::new) // 해당 정보로 가입된 사용자가 없으면 예외 던짐
+                .orElseThrow(UserNotFoundException::new)
                 .getEmail();
 
-        // 이메일을 담은 응답 객체 생성 후 반환
         return new FindIdResponse(email);
     }
 
