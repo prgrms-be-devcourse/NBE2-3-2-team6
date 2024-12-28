@@ -58,13 +58,6 @@ public class User extends BaseEntity {
         this.status = status;
     }
 
-    // 테스트용 생성자
-    public User(String email, String name, String password) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
-    }
-
     public void changePassword(String newPassword) {
         if (!StringUtils.hasText(newPassword)) {
             throw new EmptyPasswordException();
