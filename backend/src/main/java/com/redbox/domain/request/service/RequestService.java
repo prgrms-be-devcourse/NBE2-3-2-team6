@@ -52,6 +52,7 @@ public class RequestService {
         return user.getId();
     }
 
+    // 페이지 처리
     public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
         // 동적쿼리로 처리하기
@@ -60,8 +61,9 @@ public class RequestService {
         return new PageResponse<>(responsePage);
     }
 
+    // 게시글 등록
     @Transactional
-    public Long createRequest(WriteRequest writeRequest, MultipartFile file) {
+    public DetailResponse createRequest(WriteRequest writeRequest, MultipartFile file) {
         String filePath = null;
         if (file != null && !file.isEmpty()) {
             filePath = saveFile(file);
@@ -86,19 +88,14 @@ public class RequestService {
                 .fileDownloads(0) // 초기 다운로드 수
                 .build();
 
-        Request savedRequest = requestRepository.save(request);
-        return savedRequest.getRequestId();
+        requestRepository.save(request);
+        return viewRequest(request.getRequestId());
     }
 
+    // 게시글 상세조회
     @Transactional
-    public DetailResponse getRequestDetails(Long requestId, boolean isIncrement) {
+    public DetailResponse viewRequest(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
-
-        // 조회수 증가(modify 에서는 조회수 증가하면 안됨)
-        if(isIncrement) {
-            request.setRequestHits(request.getRequestHits() + 1);
-            requestRepository.save(request);
-        }
 
         List<DetailResponse.AttachmentResponse> attachments = new ArrayList<>();
         if (request.getRequestAttachFile() != null) {
@@ -135,6 +132,17 @@ public class RequestService {
         );
     }
 
+    // 게시글 상세조회 - 조회수 증가
+    @Transactional
+    public DetailResponse getRequestDetails(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+
+        request.setRequestHits(request.getRequestHits() + 1);
+        requestRepository.save(request);
+
+        return viewRequest(request.getRequestId());
+    }
+
     // 좋아요 상태 변경
     @Transactional
     public void likeRequest(Long requestId) {
@@ -159,8 +167,9 @@ public class RequestService {
         }
     }
 
+    // 게시글 수정
     @Transactional
-    public Long modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
+    public DetailResponse modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         request.setRequestTitle(writeRequest.getRequestTitle());
@@ -175,9 +184,10 @@ public class RequestService {
         }
 
         Request modifyRequest = requestRepository.save(request);
-        return modifyRequest.getRequestId();
+        return viewRequest(modifyRequest.getRequestId());
     }
 
+    // 파일 저장 로직
     private String saveFile(MultipartFile file) {
         try {
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
