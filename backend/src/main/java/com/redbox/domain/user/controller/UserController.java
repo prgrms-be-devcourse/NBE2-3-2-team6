@@ -3,14 +3,13 @@ package com.redbox.domain.user.controller;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,5 +58,11 @@ public class UserController {
         redCardService.registerRedCard(request);
         return ResponseEntity.ok().build();
     }
-  
+
+    //회원 탈퇴
+    @DeleteMapping("/auth/drop-info")
+    public ResponseEntity<Void> dropUser(@RequestBody @Valid DropInfoRequest request){
+        userService.dropUser(request);
+        return ResponseEntity.ok().build();
+    }
 }

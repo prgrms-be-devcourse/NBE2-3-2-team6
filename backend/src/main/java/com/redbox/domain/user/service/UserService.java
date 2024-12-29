@@ -2,11 +2,13 @@ package com.redbox.domain.user.service;
 
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.auth.dto.CustomUserDetails;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
 import com.redbox.domain.user.exception.InvalidUserInfoException;
 import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.PasswordMismatchException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -140,4 +142,19 @@ public class UserService {
         return new FindIdResponse(email);
     }
 
+    // 비밀 번호 일치 여부 확인 로직
+    @Transactional
+    public void dropUser(DropInfoRequest request) {
+
+        // 현재 로그인한 사용자 조회
+        User currentUser = getCurrentUser();
+
+        // 입력받은 비밀번호와 현재 사용자의 비밀번호 비교
+        if (!passwordEncoder.matches(request.getPassword(), currentUser.getPassword())) {
+            throw new PasswordMismatchException();
+        }
+
+        currentUser.inactive();
+        userRepository.save(currentUser);
+    }
 }

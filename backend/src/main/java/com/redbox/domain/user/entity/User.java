@@ -63,4 +63,8 @@ public class User extends BaseEntity {
         }
         this.password = newPassword;
     }
+
+    // 회원 탈퇴 상태 변경
+    public void inactive() { this.status = Status.INACTIVE; }
+
 }
