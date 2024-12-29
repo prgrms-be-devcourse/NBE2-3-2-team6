@@ -102,7 +102,7 @@ const NoticeDetailPage = () => {
               <div className="mt-4 flex justify-between">
                 <button
                   className="bg-gray-300 text-black rounded px-4 py-2"
-                  onClick={() => navigate("/admin/community/notice")}
+                  onClick={() => navigate("/community/notice")}
                 >
                   목록
                 </button>
