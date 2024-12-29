@@ -18,6 +18,20 @@ const Notice = ({ notice, isAdmin }) => {
     }
   }, [notice?.noticeNo, navigate]);
 
+  const handleFileClick = async (noticeNo, fileNo) => {
+    try {
+      const response = await api.get(`/notices/${noticeNo}/files/${fileNo}`);
+      // 파일 다운로드 처리
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("파일 다운로드 실패:", error);
+    }
+  };
+
+  const handleModifyBtn = () => {
+    navigate(`/admin/community/notice/modify/${notice.noticeNo}`);
+  };
+
   return (
     <div className="flex-1 p-8">
       {notice && (
@@ -65,9 +79,7 @@ const Notice = ({ notice, isAdmin }) => {
                     <button
                       className="text-black border border-gray-300 bg-white rounded px-2"
                       onClick={() =>
-                        navigate(
-                          `/notices/${notice.noticeNo}/files/${file.fileNo}`
-                        )
+                        handleFileClick(notice.noticeNo, file.fileNo)
                       }
                     >
                       다운로드
@@ -83,12 +95,18 @@ const Notice = ({ notice, isAdmin }) => {
           <div className="mt-4 flex justify-between">
             <button
               className="bg-gray-300 text-black rounded px-4 py-2"
-              onClick={() => navigate("/admin/notice")}
+              onClick={() => navigate("/admin/community/notice")}
             >
               목록
             </button>
             {isAdmin && (
               <div>
+                <button
+                  onClick={handleModifyBtn}
+                  className="ml-2 bg-gray-300 text-black rounded px-4 py-2"
+                >
+                  수정
+                </button>
                 <button
                   onClick={handleDeleteBtn}
                   className="ml-2 px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
