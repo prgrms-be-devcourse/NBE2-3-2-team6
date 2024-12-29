@@ -149,6 +149,10 @@ public class UserService {
         // 현재 로그인한 사용자 조회
         User currentUser = getCurrentUser();
 
+//        테스트
+//        String email = "";
+//        User currentUser = userRepository.findByEmail(userDetails.get).orElseThrow(UserNotFoundException::new);
+
         // 입력받은 비밀번호와 현재 사용자의 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(), currentUser.getPassword())) {
             throw new PasswordMismatchException();
