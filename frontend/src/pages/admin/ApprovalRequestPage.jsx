@@ -9,7 +9,7 @@ const AdminRequestPage = () => {
     // plag : result 개수에서 요청 개수 변경시 flag 값 변경하고 useEffect 넣기기 
 
     const navigate = useNavigate();
-    const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests';
+    const url = 'http://localhost:8080/admin/requests';
     const requrl = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/approve';
 
     const [reqdata, reqSetdata] = useState([]);
@@ -120,7 +120,7 @@ const AdminRequestPage = () => {
             {/* 리스트 아이템들 */}
             <section className="max-h-[600px] overflow-y-auto divide-y">
 
-                {reqdata.requests?.filter((data) => data.status !== "승인됨").map((data) => (
+                {reqdata.map((data) => (
                     <div
                     key={data.id}
                     className="flex items-center py-3 hover:bg-gray-50"
