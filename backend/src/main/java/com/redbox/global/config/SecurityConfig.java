@@ -65,9 +65,10 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .logout(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
-                .addFilterBefore(new JWTFilter(jwtUtil, userDetailsService), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
+                // 인증 플로우 수정
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JWTFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CustomLogoutFilter(jwtUtil, refreshTokenService), JWTFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
