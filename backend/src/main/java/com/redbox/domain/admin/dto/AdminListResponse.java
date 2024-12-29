@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-
 public class AdminListResponse {
 
     private Long id; // 게시글 아이디

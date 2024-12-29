@@ -54,7 +54,8 @@ public class RequestService {
     // 페이지 처리
     public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
-        Long userId = getCurrentUserId();
+        //Long userId = getCurrentUserId();
+        Long userId = 1L;
 
         Page<Request> boardPage = requestRepository.searchBoards(userId, request, pageable);
         Page<ListResponse> responsePage = boardPage.map(ListResponse::new);
@@ -78,7 +79,7 @@ public class RequestService {
                 .targetAmount(writeRequest.getTargetAmount())
                 .currentAmount(0) // 초기값
                 .requestStatus(RequestStatus.REQUEST)
-                .progress(RequestStatus.IN_PROGRESS)
+                .progress(RequestStatus.REQUEST)
                 .donationStartDate(writeRequest.getDonationStartDate())
                 .donationEndDate(writeRequest.getDonationEndDate())
                 .requestAttachFile(filePath) // 저장된 파일 경로
