@@ -10,7 +10,6 @@ const AdminRequestPage = () => {
 
     const navigate = useNavigate();
     const url = 'http://localhost:8080/admin/requests';
-    const requrl = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/approve';
 
     const [reqdata, reqSetdata] = useState([]);
     
@@ -29,28 +28,28 @@ const AdminRequestPage = () => {
     // 데이터 보내기
     const sendData = async(id, status) => {
         try {
-            const response = await fetch(requrl, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    article_id: id,
-                    status: status,
+                    requestId: id,
+                    approveStatus: status,
                 }),
             });
 
-            const result = await response.json();
-            console.log("서버 응답 : ", result);
+            // const result = await response.json();
+            // console.log("서버 응답 : ", result);
 
             if (response.ok) {
                 alert("처리 완료");
                 setCount(count+1); 
-                // navigate('/admin/request');
+                navigate('/admin/approve');
             }
 
         } catch (error) {
-            console.log("err");
+            console.log(error);
         }
     }
 
@@ -66,15 +65,11 @@ const AdminRequestPage = () => {
 
     /// 데이터 보내기 (게시판 id, status)
     const handleEdit = (id) => {
-        console.log("승인된 요청 ID:", id);
-        /** 서버에 id, state(승인) 보내기 **/
-        sendData(id, '승인됨');
+        sendData(id, '승인');
     };
 
     const handleDelete = (id) => {
-        console.log("거절된 요청 ID:", id);
-        /** 서버에 id, state(승인) 보내기 -> console 에 출력해놓기 **/
-        sendData(id, '거절됨');
+        sendData(id, '거절');
     };
 
     const [modal, setModal] = useState({ isOpen: false, action: '', title: '', id: null });
