@@ -68,7 +68,4 @@ public class Notice extends BaseEntity {
         this.noticeContent = request.getContent();
     }
 
-    public boolean hasId(Long id) {
-        return this.id.equals(id);
-    }
 }

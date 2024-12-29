@@ -70,11 +70,11 @@ public class AttachFile extends BaseEntity {
 
     private boolean isNoticeFile(Long postId) {
         // notice_id 값이 있다면, notice 필드를 프록시 객체로 설정하기 때문에
-        return this.notice != null && this.notice.hasId(postId);
+        return this.notice != null;
     }
 
     private boolean isRequestFile(Long postId) {
         return true; // 향후 구현
-        // return this.request != null && this.request.hasId(postId);
+        // return this.request != null;
     }
 }
