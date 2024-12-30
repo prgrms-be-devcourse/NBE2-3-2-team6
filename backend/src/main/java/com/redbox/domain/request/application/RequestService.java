@@ -148,15 +148,25 @@ public class RequestService {
     @Transactional
     public void likeRequest(Long requestId) {
 
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+
         //Long userId = getCurrentUserId();
         Long userId = 1L;
 
+        // 좋아요 로직
         Optional<Like> optionalLike = likesRepository.findByUserIdAndRequestId(userId, requestId);
 
         if (optionalLike.isPresent()) {
             // 존재하면 isLiked 상태 변경
             Like like = optionalLike.get();
-            like.setLiked(!like.isLiked());
+            if(like.isLiked()) {
+                like.setLiked(false);
+                request.setRequestLikes(request.getRequestLikes() - 1);
+            } else {
+                like.setLiked(true);
+                request.setRequestLikes(request.getRequestLikes() + 1);
+            }
+            likesRepository.save(like);
         } else {
             // 존재하지 않으면 새로운 Like 엔티티 생성
             Like newLike = Like.builder()
@@ -164,8 +174,10 @@ public class RequestService {
                     .requestId(requestId)
                     .isLiked(true)
                     .build();
+            request.setRequestLikes(request.getRequestLikes() + 1);
             likesRepository.save(newLike);
         }
+        requestRepository.save(request);
     }
 
     // 게시글 수정
