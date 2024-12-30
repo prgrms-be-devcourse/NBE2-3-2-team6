@@ -27,16 +27,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    // 현재 로그인한 사용자 정보 조회
+    // 현재 로그인한 사용자의 전체 정보 조회
     public User getCurrentUser() {
         CustomUserDetails userDetails = getCustomUserDetails();
-        return userDetails.getUser();
-    }
-
-    // ID만 필요한 경우를 위한 메서드
-    public Long getCurrentUserId() {
-        CustomUserDetails userDetails = getCustomUserDetails();
-        return userDetails.getUserId();
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private CustomUserDetails getCustomUserDetails() {
