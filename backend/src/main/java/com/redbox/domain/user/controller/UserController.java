@@ -1,8 +1,8 @@
 package com.redbox.domain.user.controller;
 
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +40,19 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        userService.resetPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/auth/find-id")
+    public ResponseEntity<FindIdResponse> findUserId(@RequestBody @Valid FindIdRequest request) {
+        // 요청 객체를 그대로 서비스에 넘김
+        FindIdResponse response = userService.findUserId(request);
+        return ResponseEntity.ok(response);
+    }
+
     //개인적으로 uri 가 조금 적합하지 않은것 같아용 (프론트와 같이 수정 필요)
     @PostMapping("/users/me/redcards")
     public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedcardRequest request) {
@@ -47,9 +60,4 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/users/my-info/password")
-    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
-        userService.updatePassword(request);
-        return ResponseEntity.ok().build();
-    }
 }

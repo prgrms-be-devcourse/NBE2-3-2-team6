@@ -33,8 +33,6 @@ public class RedcardService {
         User user = (User) authentication.getPrincipal();
         // Redcard 생성
         Redcard redcard = new Redcard(
-                user, request.getDonationDate(), request.getCardNumber(), RedcardStatus.USED);
-        // Redcard 등록
-        user.registerRedcard(redcard);
+                user.getId(), request.getDonationDate(), request.getCardNumber(), RedcardStatus.AVAILABLE);
     }
 }

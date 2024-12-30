@@ -1,14 +1,19 @@
 package com.redbox.domain.user.service;
 
 import com.redbox.domain.user.dto.*;
+import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
+import com.redbox.domain.user.exception.InvalidUserInfoException;
+import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
 import com.redbox.global.util.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +30,27 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    private String createAuthCodeEmailContent(String verificationCode) {
+    // 현재 로그인한 사용자 정보 조회
+    public User getCurrentUser() {
+        CustomUserDetails userDetails = getCustomUserDetails();
+        return userDetails.getUser();
+    }
+
+    // ID만 필요한 경우를 위한 메서드
+    public Long getCurrentUserId() {
+        CustomUserDetails userDetails = getCustomUserDetails();
+        return userDetails.getUserId();
+    }
+
+    private static CustomUserDetails getCustomUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (CustomUserDetails) authentication.getPrincipal();
+    }
+
+    private String createEmailContent(String templateName, String variableName, String variableValue) {
         Context context = new Context();
-        context.setVariable("verificationCode", verificationCode);
-        return templateEngine.process("verification-code-email", context);
+        context.setVariable(variableName, variableValue);
+        return templateEngine.process(templateName, context);
     }
 
     public void sendVerificationCode(VerificationCodeRequest request) {
@@ -38,7 +60,7 @@ public class UserService {
         }
         String verificationCode = RandomCodeGenerator.generateRandomCode();
         String subject = "[Redbox] 이메일 인증 코드입니다.";
-        String content = createAuthCodeEmailContent(verificationCode);
+        String content = createEmailContent("verification-code-email", "verificationCode", verificationCode);
         emailSender.sendMail(request.getEmail(), subject, content);
         emailVerificationCodeRepository.save(request.getEmail(), verificationCode);
     }
@@ -85,8 +107,37 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(UpdatePasswordRequest request) {
-        // find-account 브랜치에 비밀번호 초기화하는 로직이 있으므로 겹침 방지를 위해
-        // find-account merge이후 작업예정
+    public void resetPassword(ResetPasswordRequest request) {
+        // 사용자 조회
+        User user = userRepository.findByEmailAndName(request.getEmail(), request.getUsername())
+                .orElseThrow(UserNotFoundException::new);
+
+        // 임시 비밀번호 생성
+        String tempPassword = RandomCodeGenerator.generateRandomCode();
+        String encodedPassword = encodePassword(tempPassword);
+        System.out.println("Generated temporary password: " + tempPassword);
+
+        // 비밀번호 변경
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+
+        // 이메일 전송
+        String subject = "[Redbox] 임시 비밀번호 안내";
+        String content = createEmailContent("temp-password-email", "tempPassword", tempPassword);
+        emailSender.sendMail(request.getEmail(), subject, content);
     }
+
+    @Transactional
+    public FindIdResponse findUserId(FindIdRequest request) {
+        String name = request.getUserName();
+        String phoneNumber = request.getPhoneNumber();
+
+        // 해당 정보로 사용자를 찾고, 없으면 예외 던짐
+        String email = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(UserNotFoundException::new)
+                .getEmail();
+
+        return new FindIdResponse(email);
+    }
+
 }
