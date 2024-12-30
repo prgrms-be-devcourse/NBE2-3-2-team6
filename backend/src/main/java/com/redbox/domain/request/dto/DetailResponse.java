@@ -21,6 +21,10 @@ public class DetailResponse {
     private LocalDate endDate; // 기부 종료일
     private int targetAmount; // 목표 수량
     private int currentAmount; // 현재 모금된 수량
+
+    // 작성자
+    // 등록일
+
     // todo : 좋아요 수 증가 처리
     private int likes; // 좋아요 수
     private String status; // 상태

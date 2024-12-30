@@ -1,7 +1,9 @@
 package com.redbox.domain.admin.application;
 
 import com.redbox.domain.admin.dto.AdminApproveRequest;
+import com.redbox.domain.admin.dto.AdminDetailResponse;
 import com.redbox.domain.admin.dto.AdminListResponse;
+import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
@@ -47,5 +49,23 @@ public class AdminService {
         }
 
         requestRepository.save(changeRequest);
+    }
+
+    // 요청 게시글 상세조회
+    @Transactional
+    public AdminDetailResponse getRequestDetails(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+        return new AdminDetailResponse(
+                request.getRequestId(),
+                request.getRequestTitle(),
+                request.getCreatedBy(),
+                request.getCreatedAt(),
+                request.getDonationStartDate(),
+                request.getDonationEndDate(),
+                request.getTargetAmount(),
+                request.getRequestStatus().getText(),
+                request.getRequestHits(),
+                request.getRequestContent()
+        );
     }
 }
