@@ -3,10 +3,7 @@ package com.redbox.domain.user.service;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
-import com.redbox.domain.user.exception.DuplicateEmailException;
-import com.redbox.domain.user.exception.EmailNotVerifiedException;
-import com.redbox.domain.user.exception.InvalidUserInfoException;
-import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.*;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -42,7 +39,7 @@ public class UserService {
         return userDetails.getUserId();
     }
 
-    private static CustomUserDetails getCustomUserDetails() {
+    private CustomUserDetails getCustomUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (CustomUserDetails) authentication.getPrincipal();
     }
@@ -140,4 +137,13 @@ public class UserService {
         return new FindIdResponse(email);
     }
 
+    @Transactional
+    public void changePassword(UpdatePasswordRequest request) {
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+            throw new PasswordNotMatchException();
+        }
+
+        User user = getCurrentUser();
+        user.changePassword(encodePassword(request.getPassword()));
+    }
 }

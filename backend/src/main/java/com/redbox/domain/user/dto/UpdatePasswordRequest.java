@@ -2,11 +2,15 @@ package com.redbox.domain.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class UpdatePasswordRequest {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")

@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     // 비밀번호 관련 에러
     EMPTY_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 비어있을 수 없습니다."),
+    NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     // 사용자 없음 에러
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
