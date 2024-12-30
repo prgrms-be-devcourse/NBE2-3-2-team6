@@ -25,11 +25,9 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
 
-    public JWTFilter(JWTUtil jwtUtil,CustomUserDetailsService userDetailsService) {
+    public JWTFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
