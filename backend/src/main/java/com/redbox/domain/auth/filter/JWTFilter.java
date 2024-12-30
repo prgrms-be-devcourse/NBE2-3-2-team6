@@ -1,9 +1,7 @@
 package com.redbox.domain.auth.filter;
 
 import com.redbox.domain.auth.dto.CustomUserDetails;
-import com.redbox.domain.auth.exception.ExpiredAccessTokenException;
 import com.redbox.domain.auth.exception.InvalidTokenException;
-import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.user.entity.RoleType;
 import com.redbox.domain.user.entity.User;
@@ -55,6 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
             // email과 role 값을 토큰에서 가져옴
             String email = jwtUtil.getEmail(accessToken);
             String role = jwtUtil.getRole(accessToken);
+            role = role.replace("ROLE_", "");
 
             User user = User.builder()
                     .email(email)
@@ -73,7 +72,7 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
-            throw new ExpiredAccessTokenException();
+            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);
         } catch (AuthException e) {
             ErrorResponseUtil.handleException(response, e.getErrorCode());
         } catch (Exception e) {
