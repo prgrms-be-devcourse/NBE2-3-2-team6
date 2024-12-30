@@ -38,14 +38,14 @@ public class Redbox extends BaseTimeEntity {
         return currentCount.getValue();
     }
 
-    //TODO: 동시성 이슈 발생함
+    //TODO: 동시성 이슈 처리 예정 or Update 형식으로 변경
     public void addCount(int amount) {
-        totalCount.add(amount);
-        currentCount.add(amount);
+        this.totalCount = totalCount.add(amount);
+        this.currentCount = currentCount.add(amount);
     }
 
     public void subCount(int amount) {
-        currentCount.subtract(amount);
+        this.currentCount = currentCount.subtract(amount);
     }
 }
 

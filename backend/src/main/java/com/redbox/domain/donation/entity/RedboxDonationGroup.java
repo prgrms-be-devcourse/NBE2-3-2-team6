@@ -1,5 +1,7 @@
 package com.redbox.domain.donation.entity;
 
+import com.redbox.domain.redbox.dto.Count;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,13 +21,12 @@ public class RedboxDonationGroup {
     @Column(name = "redbox_donation_group_id")
     private Long id;
     private Long donationUserId;
-    //TODO: Redbox branch 의 Count 를 사용할 예정
-    private int donationAmount;
+    private Count donationAmount;
     private LocalDate donationDate;
     private String donationMessage;
 
     @Builder
-    public RedboxDonationGroup(Long userId, int donationAmount, LocalDate donationDate, String donationMessage) {
+    public RedboxDonationGroup(Long userId, Count donationAmount, LocalDate donationDate, String donationMessage) {
         this.donationUserId = userId;
         this.donationAmount = donationAmount;
         this.donationDate = donationDate;
