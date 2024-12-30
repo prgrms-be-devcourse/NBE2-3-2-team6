@@ -15,7 +15,7 @@ public class Count {
     public Count(int count) {
         if (count < 0) {
             //TODO: ERROR CODE 지정
-            throw new IllegalArgumentException("보류량이 0보다 작을 수는 없습니다.");
+            throw new IllegalArgumentException("보유량이 0보다 작을 수는 없습니다.");
         }
         this.value = count;
     }
@@ -26,7 +26,8 @@ public class Count {
 
     public Count subtract(int amount) {
         if (this.value < amount) {
-            throw new IllegalArgumentException("보류량보다 많은 기부를 할 수 없습니다.");
+            //TODO: ERROR CODE 지정
+            throw new IllegalArgumentException("보유량보다 많은 수를 기부 할 수 없습니다.");
         }
         return new Count(value - amount);
     }
