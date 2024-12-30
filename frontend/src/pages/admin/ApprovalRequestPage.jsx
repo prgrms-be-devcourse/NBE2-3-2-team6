@@ -126,7 +126,7 @@ const AdminRequestPage = () => {
                     
                     <div className="flex-1 px-6 text-gray-500">
                         <Link
-                        to={`/admin/request/${data.id}`}
+                        to={`/admin/approve/${data.id}`}
                         className="text-gray-900 hover:text-red-600"
                         >
                           {data.title}
