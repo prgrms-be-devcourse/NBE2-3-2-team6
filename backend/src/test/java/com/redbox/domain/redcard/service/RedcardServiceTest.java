@@ -6,9 +6,11 @@ import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.exception.DuplicateSerialNumberException;
 import com.redbox.domain.redcard.repository.RedcardRepository;
+import com.redbox.domain.user.dto.RedcardResponse;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.domain.user.service.UserService;
+import com.redbox.global.entity.PageResponse;
 import com.redbox.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,5 +114,72 @@ class RedcardServiceTest {
                 .asInstanceOf(type(BusinessException.class))
                 .extracting(ex -> ex.getErrorCodes().getStatus())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("로그인한 사용자의 헌혈증 목록을 페이징하여 조회한다.")
+    @Test
+    void getRedcardsWithPagination() {
+        // given
+        User user = setUserAndSecurityContext("test@test.com");
+
+        // 테스트용 헌혈증 데이터 생성
+        for(int i = 1; i <= 15; i++) {  // 15개의 테스트 데이터
+            Redcard redcard = Redcard.builder()
+                    .userId(user.getId())
+                    .serialNumber("test-" + i)
+                    .donationDate(LocalDate.now())
+                    .hospitalName("병원" + i)
+                    .redcardStatus(RedcardStatus.AVAILABLE)
+                    .build();
+            redcardRepository.save(redcard);
+        }
+
+        // when
+        PageResponse<RedcardResponse> response = redcardService.getRedcards(1, 6);  // 첫 페이지, 10개씩
+
+        // then
+        assertThat(response.getContent()).hasSize(6);  // 첫 페이지에 6개
+        assertThat(response.getTotalElements()).isEqualTo(15);  // 전체 15개
+        assertThat(response.getTotalPages()).isEqualTo(3);  // 총 3페이지
+    }
+
+    @DisplayName("헌혈증 목록의 마지막 페이지를 조회한다.")
+    @Test
+    void getRedcardsLastPage() {
+        // given
+        User user = setUserAndSecurityContext("test@test.com");
+
+        for(int i = 1; i <= 15; i++) {
+            Redcard redcard = Redcard.builder()
+                    .userId(user.getId())
+                    .serialNumber("test-" + i)
+                    .donationDate(LocalDate.now())
+                    .hospitalName("병원" + i)
+                    .redcardStatus(RedcardStatus.AVAILABLE)
+                    .build();
+            redcardRepository.save(redcard);
+        }
+
+        // when
+        PageResponse<RedcardResponse> response = redcardService.getRedcards(3, 6);  // 두번째 페이지
+
+        // then
+        assertThat(response.getContent()).hasSize(3);  // 마지막 페이지에 3개
+        assertThat(response.getTotalElements()).isEqualTo(15);
+    }
+
+    @DisplayName("헌혈증 데이터가 없을 때 빈 목록을 반환한다.")
+    @Test
+    void getRedcardsEmptyList() {
+        // given
+        User user = setUserAndSecurityContext("test@test.com");
+
+        // when
+        PageResponse<RedcardResponse> response = redcardService.getRedcards(1, 6);
+
+        // then
+        assertThat(response.getContent()).isEmpty();
+        assertThat(response.getTotalElements()).isZero();
+        assertThat(response.getTotalPages()).isZero();
     }
 }
