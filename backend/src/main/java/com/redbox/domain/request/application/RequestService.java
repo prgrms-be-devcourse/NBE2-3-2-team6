@@ -77,8 +77,8 @@ public class RequestService {
 
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
-                //.userId(getCurrentUserId())
-                .userId(1L) // user_id (현재 임의 값 설정)
+                .userId(getCurrentUserId())
+                //.userId(1L) // user_id (현재 임의 값 설정)
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
@@ -183,6 +183,15 @@ public class RequestService {
             likesRepository.save(newLike);
         }
         requestRepository.save(request);
+    }
+
+    // 게시글 수정 권한
+    public Boolean modifyRequestAuthor(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+        Long currentUserId = getCurrentUserId();
+        System.out.println(request.getRequestId());
+        System.out.println(currentUserId);
+        return request.getRequestId().equals(currentUserId);
     }
 
     // 게시글 수정

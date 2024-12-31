@@ -58,11 +58,11 @@ public class RequestController {
         return ResponseEntity.status(HttpStatus.OK).body(likeResponse);
     }
 
-    // 수정 내용 불러오기 (조회수 증가 X)
-    @GetMapping("/requests/modify/{requestId}")
-    public ResponseEntity<DetailResponse> requestModify(@PathVariable Long requestId) {
-        DetailResponse detailResponse = requestService.viewRequest(requestId);
-        return ResponseEntity.ok(detailResponse);
+    // 수정 권한 확인
+    @GetMapping("/requests/modify/{requestId}/author")
+    public ResponseEntity<Boolean> requestModifyAuthor(@PathVariable Long requestId) {
+        Boolean isAuthor = requestService.modifyRequestAuthor(requestId);
+        return ResponseEntity.status(HttpStatus.OK).body(isAuthor);
     }
 
     // 내용 수정 (조회수 증가 X)
@@ -72,8 +72,14 @@ public class RequestController {
             @RequestPart("post") @Valid WriteRequest writeRequest,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        // todo : 게시글 작성한 사용자만 수정가능
         DetailResponse detailResponse = requestService.modifyRequest(requestId, writeRequest, file);
+        return ResponseEntity.ok(detailResponse);
+    }
+
+    // 수정한 내용 불러오기 (조회수 증가 X)
+    @GetMapping("/requests/modify/{requestId}")
+    public ResponseEntity<DetailResponse> requestModify(@PathVariable Long requestId) {
+        DetailResponse detailResponse = requestService.viewRequest(requestId);
         return ResponseEntity.ok(detailResponse);
     }
 }
