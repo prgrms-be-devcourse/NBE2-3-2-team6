@@ -83,13 +83,13 @@ class UserServiceTest {
                 .password("aa123123@")
                 .passwordConfirm("aa123123@")
                 .build();
-        
-        //when
-        String newPassword = encodePassword(request.getPassword());
-        user.changePassword(newPassword);
 
-        //then
-        assertThat(user.getPassword()).isEqualTo(newPassword);
+        // when
+        userService.changePassword(request);
+
+        // then
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(passwordEncoder.matches(request.getPassword(), updatedUser.getPassword())).isTrue();
     }
 
     @DisplayName("비밀번호와 비밀번호가 일치하지 않은 경우 예외가 발생한다.")
