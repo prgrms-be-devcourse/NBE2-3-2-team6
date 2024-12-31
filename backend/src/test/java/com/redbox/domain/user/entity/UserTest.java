@@ -42,13 +42,6 @@ class UserTest {
                 .asInstanceOf(type(BusinessException.class))
                 .extracting(ex -> ex.getErrorCodes().getStatus())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
-
-        assertThatThrownBy(() -> user.changePassword(""))
-                .isInstanceOf(EmptyPasswordException.class)
-                .hasMessage("비밀번호는 비어있을 수 없습니다.")
-                .asInstanceOf(type(BusinessException.class))
-                .extracting(ex -> ex.getErrorCodes().getStatus())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("바꾸려는 비밀번호가 빈 값이면 예외가 발생한다.")
@@ -60,13 +53,6 @@ class UserTest {
                 .build();
 
         //when & then
-        assertThatThrownBy(() -> user.changePassword(null))
-                .isInstanceOf(EmptyPasswordException.class)
-                .hasMessage("비밀번호는 비어있을 수 없습니다.")
-                .asInstanceOf(type(BusinessException.class))
-                .extracting(ex -> ex.getErrorCodes().getStatus())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
-
         assertThatThrownBy(() -> user.changePassword(""))
                 .isInstanceOf(EmptyPasswordException.class)
                 .hasMessage("비밀번호는 비어있을 수 없습니다.")
