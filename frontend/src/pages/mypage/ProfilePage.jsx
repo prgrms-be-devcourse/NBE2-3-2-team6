@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Mail, Phone, User, MapPin, Lock } from "lucide-react";
+import api from "../../lib/axios";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
 export default function ProfilePage() {
@@ -101,20 +102,20 @@ export default function ProfilePage() {
 
     try {
       // API 요청
-      // const response = await axios.put("", {
-      //   currentPassword: userInfo.currentPassword,
-      //   newPassword: userInfo.newPassword,
-      // });
-      // if (response.status === 200) {
-      //   alert("비밀번호가 성공적으로 변경되었습니다.");
-      //   setShowPasswordChange(false);
-      //   setUserInfo((prev) => ({
-      //     ...prev,
-      //     currentPassword: "",
-      //     newPassword: "",
-      //     newPasswordConfirm: "",
-      //   }));
-      // }
+      const response = await api.put("/users/my-info/password", {
+        password: userInfo.newPassword,
+        passwordConfirm: userInfo.newPasswordConfirm,
+      });
+      if (response.status === 200) {
+        alert("비밀번호가 성공적으로 변경되었습니다.");
+        setShowPasswordChange(false);
+        setUserInfo((prev) => ({
+          ...prev,
+          currentPassword: "",
+          newPassword: "",
+          newPasswordConfirm: "",
+        }));
+      }
     } catch (error) {
       console.error("Error changing password:", error);
       if (error.response?.status === 401) {
