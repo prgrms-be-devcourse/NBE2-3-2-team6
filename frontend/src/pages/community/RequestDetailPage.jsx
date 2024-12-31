@@ -77,7 +77,23 @@ const RequestDetailPage = () => {
     setIsRedboxModalOpen(false); // 기부 모달 닫기
   };
 
-  // TODO : 수정 버튼 필요
+  // 수정 권한 확인
+  const modifyAuthor = async () => {
+    try {
+      const authorResponse = await axios.get(`http://localhost:8080/requests/modify/${id}/author`);
+      const isAuthor = authorResponse.data;
+
+      if (!isAuthor) {
+        alert("수정 권한이 없습니다.");
+        return;
+      }
+  
+      navigate(`/community/requests/modify/${id}`);
+
+    } catch (error) {
+      console.error("권한 확인 중 오류:", error);
+    }
+  };
   
   return (
     <div className="flex-1 bg-gray-50">
@@ -147,7 +163,7 @@ const RequestDetailPage = () => {
                 {/* 수정 버튼 */}
                 <button
                   className="ml-auto px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  onClick={() => navigate(`/community/requests/modify/${id}`)} // 수정 페이지로 이동
+                  onClick={modifyAuthor} // 권한 확인 함수 호출
                 >
                   수정
                 </button>
