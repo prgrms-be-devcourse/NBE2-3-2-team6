@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,6 +58,16 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/users/my-info")
+    public UserInfoResponse getUserInfo() {
+        return userService.getUserInfo();
+    }
+
+    @PutMapping("/users/my-info")
+    public UserInfoResponse updateUserInfo(@RequestBody UpdateUserInfoRequest request) {
+        return userService.updateUserInfo(request);
+    }
+  
     @PutMapping("/users/my-info/password")
     public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
         userService.changePassword(request);

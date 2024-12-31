@@ -131,7 +131,36 @@ public class UserService {
 
         return new FindIdResponse(email);
     }
+  
+    public UserInfoResponse getUserInfo() {
+        User user = getCurrentUser();
+        return new UserInfoResponse(user);
+    }
 
+    @Transactional
+    public UserInfoResponse updateUserInfo(UpdateUserInfoRequest updateRequest) {
+        User user = getCurrentUser();
+
+        if (updateRequest.getName() != null) {
+            user.changeName(updateRequest.getName());
+        }
+        if (updateRequest.getPhoneNumber() != null) {
+            user.changePhoneNumber(updateRequest.getPhoneNumber());
+        }
+        if (updateRequest.getRoadAddress() != null) {
+            user.changeRoadAddress(updateRequest.getRoadAddress());
+        }
+        if (updateRequest.getExtraAddress() != null) {
+            user.changeExtraAddress(updateRequest.getExtraAddress());
+        }
+        if (updateRequest.getDetailAddress() != null) {
+            user.changeDetailAddress(updateRequest.getDetailAddress());
+        }
+
+        userRepository.save(user);
+        return new UserInfoResponse(user);
+    }
+  
     @Transactional
     public void changePassword(UpdatePasswordRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
@@ -141,4 +170,5 @@ public class UserService {
         User user = getCurrentUser();
         user.changePassword(encodePassword(request.getPassword()));
     }
+  
 }
