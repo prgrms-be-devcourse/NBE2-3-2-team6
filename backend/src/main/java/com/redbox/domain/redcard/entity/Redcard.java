@@ -1,5 +1,6 @@
 package com.redbox.domain.redcard.entity;
 
+import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "redcards")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Redcard {
+public class Redcard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,14 +22,17 @@ public class Redcard {
     private Long userId;
     private LocalDate donationDate;
     private String serialNumber;
+    private String hospitalName;
 
+    @Enumerated(EnumType.STRING)
     private RedcardStatus redcardStatus;
 
     @Builder
-    public Redcard(Long userId, LocalDate donationDate, String serialNumber, RedcardStatus redcardStatus) {
+    public Redcard(Long userId, LocalDate donationDate, String serialNumber, String hospitalName, RedcardStatus redcardStatus) {
         this.userId = userId;
         this.donationDate = donationDate;
         this.serialNumber = serialNumber;
+        this.hospitalName = hospitalName;
         this.redcardStatus = redcardStatus;
     }
 
