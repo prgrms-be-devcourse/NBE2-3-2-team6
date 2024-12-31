@@ -25,9 +25,9 @@ public class Redcard {
     private RedcardStatus redcardStatus;
 
     @Builder
-    public Redcard(Long userId, LocalDate donation_date, String serialNumber, RedcardStatus redcardStatus) {
+    public Redcard(Long userId, LocalDate donationDate, String serialNumber, RedcardStatus redcardStatus) {
         this.userId = userId;
-        this.donationDate = donation_date;
+        this.donationDate = donationDate;
         this.serialNumber = serialNumber;
         this.redcardStatus = redcardStatus;
     }
