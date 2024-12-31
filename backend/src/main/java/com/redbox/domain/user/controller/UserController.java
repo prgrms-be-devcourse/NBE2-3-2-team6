@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,5 +60,10 @@ public class UserController {
         redCardService.registerRedCard(request);
         return ResponseEntity.ok().build();
     }
-  
+
+    @PutMapping("/users/my-info/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
 }

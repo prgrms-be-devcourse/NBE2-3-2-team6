@@ -2,12 +2,12 @@ package com.redbox.global.config;
 
 import com.redbox.domain.auth.filter.CustomLogoutFilter;
 import com.redbox.domain.auth.filter.JWTFilter;
-import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.service.RefreshTokenService;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,18 +27,17 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@Profile("!test")
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService; // 변경: RefreshTokenService 주입
-    private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService,CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService; // 주입
-        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -67,7 +66,7 @@ public class SecurityConfig {
                 .httpBasic(auth -> auth.disable())
                 // 인증 플로우 수정
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JWTFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new CustomLogoutFilter(jwtUtil, refreshTokenService), JWTFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
