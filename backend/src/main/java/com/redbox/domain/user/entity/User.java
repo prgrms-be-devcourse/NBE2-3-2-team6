@@ -3,7 +3,6 @@ package com.redbox.domain.user.entity;
 import com.redbox.domain.user.exception.EmptyPasswordException;
 import org.springframework.util.StringUtils;
 import com.redbox.domain.redcard.entity.Redcard;
-import com.redbox.domain.redcard.entity.Redcards;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,9 +41,6 @@ public class User extends BaseEntity {
     private Status status;
 
     private LocalDateTime lastLoginAt;
-
-    @Embedded
-    private Redcards redcards = new Redcards();
 
     @Builder
     public User(String email, String password, String name, LocalDate birth, String phoneNumber, String roadAddress, String extraAddress, String detailAddress, Gender gender, RoleType roleType, Status status) {
@@ -95,4 +91,5 @@ public class User extends BaseEntity {
     public void changeDetailAddress(String detailAddress) {
         this.detailAddress = detailAddress;
     }
+  
 }

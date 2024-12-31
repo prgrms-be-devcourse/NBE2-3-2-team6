@@ -67,4 +67,10 @@ public class UserController {
     public UserInfoResponse updateUserInfo(@RequestBody UpdateUserInfoRequest request) {
         return userService.updateUserInfo(request);
     }
+  
+    @PutMapping("/users/my-info/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
 }
