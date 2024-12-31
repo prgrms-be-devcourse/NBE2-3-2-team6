@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,12 @@ public class RequestService {
 
     // 현재 로그인한 사용자 정보 가져오기
     private Long getCurrentUserId() {
-        // Spring Security 로 로그인한 사용자 email -> id 얻기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 인증 정보가 없거나 익명 사용자일 경우 null
+        if (authentication == null || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null;
+        }
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         return user.getId();
@@ -54,8 +60,7 @@ public class RequestService {
     // 페이지 처리
     public PageResponse<ListResponse> getRequests(int page, int size, RequestFilter request) {
         Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
-        //Long userId = getCurrentUserId();
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
 
         Page<Request> boardPage = requestRepository.searchBoards(userId, request, pageable);
         Page<ListResponse> responsePage = boardPage.map(ListResponse::new);

@@ -48,8 +48,7 @@ public class RequestRepositoryImpl implements RequestRepositoryCustom {
         }
 
         // 좋아요한 글만 필터링 (옵션이 LIKED일 경우)
-        // TODO : Request 와 Like 간의 연관관계가 직접연관관계가 된다면 수정 필요
-        if (requestFilter.getOption() != null && requestFilter.getOption().equals(Filter.LIKED)) {
+        if (requestFilter.getOption() != null && requestFilter.getOption().equals(Filter.LIKED) && userId != null) {
             builder.and(
                     JPAExpressions.select(like.requestId)
                                   .from(like)
