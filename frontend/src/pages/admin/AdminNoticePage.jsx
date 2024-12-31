@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
+import { formatDate } from "../../utils/dateUtils";
 
 const AdminNoticePage = () => {
   const navigate = useNavigate();
@@ -11,9 +12,6 @@ const AdminNoticePage = () => {
   const [data, setData] = useState({ notices: [] });
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-
-  const url =
-    "https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/notices";
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -27,17 +25,16 @@ const AdminNoticePage = () => {
 
   const fetchBoards = async (page, size) => {
     try {
-      const response = await api.get(url, {
+      const response = await api.get("/notices", {
         params: {
-          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+          page: page,
           size,
         },
       });
 
-      const { data, totalPages, totalElements } = response.data;
-      setData(data);
-      setTotalPages(totalPages); // 전체 페이지 수 설정
-      setTotalElements(totalElements); // 전체 요청 수 설정
+      setData({ notices: response.data.content }); // content를 notices 배열로 설정
+      setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
     } catch (error) {
       console.error("Error fetching boards:", error);
     }
@@ -95,22 +92,22 @@ const AdminNoticePage = () => {
                 {data.notices.length > 0 ? (
                   data.notices.map((notice) => (
                     <div
-                      key={notice.id}
+                      key={notice.noticeNo} // id 대신 noticeNo 사용
                       className="flex items-center py-3 hover:bg-gray-50"
                     >
                       <div className="w-16 text-center text-sm text-gray-500">
-                        {notice.id}
+                        {notice.noticeNo}
                       </div>
                       <div className="flex-1 px-6">
                         <Link
-                          to={`/community/notice/${notice.id}`}
+                          to={`/admin/community/notice/${notice.noticeNo}`}
                           className="text-gray-900 hover:text-red-600"
                         >
                           {notice.title}
                         </Link>
                       </div>
                       <div className="w-24 text-center text-sm text-gray-500">
-                        {new Date(notice.date).toLocaleDateString()}
+                        {formatDate(notice.createdDate)}
                       </div>
                       <div className="w-20 text-center text-sm text-gray-500">
                         {notice.views}

@@ -28,6 +28,7 @@ import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
 import RequestDetailPage from "../pages/community/RequestDetailPage";
+import AdminNoticeModifyPage from "../pages/admin/AdminNoticeModifyPage";
 import { decodeJWT } from "../lib/axios";
 
 const requireAdmin = () => {
@@ -150,6 +151,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/community/notice/:id",
         element: <AdminNoticeDetailPage />,
+      },
+      {
+        path: "/admin/community/notice/modify/:id",
+        element: <AdminNoticeModifyPage />,
       },
       {
         path: "/admin/community/notice/write",

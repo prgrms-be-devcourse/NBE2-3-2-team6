@@ -1,34 +1,38 @@
 import { useEffect, useState } from "react";
 import api from "../../lib/axios";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import { Link } from "react-router-dom";
-
-const url =
-  "https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/notices";
-const PAGE_SIZE = 10; // 페이지 크기
+import { Link, useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils/dateUtils";
 
 const NoticePage = () => {
+  const navigate = useNavigate();
+  // 페이지네이션 상태 관리
+  const size = 10;
   const [page, setPage] = useState(1);
-  const [notices, setNotices] = useState([]);
-  const [totalElements, setTotalElements] = useState(0);
+  const [data, setData] = useState({ notices: [] });
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const response = await api.get(
-          `${url}?page=${page - 1}&size=${PAGE_SIZE}`
-        );
-        setNotices(response.data.notices); // notices 상태에 데이터 설정
-        setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
-        setTotalElements(response.data.totalElements); // 전체 요청 수 설정
-      } catch (error) {
-        console.error("데이터를 가져오는 중 오류 발생: ", error);
-      }
-    };
+    fetchBoards(page, size);
+  }, [page, size]);
 
-    fetchNotices(); // 데이터 가져오기
-  }, [page]); // page가 변경될 때마다 호출
+  const fetchBoards = async (page, size) => {
+    try {
+      const response = await api.get("/notices", {
+        params: {
+          page: page,
+          size,
+        },
+      });
+
+      setData({ notices: response.data.content }); // content를 notices 배열로 설정
+      setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+    }
+  };
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -79,37 +83,32 @@ const NoticePage = () => {
                   조회수
                 </div>
               </div>
-
               <div className="divide-y">
-                {notices.length > 0 ? (
-                  notices.map(
-                    (
-                      notice // notices 상태를 사용
-                    ) => (
-                      <div
-                        key={notice.id}
-                        className="flex items-center py-3 hover:bg-gray-50"
-                      >
-                        <div className="w-16 text-center text-sm text-gray-500">
-                          {notice.id}
-                        </div>
-                        <div className="flex-1 px-6">
-                          <Link
-                            to={`/community/notice/${notice.id}`}
-                            className="text-gray-900 hover:text-red-600"
-                          >
-                            {notice.title}
-                          </Link>
-                        </div>
-                        <div className="w-24 text-center text-sm text-gray-500">
-                          {new Date(notice.date).toLocaleDateString()}
-                        </div>
-                        <div className="w-20 text-center text-sm text-gray-500">
-                          {notice.views}
-                        </div>
+                {data.notices.length > 0 ? (
+                  data.notices.map((notice) => (
+                    <div
+                      key={notice.noticeNo} // id 대신 noticeNo 사용
+                      className="flex items-center py-3 hover:bg-gray-50"
+                    >
+                      <div className="w-16 text-center text-sm text-gray-500">
+                        {notice.noticeNo}
                       </div>
-                    )
-                  )
+                      <div className="flex-1 px-6">
+                        <Link
+                          to={`/community/notice/${notice.noticeNo}`}
+                          className="text-gray-900 hover:text-red-600"
+                        >
+                          {notice.title}
+                        </Link>
+                      </div>
+                      <div className="w-24 text-center text-sm text-gray-500">
+                        {formatDate(notice.createdDate)}
+                      </div>
+                      <div className="w-20 text-center text-sm text-gray-500">
+                        {notice.views}
+                      </div>
+                    </div>
+                  ))
                 ) : (
                   <div className="flex justify-center items-center py-20 text-gray-500">
                     등록된 공지사항이 없습니다.
@@ -120,8 +119,8 @@ const NoticePage = () => {
 
             {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
-              <div className="flex justify-items-center">
-                <div></div>
+              <div className="flex justify-between items-center w-full">
+                <div className="w-16"></div>
                 <nav className="flex space-x-2 justify-between">
                   {/* 이전 그룹 버튼 */}
                   <button
