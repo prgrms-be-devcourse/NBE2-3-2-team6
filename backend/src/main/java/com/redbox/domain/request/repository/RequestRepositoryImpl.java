@@ -9,6 +9,7 @@ import com.redbox.domain.request.dto.Filter;
 import com.redbox.domain.request.dto.RequestFilter;
 import com.redbox.domain.request.entity.QRequest;
 import com.redbox.domain.request.entity.Request;
+import com.redbox.domain.request.entity.RequestStatus;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,6 +39,8 @@ public class RequestRepositoryImpl implements RequestRepositoryCustom {
         QRequest request = QRequest.request;
 
         BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(request.requestStatus.eq(RequestStatus.APPROVE));
 
         if (requestFilter.getStartDate() != null) {
             builder.and(request.donationStartDate.goe(requestFilter.getStartDate()));
