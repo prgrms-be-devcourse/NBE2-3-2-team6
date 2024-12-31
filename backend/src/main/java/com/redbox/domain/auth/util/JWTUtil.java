@@ -21,6 +21,12 @@ public class JWTUtil {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
     }
 
+    // userId 추출 메소드 추가
+    public Long getUserId(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("userId", Long.class);
+    }
+
     // email 추출
     public String getEmail(String token) {
         Claims claims = parseToken(token);
@@ -46,9 +52,10 @@ public class JWTUtil {
     }
 
     // JWT 생성
-    public String createJwt(String category, String email, String role, Long expiredMs) {
+    public String createJwt(String category, Long userId, String email, String role, Long expiredMs) {
         return Jwts.builder()
                 .claim("category", category)
+                .claim("userId", userId)    // userId 추가
                 .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 발급 시간
