@@ -38,6 +38,12 @@ const RequestDetailPage = () => {
 
   // 좋아요 버튼 클릭 시 호출되는 함수
   const handleLike = async () => {
+    
+    if (request.status === "만료") {
+      alert("만료된 게시글입니다.");
+      return;
+    }
+
     try {
       console.log(url + "/like");
 
@@ -51,6 +57,15 @@ const RequestDetailPage = () => {
     } catch (error) {
       console.error("좋아요 요청 오류:", error); // 오류 처리
     }
+  };
+
+  // 기부 버튼 클릭 시 호출되는 함수
+  const handleOpenDonateModal = () => {
+    if (request.status === "만료") {
+      alert("만료된 게시글입니다.");
+      return;
+    }
+    setIsRedboxModalOpen(true); // 모달 열기
   };
 
   // 기부 요청 처리 함수
@@ -79,6 +94,12 @@ const RequestDetailPage = () => {
 
   // 수정 권한 확인
   const modifyAuthor = async () => {
+    
+    if (request.status === "만료") {
+      alert("만료된 게시글입니다.");
+      return;
+    }
+
     try {
       const authorResponse = await axios.get(`http://localhost:8080/requests/modify/${id}/author`);
       const isAuthor = authorResponse.data;
@@ -111,7 +132,7 @@ const RequestDetailPage = () => {
                 </div>
                 <div className="flex bg-gray-50 py-3 border-b">
                   <div className="w-20 text-center text-sm font-medium text-gray-500">작성자</div>
-                  <div className="w-20 text-left text-sm font-medium">{request.id}</div>
+                  <div className="w-20 text-left text-sm font-medium">{request.userEmail}</div>
                   <div className="w-20 text-left text-sm font-medium text-gray-500">등록일</div>
                   <div className="w-28 text-left text-sm font-medium">{request.date}</div>
                   <div className="w-20 text-center text-sm font-medium text-gray-500">기부 시작일</div>
@@ -141,7 +162,7 @@ const RequestDetailPage = () => {
                 </button>
                 <button
                   className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
-                  onClick={() => setIsRedboxModalOpen(true)} // 기부 모달 열기
+                  onClick={handleOpenDonateModal}
                 >
                   <HandHeart />
                 </button>

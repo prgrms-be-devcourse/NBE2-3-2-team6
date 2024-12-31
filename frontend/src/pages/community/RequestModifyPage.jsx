@@ -121,6 +121,7 @@ const RequestModifyPage = () => {
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   value={donationStartDate}
                   onChange={(e) => setDonationStartDate(e.target.value)}
+                  readOnly
                 />
               </div>
               <div>
@@ -132,6 +133,7 @@ const RequestModifyPage = () => {
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   value={donationEndDate}
                   onChange={(e) => setDonationEndDate(e.target.value)}
+                  readOnly
                 />
               </div>
             </div>
@@ -147,6 +149,7 @@ const RequestModifyPage = () => {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 value={donationAmount}
                 onChange={(e) => setDonationAmount(e.target.value)}
+                readOnly
               />
             </div>
 
