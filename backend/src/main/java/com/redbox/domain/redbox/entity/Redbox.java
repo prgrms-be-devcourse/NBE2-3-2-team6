@@ -20,9 +20,11 @@ public class Redbox extends BaseTimeEntity {
     private Long id;
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "total_count"))
     private Count totalCount;
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "current_count"))
     private Count currentCount;
 
     public Redbox(Count totalCount, Count currentCount) {
