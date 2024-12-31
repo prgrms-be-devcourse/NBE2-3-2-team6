@@ -25,11 +25,11 @@ class RedCardTest {
 
         //When
         Redcard cardData = Redcard.builder()
-                        .userId(userId)
-                        .donation_date(donationDate)
-                        .serialNumber(serialNumber)
-                        .redcardStatus(status)
-                        .build();
+                .userId(userId)
+                .donation_date(donationDate)
+                .serialNumber(serialNumber)
+                .redcardStatus(status)
+                .build();
 
         // Then
         assertEquals(userId, cardData.getUserId());

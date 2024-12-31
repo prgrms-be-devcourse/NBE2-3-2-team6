@@ -59,6 +59,22 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/users/my-info")
+    public UserInfoResponse getUserInfo() {
+        return userService.getUserInfo();
+    }
+
+    @PutMapping("/users/my-info")
+    public UserInfoResponse updateUserInfo(@RequestBody UpdateUserInfoRequest request) {
+        return userService.updateUserInfo(request);
+    }
+
+    @PutMapping("/users/my-info/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/users/my-info/redcards")
     public ResponseEntity<PageResponse<RedcardResponse>> getRedcards(
             @RequestParam(defaultValue = "1") int page,

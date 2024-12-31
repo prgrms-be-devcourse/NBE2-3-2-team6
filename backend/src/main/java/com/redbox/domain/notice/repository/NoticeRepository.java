@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -31,4 +32,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
             " left join fetch n.attachFiles af" +
             " where n.id = :noticeId")
     Optional<Notice> findForDelete(@Param("noticeId") Long id);
+
+    List<Notice> findTop5ByOrderByCreatedAtDesc();
 }
