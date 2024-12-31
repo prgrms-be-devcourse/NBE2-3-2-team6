@@ -73,10 +73,8 @@ public class RequestService {
     public void updateExpiredRequests() {
         LocalDate today = LocalDate.now();
         List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
-
         for (Request request : expiredRequests) {
             request.setProgress(RequestStatus.EXPIRED);
-            System.out.println("만료 변경");
         }
         requestRepository.saveAll(expiredRequests);
     }
@@ -92,7 +90,6 @@ public class RequestService {
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
                 .userId(getCurrentUserId())
-                //.userId(1L) // user_id (현재 임의 값 설정)
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
@@ -128,28 +125,14 @@ public class RequestService {
             ));
         }
 
-        //Long userId = getCurrentUserId();
-        Long userId = 1L; // 임의값 설정
+        Long userId = getCurrentUserId();
+        // Long userId = 1L; // 임의값 설정
 
         // 좋아요 여부 조회
-        boolean isLiked = likesRepository.findByUserIdAndRequestId(userId, requestId)
-                .map(Like::isLiked)
-                .orElse(false);
+        Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
+        boolean isLiked = like != null && like.isLiked();
 
-        return new DetailResponse(
-                request.getRequestId(),
-                request.getRequestTitle(),
-                request.getRequestHits(),
-                request.getDonationStartDate(),
-                request.getDonationEndDate(),
-                request.getTargetAmount(),
-                request.getCurrentAmount(),
-                request.getRequestLikes(),
-                request.getRequestStatus().getText(),
-                request.getRequestContent(),
-                isLiked,
-                attachments
-        );
+        return new DetailResponse(request, isLiked, attachments);
     }
 
     // 게시글 상세조회 - 조회수 증가
@@ -169,15 +152,13 @@ public class RequestService {
 
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
-        //Long userId = getCurrentUserId();
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
+        // Long userId = 1L;
 
         // 좋아요 로직
-        Optional<Like> optionalLike = likesRepository.findByUserIdAndRequestId(userId, requestId);
-
-        if (optionalLike.isPresent()) {
+        Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
+        if (like != null) {
             // 존재하면 isLiked 상태 변경
-            Like like = optionalLike.get();
             if(like.isLiked()) {
                 like.setLiked(false);
                 request.setRequestLikes(request.getRequestLikes() - 1);
@@ -186,16 +167,18 @@ public class RequestService {
                 request.setRequestLikes(request.getRequestLikes() + 1);
             }
             likesRepository.save(like);
-        } else {
-            // 존재하지 않으면 새로운 Like 엔티티 생성
-            Like newLike = Like.builder()
-                    .userId(userId)
-                    .requestId(requestId)
-                    .isLiked(true)
-                    .build();
-            request.setRequestLikes(request.getRequestLikes() + 1);
-            likesRepository.save(newLike);
+            requestRepository.save(request);
+            return;
         }
+
+        // 존재하지 않으면 새로운 Like 엔티티 생성
+        Like newLike = Like.builder()
+                .userId(userId)
+                .requestId(requestId)
+                .isLiked(true)
+                .build();
+        request.setRequestLikes(request.getRequestLikes() + 1);
+        likesRepository.save(newLike);
         requestRepository.save(request);
     }
 
