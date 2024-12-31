@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +68,19 @@ public class RequestService {
         return new PageResponse<>(responsePage);
     }
 
+    // 게시글 만료 처리
+    @Transactional
+    public void updateExpiredRequests() {
+        LocalDate today = LocalDate.now();
+        List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
+
+        for (Request request : expiredRequests) {
+            request.setProgress(RequestStatus.EXPIRED);
+            System.out.println("만료 변경");
+        }
+        requestRepository.saveAll(expiredRequests);
+    }
+
     // 게시글 등록
     @Transactional
     public DetailResponse createRequest(WriteRequest writeRequest, MultipartFile file) {
@@ -84,7 +98,7 @@ public class RequestService {
                 .targetAmount(writeRequest.getTargetAmount())
                 .currentAmount(0) // 초기값
                 .requestStatus(RequestStatus.REQUEST)
-                .progress(RequestStatus.REQUEST)
+                .progress(RequestStatus.IN_PROGRESS)
                 .donationStartDate(writeRequest.getDonationStartDate())
                 .donationEndDate(writeRequest.getDonationEndDate())
                 .requestAttachFile(filePath) // 저장된 파일 경로
