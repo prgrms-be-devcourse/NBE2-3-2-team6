@@ -12,7 +12,6 @@ import com.redbox.domain.notice.exception.NoticeNotFoundException;
 import com.redbox.domain.notice.repository.NoticeQueryRepository;
 import com.redbox.domain.notice.repository.NoticeRepository;
 import com.redbox.domain.user.repository.UserRepository;
-import com.redbox.domain.user.service.UserService;
 import com.redbox.global.entity.PageResponse;
 import com.redbox.global.infra.s3.S3Service;
 import com.redbox.global.util.FileUtils;
@@ -34,7 +33,6 @@ public class NoticeService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final AttachFileRepository attachFileRepository;
-    private final UserService userService;
 
     public PageResponse<NoticeListResponse> getNotices(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -56,7 +54,8 @@ public class NoticeService {
     @Transactional
     public NoticeResponse createNotice(CreateNoticeRequest request, List<MultipartFile> files) {
         Notice notice = Notice.builder()
-                .user(userService.getCurrentUser())
+                // 로그인 구현 되면 추가
+//                .user()
                 .noticeTitle(request.getTitle())
                 .noticeContent(request.getContent())
                 .build();

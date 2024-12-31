@@ -42,7 +42,7 @@ public class UserService {
         return userDetails.getUserId();
     }
 
-    private CustomUserDetails getCustomUserDetails() {
+    private static CustomUserDetails getCustomUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (CustomUserDetails) authentication.getPrincipal();
     }
