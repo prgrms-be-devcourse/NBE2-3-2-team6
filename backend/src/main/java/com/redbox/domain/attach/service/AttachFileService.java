@@ -41,16 +41,7 @@ public class AttachFileService {
     }
 
     private void validateFileOwnership(AttachFile attachFile, Long postId) {
-        boolean isValid = switch (attachFile.getCategory()) {
-            case NOTICE -> attachFile.getNotice() != null &&
-                    attachFile.getNotice().getId().equals(postId);
-            // Request 기능과 합쳐지면 수정
-            case REQUEST -> true;
-//                    attachFile.getRequest() != null &&
-//                    attachFile.getRequest().getId().equals(postId);
-        };
-
-        if (!isValid) {
+        if (!attachFile.belongToPost(postId)) {
             throw new FileNotBelongException();
         }
     }

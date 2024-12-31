@@ -49,33 +49,23 @@ public class Notice extends BaseEntity {
     // 연관관계 편의 메서드
     // 비즈니스 로직 상 글 기준으로 움직이기 때문에 여기에 선언
     public void addAttachFiles(AttachFile attachFile) {
-        checkNullAttachFile(attachFile);
-        if (isDuplicateAttachFile(attachFile)) return;
+        attachFile.validateNull();
+        if (attachFile.isDuplicateIn(this.attachFiles)) return;
 
         this.attachFiles.add(attachFile);
         attachFile.setNotice(this);
     }
 
     public void removeAttachFiles(AttachFile attachFile) {
-        checkNullAttachFile(attachFile);
-        if (isDuplicateAttachFile(attachFile)) return;
+        attachFile.validateNull();
 
         this.attachFiles.remove(attachFile);
         attachFile.setNotice(null);
-    }
-
-    private void checkNullAttachFile(AttachFile attachFile) {
-        if (attachFile == null) {
-            throw new NullAttachFileException();
-        }
-    }
-
-    private boolean isDuplicateAttachFile(AttachFile attachFile) {
-        return this.attachFiles.contains(attachFile);
     }
 
     public void updateNotice(UpdateNoticeRequest request) {
         this.noticeTitle = request.getTitle();
         this.noticeContent = request.getContent();
     }
+
 }

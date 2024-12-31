@@ -1,7 +1,6 @@
 package com.redbox.domain.auth.filter;
 
 import com.redbox.domain.auth.dto.CustomUserDetails;
-import com.redbox.domain.auth.exception.ExpiredAccessTokenException;
 import com.redbox.domain.auth.exception.InvalidTokenException;
 import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.util.JWTUtil;
@@ -69,7 +68,7 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
-            throw new ExpiredAccessTokenException();
+            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);  // 직접 예외를 처리
         } catch (AuthException e) {
             ErrorResponseUtil.handleException(response, e.getErrorCode());
         } catch (Exception e) {
