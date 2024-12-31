@@ -3,10 +3,7 @@ package com.redbox.domain.notice.service;
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.entity.Category;
 import com.redbox.domain.attach.repository.AttachFileRepository;
-import com.redbox.domain.notice.dto.CreateNoticeRequest;
-import com.redbox.domain.notice.dto.NoticeListResponse;
-import com.redbox.domain.notice.dto.NoticeResponse;
-import com.redbox.domain.notice.dto.UpdateNoticeRequest;
+import com.redbox.domain.notice.dto.*;
 import com.redbox.domain.notice.entity.Notice;
 import com.redbox.domain.notice.exception.NoticeNotFoundException;
 import com.redbox.domain.notice.repository.NoticeQueryRepository;
@@ -23,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -105,5 +103,16 @@ public class NoticeService {
         }
 
         noticeRepository.delete(notice);
+    }
+
+    // 최신순 공지사항 5개 조회
+    public List<RecentNoticeResponse> getTop5Notices() {
+        return noticeRepository.findTop5ByOrderByCreatedAtDesc().stream()
+                .map(notice -> new RecentNoticeResponse(
+                        notice.getId(),
+                        notice.getNoticeTitle(),
+                        notice.getCreatedAt().toLocalDate()
+                ))
+                .collect(Collectors.toList());
     }
 }
