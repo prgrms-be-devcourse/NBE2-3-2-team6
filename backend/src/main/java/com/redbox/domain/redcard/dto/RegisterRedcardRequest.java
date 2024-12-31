@@ -3,6 +3,7 @@ package com.redbox.domain.redcard.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RegisterRedcardRequest {
 
     @NotBlank(message = "헌혈증 번호를 입력해주세요.")
