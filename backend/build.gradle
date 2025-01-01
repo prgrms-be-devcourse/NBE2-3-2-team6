@@ -74,6 +74,9 @@ dependencies {
     // AWS S3
     implementation platform('software.amazon.awssdk:bom:2.21.1') // AWS SDK 모듈 간의 버전 호환성을 관리
     implementation 'software.amazon.awssdk:s3' // AWS S3의 핵심 SDK
+
+    // Jackson Java 8에서 도입된 날짜와 시간 API(JSR-310)를 JSON으로 직렬화/역직렬화
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {
