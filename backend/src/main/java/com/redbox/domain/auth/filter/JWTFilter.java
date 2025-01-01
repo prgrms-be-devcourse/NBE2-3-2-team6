@@ -1,10 +1,10 @@
 package com.redbox.domain.auth.filter;
 
 import com.redbox.domain.auth.dto.CustomUserDetails;
-import com.redbox.domain.auth.exception.ExpiredAccessTokenException;
 import com.redbox.domain.auth.exception.InvalidTokenException;
-import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.domain.user.entity.RoleType;
+import com.redbox.domain.user.entity.User;
 import com.redbox.global.exception.AuthException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
@@ -23,11 +23,9 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
 
-    public JWTFilter(JWTUtil jwtUtil,CustomUserDetailsService userDetailsService) {
+    public JWTFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -53,15 +51,22 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // email과 role 값을 토큰에서 가져옴
+            Long userId = jwtUtil.getUserId(accessToken);
             String email = jwtUtil.getEmail(accessToken);
+            String role = jwtUtil.getRole(accessToken);
+            role = role.replace("ROLE_", "");
 
-            // DB에서 실제 사용자 정보를 가져와 CustomUserDetails 생성
-            CustomUserDetails userDetails =
-                    (CustomUserDetails) userDetailsService.loadUserByUsername(email);
+            User user = User.builder()
+                    .id(userId)
+                    .email(email)
+                    .roleType(RoleType.valueOf(role)) // RoleType 설정
+                    .build();
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
             // 인증 정보 생성 후 SecurityContext에 저장
             Authentication authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
+                    customUserDetails, null, customUserDetails.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -69,7 +74,7 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
-            throw new ExpiredAccessTokenException();
+            ErrorResponseUtil.handleException(response, ErrorCode.EXPIRED_TOKEN);
         } catch (AuthException e) {
             ErrorResponseUtil.handleException(response, e.getErrorCode());
         } catch (Exception e) {

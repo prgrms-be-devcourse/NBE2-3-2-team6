@@ -3,10 +3,7 @@ package com.redbox.domain.user.service;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.User;
-import com.redbox.domain.user.exception.DuplicateEmailException;
-import com.redbox.domain.user.exception.EmailNotVerifiedException;
-import com.redbox.domain.user.exception.InvalidUserInfoException;
-import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.*;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.util.RandomCodeGenerator;
@@ -30,19 +27,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    // 현재 로그인한 사용자 정보 조회
+    // 현재 로그인한 사용자의 전체 정보 조회
     public User getCurrentUser() {
         CustomUserDetails userDetails = getCustomUserDetails();
-        return userDetails.getUser();
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
     }
 
-    // ID만 필요한 경우를 위한 메서드
+    // 현재 로그인한 user_id
     public Long getCurrentUserId() {
-        CustomUserDetails userDetails = getCustomUserDetails();
-        return userDetails.getUserId();
+        return getCustomUserDetails().getUserId();
     }
 
-    private static CustomUserDetails getCustomUserDetails() {
+    private CustomUserDetails getCustomUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (CustomUserDetails) authentication.getPrincipal();
     }
@@ -115,7 +112,6 @@ public class UserService {
         // 임시 비밀번호 생성
         String tempPassword = RandomCodeGenerator.generateRandomCode();
         String encodedPassword = encodePassword(tempPassword);
-        System.out.println("Generated temporary password: " + tempPassword);
 
         // 비밀번호 변경
         user.changePassword(encodedPassword);
@@ -139,5 +135,44 @@ public class UserService {
 
         return new FindIdResponse(email);
     }
+  
+    public UserInfoResponse getUserInfo() {
+        User user = getCurrentUser();
+        return new UserInfoResponse(user);
+    }
 
+    @Transactional
+    public UserInfoResponse updateUserInfo(UpdateUserInfoRequest updateRequest) {
+        User user = getCurrentUser();
+
+        if (updateRequest.getName() != null) {
+            user.changeName(updateRequest.getName());
+        }
+        if (updateRequest.getPhoneNumber() != null) {
+            user.changePhoneNumber(updateRequest.getPhoneNumber());
+        }
+        if (updateRequest.getRoadAddress() != null) {
+            user.changeRoadAddress(updateRequest.getRoadAddress());
+        }
+        if (updateRequest.getExtraAddress() != null) {
+            user.changeExtraAddress(updateRequest.getExtraAddress());
+        }
+        if (updateRequest.getDetailAddress() != null) {
+            user.changeDetailAddress(updateRequest.getDetailAddress());
+        }
+
+        userRepository.save(user);
+        return new UserInfoResponse(user);
+    }
+  
+    @Transactional
+    public void changePassword(UpdatePasswordRequest request) {
+        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+            throw new PasswordNotMatchException();
+        }
+
+        User user = getCurrentUser();
+        user.changePassword(encodePassword(request.getPassword()));
+    }
+  
 }

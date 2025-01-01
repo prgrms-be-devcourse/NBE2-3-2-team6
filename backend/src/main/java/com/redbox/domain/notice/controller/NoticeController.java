@@ -3,10 +3,7 @@ package com.redbox.domain.notice.controller;
 import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.attach.entity.Category;
 import com.redbox.domain.attach.service.AttachFileService;
-import com.redbox.domain.notice.dto.CreateNoticeRequest;
-import com.redbox.domain.notice.dto.NoticeListResponse;
-import com.redbox.domain.notice.dto.NoticeResponse;
-import com.redbox.domain.notice.dto.UpdateNoticeRequest;
+import com.redbox.domain.notice.dto.*;
 import com.redbox.domain.notice.service.NoticeService;
 import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
@@ -94,5 +91,10 @@ public class NoticeController {
             @PathVariable Long fileId) {
         attachFileService.removeFile(Category.NOTICE, noticeId, fileId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/notices/top5")
+    public ResponseEntity<List<RecentNoticeResponse>> getTop5Notices() {
+        return ResponseEntity.ok(noticeService.getTop5Notices());
     }
 }

@@ -21,6 +21,12 @@ server:
   servlet:
     session:
       timeout: 0
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    com.redbox: DEBUG               # 애플리케이션 전반적인 로그
+    org.springframework.web: DEBUG  # 웹 요청/응답 로그
 ---
 spring:
   config:
@@ -51,10 +57,6 @@ spring:
       max-file-size: 10MB        # 단일 파일 최대 크기
       max-request-size: 50MB     # 요청당 전체 파일 크기
       enabled: true
-logging:
-  level:
-    root: INFO
-    org.springframework.security: DEBUG
 cloud:
   aws:
     region:
@@ -88,4 +90,31 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      password:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: test
+      secret-key: test
+    s3:
+      bucket: test
 
