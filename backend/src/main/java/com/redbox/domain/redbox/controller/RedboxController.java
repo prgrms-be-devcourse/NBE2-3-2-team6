@@ -20,4 +20,10 @@ public class RedboxController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/redbox/received-patients")
+    public ResponseEntity<Long> getReceivedPatientsCount() {
+        long count = redboxService.getReceivedPatientsCount();
+        return ResponseEntity.ok(count);
+    }
+
 }
