@@ -26,7 +26,7 @@ class RedCardTest {
         //When
         Redcard cardData = Redcard.builder()
                         .userId(userId)
-                        .donation_date(donationDate)
+                        .donationDate(donationDate)
                         .serialNumber(serialNumber)
                         .redcardStatus(status)
                         .build();
