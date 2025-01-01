@@ -104,26 +104,27 @@ const AdminRequestDetailPage = () => {
        <div className="flex-1 p-8">
          {request && (
            <>
-             <div className="bg-white rounded-lg shadow-md p-6 max-w-6xl">
+             <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
                <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
                <hr className="my-4 border-t-2 border-gray-300" />
                <div className="flex bg-gray-50 py-3 border-b">
                  <div className="text-2xl flex-1 text-center">{request.title}</div>
                </div>
                <div className="flex bg-gray-50 py-3 border-b">
-                  <div className="w-20 text-center text-sm font-medium text-gray-500">작성자</div>
-                  <div className="w-20 text-left text-sm font-medium">{request.userEmail}</div>
-                  <div className="w-20 text-left text-sm font-medium text-gray-500">등록일</div>
-                  <div className="w-28 text-left text-sm font-medium">{request.date}</div>
-                  <div className="w-20 text-center text-sm font-medium text-gray-500">기부 시작일</div>
-                  <div className="w-28 text-center text-sm font-medium">{request.startDate}</div>
-                  <div className="w-20 text-center text-sm font-medium text-gray-500">기부 마감일</div>
-                  <div className="w-28 text-center text-sm font-medium">{request.endDate}</div>
-                  <div className="w-36 text-center text-sm font-medium text-gray-500">목표 헌혈증 개수</div>
-                  <div className="w-15 text-left text-sm font-medium">{request.targetAmount}</div>
-                  <div className="w-20 text-right text-sm font-medium">{request.status}</div>
-                  <div className="w-28 text-right text-sm font-medium text-gray-500">조회수</div>
-                  <div className="w-20 text-center text-sm font-medium">{request.views}</div>
+                  <div className="w-1/12 text-right text-sm font-medium text-gray-500">작성자</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.userEmail}</div>
+                  <div className="w-1/12 text-right text-sm font-medium text-gray-500">등록일</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.date}</div>
+                  <div className="w-1/12 text-right text-sm font-medium text-gray-500">기부 시작일</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.startDate}</div>
+                  <div className="w-1/12 text-right text-sm font-medium text-gray-500">기부 마감일</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.endDate}</div>
+                  <div className="w-1/12 text-right text-sm font-medium text-gray-500">목표 헌혈증 개수</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.currentAmount}/{request.targetAmount}</div>
+                  <div className="w-12 text-right text-sm font-medium text-gray-500">상태</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.status}</div>
+                  <div className="w-12 text-right text-sm font-medium text-gray-500">조회수</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.views}</div>
                 </div>
 
                 {/* HTML 문자열 렌더링 */}
@@ -169,7 +170,7 @@ const AdminRequestDetailPage = () => {
               </button>
              </div>
 
-             <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
+             <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
                <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                <div className="bg-gray-50 p-4 rounded-md">
                  {request.attachments &&

@@ -219,6 +219,7 @@ const AdminRequestPage = () => {
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-16 text-center text-sm font-medium text-gray-500">번호</div>
                 <div className="flex-1 px-6 text-sm font-medium text-gray-500">제목</div>
+                <div className="w-32 text-center text-sm font-medium text-gray-500">진행률</div>
                 <div className="w-32 text-center text-sm font-medium text-gray-500">작성일</div>
                 <div className="w-20 text-center text-sm font-medium text-gray-500">조회수</div>
               </div>
@@ -233,6 +234,9 @@ const AdminRequestPage = () => {
                         <Link to={`/admin/community/request/${request.requestId}`} className="text-gray-900 hover:text-red-600">
                           {request.requestTitle}
                         </Link>
+                      </div>
+                      <div className="w-32 text-center text-sm text-gray-500">
+                        {request.progressPercent}%
                       </div>
                       <div className="w-32 text-center text-sm text-gray-500">
                         {new Date(request.requestDate).toLocaleDateString()}
