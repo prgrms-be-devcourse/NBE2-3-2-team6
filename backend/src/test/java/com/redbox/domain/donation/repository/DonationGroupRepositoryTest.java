@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class DonationGroupRepositoryTest {
@@ -21,11 +21,16 @@ class DonationGroupRepositoryTest {
     @DisplayName("save Test")
     @Test
     void saveTest() {
-        DonationGroup donationGroup = DonationGroup.builder().donationDate(LocalDate.now()).donationAmount(10).userId(1L).build();
+        DonationGroup donationGroup = DonationGroup.builder()
+                                                   .donationDate(LocalDate.now())
+                                                   .donationAmount(10)
+                                                   .donorId(1L)
+                                                   .receiverId(0L)
+                                                   .build();
 
         DonationGroup savedDonationGroup = donationGroupRepository.save(donationGroup);
 
-        assertEquals(1L, savedDonationGroup.getId());
+        assertEquals(1L, savedDonationGroup.getDonorId());
     }
 
 }

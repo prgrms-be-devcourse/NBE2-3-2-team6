@@ -4,6 +4,7 @@ import com.redbox.domain.donation.application.AbstractDonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.TotalCountResponse;
@@ -79,15 +80,13 @@ public class RedboxService extends AbstractDonationService {
 
     private DonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
         DonationGroup redboxDonationGroup = DonationGroup.builder()
-                                                                     .userId(donationUserId)
-                                                                     .donationAmount(donationCount)
-                                                                     .donationDate(LocalDate.now())
-                                                                     .donationMessage(donationMessage)
-                                                                     .build();
-        System.out.println("Donation User ID: " + donationUserId);
-        System.out.println("Donation Count: " + donationCount);
-        System.out.println("Donation Date: " + LocalDate.now());
-        System.out.println("Donation Message: " + donationMessage);
+                                                         .donorId(donationUserId)
+                                                         .receiverId(0L)
+                                                         .donationType(DonationType.TO_USER)
+                                                         .donationAmount(donationCount)
+                                                         .donationDate(LocalDate.now())
+                                                         .donationMessage(donationMessage)
+                                                         .build();
 
         return donationGroupRepository.save(redboxDonationGroup);
     }

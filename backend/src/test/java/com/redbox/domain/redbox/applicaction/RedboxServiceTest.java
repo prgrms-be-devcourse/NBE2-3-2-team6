@@ -88,7 +88,7 @@ class RedboxServiceTest {
         ArgumentCaptor<DonationGroup> redboxDonationGroupCaptor = ArgumentCaptor.forClass(DonationGroup.class);
         verify(donationGroupRepository).save(redboxDonationGroupCaptor.capture());
         DonationGroup savedRedboxDonationGroup = redboxDonationGroupCaptor.getValue();
-        assert savedRedboxDonationGroup.getDonationUserId().equals(donationUserId);
+        assert savedRedboxDonationGroup.getDonorId().equals(donationUserId);
         assert savedRedboxDonationGroup.getDonationAmount() == 2;
         assert savedRedboxDonationGroup.getDonationMessage().equals("Test message");
 
