@@ -12,6 +12,7 @@ const RequestPage = () => {
   const [requests, setRequests] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [userId, setUserId] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +21,7 @@ const RequestPage = () => {
         setRequests(response.data.content); // requests 배열 설정
         setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
         setTotalElements(response.data.totalElements); // 전체 요청 수 설정
+        setUserId(response.data.userId);
       } catch (error) {
         console.error("데이터를 가져오는 중 오류 발생: ", error);
       }
@@ -56,6 +58,10 @@ const RequestPage = () => {
   };
 
   const handleRequestWrite = () => {
+    if (userId == null) {
+      alert("로그인이 필요합니다");
+      return;
+    }
     navigate("/community/requests/write");
   };
 
