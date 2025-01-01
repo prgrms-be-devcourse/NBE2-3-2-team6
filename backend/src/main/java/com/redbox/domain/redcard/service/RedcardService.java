@@ -52,7 +52,7 @@ public class RedcardService {
 
     public PageResponse<RedcardResponse> getRedcards(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Redcard> redcards = redcardRepository.findByUserId(userService.getCurrentUserId(), pageable);
+        Page<Redcard> redcards = redcardRepository.findAllByUserId(userService.getCurrentUserId(), pageable);
         return new PageResponse<>(redcards.map(RedcardResponse::new));
     }
 
