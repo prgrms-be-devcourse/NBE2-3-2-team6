@@ -78,8 +78,7 @@ public class RedboxService extends AbstractDonationService {
         saveRedboxDonationDetails(redcardList, donationGroupId);
     }
 
-    @Transactional
-    protected RedboxDonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
+    private RedboxDonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
         RedboxDonationGroup redboxDonationGroup = RedboxDonationGroup.builder()
                                                                      .userId(donationUserId)
                                                                      .donationAmount(donationCount)
@@ -91,10 +90,7 @@ public class RedboxService extends AbstractDonationService {
         System.out.println("Donation Date: " + LocalDate.now());
         System.out.println("Donation Message: " + donationMessage);
 
-        redboxDonationGroupRepository.save(redboxDonationGroup);
-        entityManager.flush();
-
-        return redboxDonationGroup;
+        return redboxDonationGroupRepository.save(redboxDonationGroup);
     }
 
     private void saveRedboxDonationDetails(List<Redcard> redcardList, Long donationGroupId) {

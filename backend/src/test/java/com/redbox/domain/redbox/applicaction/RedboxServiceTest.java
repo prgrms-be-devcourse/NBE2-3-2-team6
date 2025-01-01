@@ -58,8 +58,7 @@ class RedboxServiceTest {
     }
 
     @Test
-    @Transactional
-    void processDonation_shouldSaveRedboxDonationGroupAndDetails() {
+    void donationProcessTest() {
         // Arrange
         DonationRequest donationRequest = DonationRequest.builder()
                                                          .amount(2)
