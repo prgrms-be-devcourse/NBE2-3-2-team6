@@ -43,9 +43,6 @@ public class Redcard extends BaseEntity {
     }
 
     public void changeRedcardStatus(RedcardStatus status) {
-        if (status.equals(RedcardStatus.PENDING)) {
-            throw new PendingRedcardException();
-        }
         this.redcardStatus = status;
     }
 }

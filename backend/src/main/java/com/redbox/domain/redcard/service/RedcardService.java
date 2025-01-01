@@ -4,6 +4,7 @@ import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.exception.DuplicateSerialNumberException;
+import com.redbox.domain.redcard.exception.PendingRedcardException;
 import com.redbox.domain.redcard.exception.RedcardNotBelongException;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.user.dto.RedcardResponse;
@@ -57,7 +58,9 @@ public class RedcardService {
     public void updateRedcardStatus(UpdateRedcardStatusRequest request, Long redcardId) {
         Redcard redcard = redcardRepository.findByUserIdAndId(userService.getCurrentUserId(), redcardId)
                 .orElseThrow(RedcardNotBelongException::new);
-
+        if (redcard.getRedcardStatus().equals(RedcardStatus.PENDING)) {
+            throw new PendingRedcardException();
+        }
         redcard.changeRedcardStatus(request.validateAndGetOppositeStatus());
     }
 }
