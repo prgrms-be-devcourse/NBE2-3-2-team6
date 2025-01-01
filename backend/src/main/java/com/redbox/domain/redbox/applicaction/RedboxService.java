@@ -5,7 +5,7 @@ import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.redbox.dto.TotalCountResponse;
 import com.redbox.domain.redbox.entity.Redbox;
 import com.redbox.domain.redbox.repository.RedboxRepository;
-
+import com.redbox.domain.redbox.exception.RedboxNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class RedboxService implements DonationService {
 
     public TotalCountResponse getTotalCount() {
         Redbox redbox = redboxRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("Redbox 정보가 존재하지 않습니다."));
+                .orElseThrow(RedboxNotFoundException::new); // RedboxNotFoundException 사용
 
         return new TotalCountResponse(redbox.getTotalCount());
     }
