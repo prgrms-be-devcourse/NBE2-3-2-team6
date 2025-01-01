@@ -5,8 +5,11 @@ import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.exception.DuplicateSerialNumberException;
+import com.redbox.domain.redcard.exception.PendingRedcardException;
+import com.redbox.domain.redcard.exception.RedcardNotBelongException;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.user.dto.RedcardResponse;
+import com.redbox.domain.user.dto.UpdateRedcardStatusRequest;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.domain.user.service.UserService;
@@ -183,5 +186,63 @@ class RedcardServiceTest {
         assertThat(response.getContent()).isEmpty();
         assertThat(response.getTotalElements()).isZero();
         assertThat(response.getTotalPages()).isZero();
+    }
+
+    @DisplayName("기부 진행중인 헌혈증은 상태를 변경할 때 예외가 발생한다.")
+    @Test
+    void changeRedcardStatusFromPendingToAnotherStatusThrowException() throws Exception {
+        //given
+        User user = setUserAndSecurityContext("test@test.com");
+        Redcard redcard = Redcard.builder()
+                .userId(user.getId())
+                .serialNumber("test-1")
+                .donationDate(LocalDate.now())
+                .hospitalName("테스트병원")
+                .redcardStatus(RedcardStatus.PENDING)  // PENDING 상태로 설정
+                .build();
+        redcardRepository.save(redcard);
+
+        UpdateRedcardStatusRequest request = new UpdateRedcardStatusRequest("available");
+
+        //when & then
+        assertThatThrownBy(() -> redcardService.updateRedcardStatus(request, redcard.getId()))
+                .isInstanceOf(PendingRedcardException.class)
+                .hasMessage("기부 진행중인 헌혈증입니다.")
+                .asInstanceOf(type(BusinessException.class))
+                .extracting(ex -> ex.getErrorCodes().getStatus())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("자신의 것이 아닌 헌혈증의 상태를 변경할 때 예외가 발생한다.")
+    @Test
+    void updateRedcardStatusWithNotOwnedRedcardThrowException() {
+        //given
+        User owner = User.builder()
+                .email("owner@test.com")
+                .build();
+        userRepository.save(owner);
+
+        // 다른 사용자의 헌혈증 생성
+        Redcard redcard = Redcard.builder()
+                .userId(owner.getId())
+                .serialNumber("test-1")
+                .donationDate(LocalDate.now())
+                .hospitalName("테스트병원")
+                .redcardStatus(RedcardStatus.AVAILABLE)
+                .build();
+        redcardRepository.save(redcard);
+
+        // 현재 로그인한 사용자를 다른 사용자로 설정
+        setUserAndSecurityContext("another@test.com");
+
+        UpdateRedcardStatusRequest request = new UpdateRedcardStatusRequest("used");
+
+        //when & then
+        assertThatThrownBy(() -> redcardService.updateRedcardStatus(request, redcard.getId()))
+                .isInstanceOf(RedcardNotBelongException.class)
+                .hasMessage("자신이 소유한 헌혈증이 아닙니다.")
+                .asInstanceOf(type(BusinessException.class))
+                .extracting(ex -> ex.getErrorCodes().getStatus())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }
