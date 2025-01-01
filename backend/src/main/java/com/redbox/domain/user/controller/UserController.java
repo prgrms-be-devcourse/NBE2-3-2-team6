@@ -81,4 +81,13 @@ public class UserController {
     ) {
         return ResponseEntity.ok(redCardService.getRedcards(page, size));
     }
+
+    @PutMapping("/users/my-info/redcards/{redcardId}")
+    public ResponseEntity<Void> updateRedcardStatus(
+            @RequestBody @Valid UpdateRedcardStatusRequest request,
+            @PathVariable Long redcardId
+    ) {
+        redCardService.updateRedcardStatus(request, redcardId);
+        return ResponseEntity.ok().build();
+    }
 }

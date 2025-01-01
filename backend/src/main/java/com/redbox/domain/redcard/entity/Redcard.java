@@ -1,5 +1,6 @@
 package com.redbox.domain.redcard.entity;
 
+import com.redbox.domain.redcard.exception.PendingRedcardException;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,5 +40,12 @@ public class Redcard extends BaseEntity {
     // 헌혈증 소지자가 바뀔때 사용하는 메서드
     public void updateUser(Long userId) {
         this.userId = userId;
+    }
+
+    public void changeRedcardStatus(RedcardStatus status) {
+        if (status.equals(RedcardStatus.PENDING)) {
+            throw new PendingRedcardException();
+        }
+        this.redcardStatus = status;
     }
 }
