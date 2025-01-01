@@ -5,20 +5,20 @@ import lombok.*;
 
 @Getter
 @Entity
-@Table(name = "redbox_donation_details")
+@Table(name = "donation_details")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RedboxDonationDetail {
+public class DonationDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "redbox_donation_detail_id")
+    @Column(name = "donation_detail_id")
     private Long id;
-    private Long redboxDonationId;
+    private Long donationGroupId;
     private Long redcardId;
 
     @Builder
-    public RedboxDonationDetail(Long redboxDonationId, Long redcardId) {
-        this.redboxDonationId = redboxDonationId;
+    public DonationDetail(Long donationGroupId, Long redcardId) {
+        this.donationGroupId = donationGroupId;
         this.redcardId = redcardId;
     }
 }

@@ -1,6 +1,6 @@
 package com.redbox.domain.donation.repository;
 
-import com.redbox.domain.donation.entity.RedboxDonationGroup;
+import com.redbox.domain.donation.entity.DonationGroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,17 +13,17 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class RedboxDonationGroupRepositoryTest {
+class DonationGroupRepositoryTest {
 
     @Autowired
-    private RedboxDonationGroupRepository redboxDonationGroupRepository;
+    private DonationGroupRepository donationGroupRepository;
 
     @DisplayName("save Test")
     @Test
     void saveTest() {
-        RedboxDonationGroup donationGroup = RedboxDonationGroup.builder().donationDate(LocalDate.now()).donationAmount(10).userId(1L).build();
+        DonationGroup donationGroup = DonationGroup.builder().donationDate(LocalDate.now()).donationAmount(10).userId(1L).build();
 
-        RedboxDonationGroup savedDonationGroup = redboxDonationGroupRepository.save(donationGroup);
+        DonationGroup savedDonationGroup = donationGroupRepository.save(donationGroup);
 
         assertEquals(1L, savedDonationGroup.getId());
     }

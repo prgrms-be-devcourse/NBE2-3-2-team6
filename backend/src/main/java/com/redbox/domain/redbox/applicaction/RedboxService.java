@@ -2,11 +2,10 @@ package com.redbox.domain.redbox.applicaction;
 
 import com.redbox.domain.donation.application.AbstractDonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
-import com.redbox.domain.donation.entity.RedboxDonationDetail;
-import com.redbox.domain.donation.entity.RedboxDonationGroup;
-import com.redbox.domain.donation.repository.RedboxDonationDetailRepository;
-import com.redbox.domain.donation.repository.RedboxDonationGroupRepository;
-import com.redbox.domain.redbox.dto.Count;
+import com.redbox.domain.donation.entity.DonationDetail;
+import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.repository.DonationDetailRepository;
+import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.TotalCountResponse;
 import com.redbox.domain.redbox.entity.Redbox;
 import com.redbox.domain.redbox.exception.RedboxNotFoundException;
@@ -31,20 +30,20 @@ public class RedboxService extends AbstractDonationService {
 
     private final RedboxRepository redboxRepository;
     private final RedboxReceiptGroupRepository redboxReceiptGroupRepository;
-    private final RedboxDonationGroupRepository redboxDonationGroupRepository;
-    private final RedboxDonationDetailRepository redboxDonationDetailRepository;
+    private final DonationGroupRepository donationGroupRepository;
+    private final DonationDetailRepository donationDetailRepository;
     private final EntityManager entityManager;
 
     public RedboxService(UserService userService,
                          RedcardRepository redcardRepository,
                          RedboxRepository redboxRepository,
                          RedboxReceiptGroupRepository redboxReceiptGroupRepository,
-                         RedcardService redcardService, RedboxDonationGroupRepository redboxDonationGroupRepository, RedboxDonationDetailRepository redboxDonationDetailRepository, EntityManagerFactoryBuilder entityManagerFactoryBuilder, EntityManager entityManager) {
+                         RedcardService redcardService, DonationGroupRepository redboxDonationGroupRepository, DonationDetailRepository redboxDonationDetailRepository, EntityManagerFactoryBuilder entityManagerFactoryBuilder, EntityManager entityManager) {
         super(userService, redcardRepository, redcardService); // 부모 클래스 생성자 호출
         this.redboxRepository = redboxRepository;
         this.redboxReceiptGroupRepository = redboxReceiptGroupRepository;
-        this.redboxDonationGroupRepository = redboxDonationGroupRepository;
-        this.redboxDonationDetailRepository = redboxDonationDetailRepository;
+        this.donationGroupRepository = redboxDonationGroupRepository;
+        this.donationDetailRepository = redboxDonationDetailRepository;
         this.entityManager = entityManager;
     }
 
@@ -72,14 +71,14 @@ public class RedboxService extends AbstractDonationService {
         // 헌혈증 보유자 수정
         redcardService.updateRedCardList(redcardList, receiveUserId);
         // 레드박스 기부 기록 생성 & 저장
-        RedboxDonationGroup redboxDonationGroup = createRedboxDonationGroup(donationUserId, donationCount, donationRequest.getMessage());
+        DonationGroup redboxDonationGroup = createRedboxDonationGroup(donationUserId, donationCount, donationRequest.getMessage());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveRedboxDonationDetails(redcardList, donationGroupId);
     }
 
-    private RedboxDonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
-        RedboxDonationGroup redboxDonationGroup = RedboxDonationGroup.builder()
+    private DonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
+        DonationGroup redboxDonationGroup = DonationGroup.builder()
                                                                      .userId(donationUserId)
                                                                      .donationAmount(donationCount)
                                                                      .donationDate(LocalDate.now())
@@ -90,17 +89,17 @@ public class RedboxService extends AbstractDonationService {
         System.out.println("Donation Date: " + LocalDate.now());
         System.out.println("Donation Message: " + donationMessage);
 
-        return redboxDonationGroupRepository.save(redboxDonationGroup);
+        return donationGroupRepository.save(redboxDonationGroup);
     }
 
     private void saveRedboxDonationDetails(List<Redcard> redcardList, Long donationGroupId) {
         for (Redcard redcard : redcardList) {
-            RedboxDonationDetail donationDetail = RedboxDonationDetail.builder().
-                                                                      redboxDonationId(donationGroupId).
+            DonationDetail donationDetail = DonationDetail.builder().
+                                                                      donationGroupId(donationGroupId).
                                                                       redcardId(redcard.getUserId()).
                                                                       build();
 
-            redboxDonationDetailRepository.save(donationDetail);
+            donationDetailRepository.save(donationDetail);
         }
     }
 }

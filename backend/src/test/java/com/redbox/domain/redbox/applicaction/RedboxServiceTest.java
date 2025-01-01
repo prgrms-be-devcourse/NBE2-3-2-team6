@@ -1,18 +1,15 @@
 package com.redbox.domain.redbox.applicaction;
 
 import com.redbox.domain.donation.dto.DonationRequest;
-import com.redbox.domain.donation.entity.RedboxDonationDetail;
-import com.redbox.domain.donation.entity.RedboxDonationGroup;
-import com.redbox.domain.donation.repository.RedboxDonationDetailRepository;
-import com.redbox.domain.donation.repository.RedboxDonationGroupRepository;
+import com.redbox.domain.donation.entity.DonationDetail;
+import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.repository.DonationDetailRepository;
+import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.service.UserService;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,10 +29,10 @@ import static org.mockito.Mockito.*;
 class RedboxServiceTest {
 
     @Mock
-    private RedboxDonationGroupRepository redboxDonationGroupRepository;
+    private DonationGroupRepository donationGroupRepository;
 
     @Mock
-    private RedboxDonationDetailRepository redboxDonationDetailRepository;
+    private DonationDetailRepository donationDetailRepository;
 
     @Mock
     private RedcardRepository redcardRepository;
@@ -88,20 +85,20 @@ class RedboxServiceTest {
 
         // Assert
         // RedboxDonationGroup 저장 여부 확인
-        ArgumentCaptor<RedboxDonationGroup> redboxDonationGroupCaptor = ArgumentCaptor.forClass(RedboxDonationGroup.class);
-        verify(redboxDonationGroupRepository).save(redboxDonationGroupCaptor.capture());
-        RedboxDonationGroup savedRedboxDonationGroup = redboxDonationGroupCaptor.getValue();
+        ArgumentCaptor<DonationGroup> redboxDonationGroupCaptor = ArgumentCaptor.forClass(DonationGroup.class);
+        verify(donationGroupRepository).save(redboxDonationGroupCaptor.capture());
+        DonationGroup savedRedboxDonationGroup = redboxDonationGroupCaptor.getValue();
         assert savedRedboxDonationGroup.getDonationUserId().equals(donationUserId);
         assert savedRedboxDonationGroup.getDonationAmount() == 2;
         assert savedRedboxDonationGroup.getDonationMessage().equals("Test message");
 
         // RedboxDonationDetail 저장 여부 확인
-        ArgumentCaptor<RedboxDonationDetail> redboxDonationDetailCaptor = ArgumentCaptor.forClass(RedboxDonationDetail.class);
-        verify(redboxDonationDetailRepository, times(2)).save(redboxDonationDetailCaptor.capture());
-        List<RedboxDonationDetail> savedDetails = redboxDonationDetailCaptor.getAllValues();
+        ArgumentCaptor<DonationDetail> redboxDonationDetailCaptor = ArgumentCaptor.forClass(DonationDetail.class);
+        verify(donationDetailRepository, times(2)).save(redboxDonationDetailCaptor.capture());
+        List<DonationDetail> savedDetails = redboxDonationDetailCaptor.getAllValues();
         assert savedDetails.size() == 2;
-        assert savedDetails.get(0).getRedboxDonationId().equals(savedRedboxDonationGroup.getId());
-        assert savedDetails.get(1).getRedboxDonationId().equals(savedRedboxDonationGroup.getId());
+        assert savedDetails.get(0).getDonationGroupId().equals(savedRedboxDonationGroup.getId());
+        assert savedDetails.get(1).getDonationGroupId().equals(savedRedboxDonationGroup.getId());
     }
 
     @Test
