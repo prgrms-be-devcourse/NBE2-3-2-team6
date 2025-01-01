@@ -6,56 +6,7 @@ const RedCardPage = () => {
   // 페이지네이션 상태 관리
   const size = 6;
   const [page, setPage] = useState(1);
-  const [content, setContent] = useState([
-    {
-      id: 1,
-      cardNumber: "BD123456789",
-      donationDate: "2024-03-15",
-      hospital: "대한적십자사 서울중앙센터",
-      registrationDate: "2024-03-16",
-      status: "available",
-    },
-    {
-      id: 2,
-      cardNumber: "BD987654321",
-      donationDate: "2024-03-14",
-      hospital: "대한적십자사 부산센터",
-      registrationDate: "2024-03-15",
-      status: "available",
-    },
-    {
-      id: 3,
-      cardNumber: "BD123456789",
-      donationDate: "2024-03-15",
-      hospital: "대한적십자사 서울중앙센터",
-      registrationDate: "2024-03-16",
-      status: "available",
-    },
-    {
-      id: 4,
-      cardNumber: "BD987654321",
-      donationDate: "2024-03-14",
-      hospital: "대한적십자사 부산센터",
-      registrationDate: "2024-03-15",
-      status: "available",
-    },
-    {
-      id: 5,
-      cardNumber: "BD123456789",
-      donationDate: "2024-03-15",
-      hospital: "대한적십자사 서울중앙센터",
-      registrationDate: "2024-03-16",
-      status: "available",
-    },
-    {
-      id: 6,
-      cardNumber: "BD987654321",
-      donationDate: "2024-03-14",
-      hospital: "대한적십자사 부산센터",
-      registrationDate: "2024-03-15",
-      status: "used",
-    },
-  ]);
+  const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
@@ -68,16 +19,15 @@ const RedCardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [redCardData, setRedCardData] = useState({
     cardNumber: "",
-    bloodType: "",
     donationDate: "",
     hospitalName: "",
   });
 
   const fetchRedcards = async (page, size) => {
     try {
-      const response = await api.get("/boards", {
+      const response = await api.get("/users/my-info/redcards", {
         params: {
-          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+          page: page,
           size,
         },
       });
@@ -140,30 +90,45 @@ const RedCardPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/redcards", redCardData);
+      await api.post("/users/my-info/redcards", redCardData);
       handleCloseModal();
       // 데이터 새로고침을 위해 현재 페이지 다시 불러오기
       fetchRedcards(page, size);
     } catch (error) {
+      if (error.response) {
+        // 서버가 응답한 에러 메시지 표시
+        alert(error.response.data.message || "오류가 발생했습니다.");
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        alert("서버와 통신할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      } else {
+        // 요청 자체를 보내지 못한 경우
+        alert("요청을 보내는 중 오류가 발생했습니다.");
+      }
       console.error("Error submitting red card:", error);
     }
   };
 
-  const handleStatusChange = async (id) => {
-    try {
-      // 백엔드 상태 업데이트
-      // await axios.patch(`http://localhost:8080/redcards/${id}/status`);
+  const handleStatusChange = async (id, cardStatus) => {
+    if (window.confirm("상태를 변경하시겠습니까?")) {
+      try {
+        // 백엔드 상태 업데이트
+        await api.put(`/users/my-info/redcards/${id}`, cardStatus);
 
-      // 로컬 상태 업데이트
-      setContent((prevContent) =>
-        prevContent.map((card) =>
-          card.id === id
-            ? { ...card, status: card.status === "used" ? "available" : "used" }
-            : card
-        )
-      );
-    } catch (error) {
-      console.error("Error updating status:", error);
+        // 로컬 상태 업데이트
+        setContent((prevContent) =>
+          prevContent.map((card) =>
+            card.id === id
+              ? {
+                  ...card,
+                  status: card.status === "used" ? "available" : "used",
+                }
+              : card
+          )
+        );
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
     }
   };
 
@@ -187,36 +152,51 @@ const RedCardPage = () => {
                     className={`${
                       redcard.status === "used"
                         ? "bg-gray-50 border-gray-200"
+                        : redcard.status === "pending"
+                        ? "bg-yellow-50 border-yellow-100"
                         : "bg-white border-red-100"
-                    } rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 border`}
+                    } rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 border ${
+                      redcard.status === "pending" ? "pointer-events-none" : ""
+                    }`}
                   >
-                    {/* Card Header */}
                     {/* Card Header */}
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-500">
-                          #{redcard.id}
-                        </span>
+                        {redcard.status === "pending" && (
+                          <span className="bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded">
+                            기부중
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center space-x-2">
                         <span
                           className={`text-sm ${
                             redcard.status === "used"
                               ? "text-gray-500"
+                              : redcard.status === "pending"
+                              ? "text-yellow-600"
                               : "text-red-600"
                           }`}
                         >
-                          {redcard.status === "used" ? "사용완료" : "사용가능"}
+                          {redcard.status === "used"
+                            ? "사용완료"
+                            : redcard.status === "pending"
+                            ? "기부진행중"
+                            : "사용가능"}
                         </span>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={redcard.status === "used"}
-                            onChange={() => handleStatusChange(redcard.id)}
-                            className="sr-only peer"
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                        </label>
+                        {redcard.status !== "pending" && (
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={redcard.status === "used"}
+                              onChange={() =>
+                                handleStatusChange(redcard.id, redcard.status)
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                          </label>
+                        )}
                       </div>
                     </div>
 
@@ -238,7 +218,9 @@ const RedCardPage = () => {
 
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">헌혈장소</span>
-                        <span className="font-medium">{redcard.hospital}</span>
+                        <span className="font-medium">
+                          {redcard.hospitalName}
+                        </span>
                       </div>
                     </div>
 
