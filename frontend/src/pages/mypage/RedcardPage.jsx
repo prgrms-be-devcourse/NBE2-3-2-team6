@@ -109,21 +109,26 @@ const RedCardPage = () => {
     }
   };
 
-  const handleStatusChange = async (id) => {
-    try {
-      // 백엔드 상태 업데이트
-      // await axios.patch(`http://localhost:8080/redcards/${id}/status`);
+  const handleStatusChange = async (id, cardStatus) => {
+    if (window.confirm("상태를 변경하시겠습니까?")) {
+      try {
+        // 백엔드 상태 업데이트
+        await api.put(`/users/my-info/redcards/${id}`, cardStatus);
 
-      // 로컬 상태 업데이트
-      setContent((prevContent) =>
-        prevContent.map((card) =>
-          card.id === id
-            ? { ...card, status: card.status === "used" ? "available" : "used" }
-            : card
-        )
-      );
-    } catch (error) {
-      console.error("Error updating status:", error);
+        // 로컬 상태 업데이트
+        setContent((prevContent) =>
+          prevContent.map((card) =>
+            card.id === id
+              ? {
+                  ...card,
+                  status: card.status === "used" ? "available" : "used",
+                }
+              : card
+          )
+        );
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
     }
   };
 
@@ -184,7 +189,9 @@ const RedCardPage = () => {
                             <input
                               type="checkbox"
                               checked={redcard.status === "used"}
-                              onChange={() => handleStatusChange(redcard.id)}
+                              onChange={() =>
+                                handleStatusChange(redcard.id, redcard.status)
+                              }
                               className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
