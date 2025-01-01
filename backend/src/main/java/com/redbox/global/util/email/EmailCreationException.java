@@ -5,6 +5,6 @@ import com.redbox.global.exception.ErrorCode;
 
 public class EmailCreationException extends BusinessException {
     protected EmailCreationException() {
-        super(ErrorCode.EMAIL_CREATION_FAILED);
+        super(ErrorCode.FAIL_TO_CREATE_EMAIL);
     }
 }
