@@ -47,7 +47,7 @@ const RequestDetailPage = () => {
     try {
       console.log(url + "/like");
 
-      const response = await axios.post(url); // 좋아요 요청 API 호출
+      const response = await axios.post(url + "/like"); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
         console.log("200 OK 좋아요 업데이트")
@@ -94,25 +94,20 @@ const RequestDetailPage = () => {
 
   // 수정 권한 확인
   const modifyAuthor = async () => {
-    
-    if (request.status === "만료") {
-      alert("만료된 게시글입니다.");
-      return;
-    }
-
     try {
-      const authorResponse = await axios.get(`http://localhost:8080/requests/modify/${id}/author`);
-      const isAuthor = authorResponse.data;
-
-      if (!isAuthor) {
-        alert("수정 권한이 없습니다.");
+      if (request.status === "만료") {
+        alert("만료된 게시글입니다.");
         return;
       }
-  
-      navigate(`/community/requests/modify/${id}`);
-
+      await axios.get(`http://localhost:8080/requests/modify/${id}`);
+      navigate(`/community/requests/modify/${id}`); 
     } catch (error) {
-      console.error("권한 확인 중 오류:", error);
+      if (error.response && error.response.status === 403) {
+        alert("수정 권한이 없습니다");
+      } else {
+        console.error("권한 확인 중 오류:", error);
+        alert("권한 확인 중 오류가 발생했습니다.");
+      }
     }
   };
   

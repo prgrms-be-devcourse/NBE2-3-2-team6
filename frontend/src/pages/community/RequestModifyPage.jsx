@@ -20,7 +20,7 @@ const RequestModifyPage = () => {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/requests/${id}`);
+      const response = await axios.get(`http://localhost:8080/requests/modify/${id}`);
       const data = response.data;
 
       setTitle(data.title);
