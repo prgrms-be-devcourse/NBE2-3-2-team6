@@ -1,8 +1,8 @@
 package com.redbox.domain.donation.config;
 
 import com.redbox.domain.donation.application.DonationService;
-import com.redbox.domain.redbox.applicaction.RedboxSerivce;
 
+import com.redbox.domain.redbox.applicaction.RedboxService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,10 +15,10 @@ public class DonationServiceConfig {
     public Map<String, DonationService> donationServiceMap(
 //            UserDonationService userDonationService,  추후 추가 예정
 //            RequestDonationService requestDonationService,
-            RedboxSerivce redboxSerivce) {
+            RedboxService redboxService) {
 
         return Map.of(
-                "redbox", redboxSerivce
+                "redbox", redboxService
         );
     }
 }
