@@ -62,4 +62,33 @@ public class User extends BaseEntity {
         }
         this.password = newPassword;
     }
+
+    public void registerRedCard(Redcard redCard) {
+        this.redcards.addRedcard(redCard);
+    }
+
+    public int countRedCards() {
+        return redcards.getRedcardsCount();
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void changeRoadAddress(String roadAddress) {
+        this.roadAddress = roadAddress;
+    }
+
+    public void changeExtraAddress(String extraAddress) {
+        this.extraAddress = extraAddress;
+    }
+
+    public void changeDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
+  
 }

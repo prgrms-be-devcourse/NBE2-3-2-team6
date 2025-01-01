@@ -2,12 +2,12 @@ package com.redbox.global.config;
 
 import com.redbox.domain.auth.filter.CustomLogoutFilter;
 import com.redbox.domain.auth.filter.JWTFilter;
-import com.redbox.domain.auth.service.CustomUserDetailsService;
 import com.redbox.domain.auth.service.RefreshTokenService;
 import com.redbox.domain.auth.util.JWTUtil;
 import com.redbox.domain.auth.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,18 +27,17 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@Profile("!test")
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService; // 변경: RefreshTokenService 주입
-    private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService,CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService; // 주입
-        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -65,9 +64,10 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .logout(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
-                .addFilterBefore(new JWTFilter(jwtUtil, userDetailsService), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class) // 변경: RefreshTokenService 사용
+                // 인증 플로우 수정
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CustomLogoutFilter(jwtUtil, refreshTokenService), JWTFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
@@ -79,8 +79,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("access"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*"));
+        configuration.setExposedHeaders(List.of("access", "Content-Type"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

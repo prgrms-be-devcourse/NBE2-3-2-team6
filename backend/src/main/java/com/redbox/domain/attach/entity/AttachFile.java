@@ -1,5 +1,6 @@
 package com.redbox.domain.attach.entity;
 
+import com.redbox.domain.attach.exception.NullAttachFileException;
 import com.redbox.domain.notice.entity.Notice;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -7,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -46,5 +49,32 @@ public class AttachFile extends BaseEntity {
     @SuppressWarnings("lombok")
     public void setNotice(Notice notice) {
         this.notice = notice;
+    }
+
+    public void validateNull() {
+        if (this == null) {
+            throw new NullAttachFileException();
+        }
+    }
+
+    public boolean isDuplicateIn(List<AttachFile> attachFiles) {
+        return attachFiles.contains(this);
+    }
+
+    public boolean belongToPost(Long postId) {
+        return switch (this.category) {
+            case NOTICE -> isNoticeFile(postId);
+            case REQUEST -> isRequestFile(postId);
+        };
+    }
+
+    private boolean isNoticeFile(Long postId) {
+        // notice_id 값이 있다면, notice 필드를 프록시 객체로 설정하기 때문에
+        return this.notice != null;
+    }
+
+    private boolean isRequestFile(Long postId) {
+        return true; // 향후 구현
+        // return this.request != null;
     }
 }
