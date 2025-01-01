@@ -45,7 +45,7 @@ public class DetailResponse {
     public DetailResponse(Request request, Boolean isLiked, List<AttachmentResponse> attachments) {
         this.id = request.getRequestId();
         this.userEmail = request.getCreatedBy();
-        this.date = request.getCreatedAt();
+        this.date = request.getCreatedAt().toLocalDate();
         this.title = request.getRequestTitle();
         this.views = request.getRequestHits();
         this.startDate = request.getDonationStartDate();

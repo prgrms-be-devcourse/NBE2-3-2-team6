@@ -59,7 +59,7 @@ public class AdminService {
                 request.getRequestId(),
                 request.getRequestTitle(),
                 request.getCreatedBy(),
-                request.getCreatedAt(),
+                request.getCreatedAt().toLocalDate(),
                 request.getDonationStartDate(),
                 request.getDonationEndDate(),
                 request.getTargetAmount(),
