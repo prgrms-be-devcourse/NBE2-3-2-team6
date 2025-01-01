@@ -7,8 +7,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -21,15 +23,36 @@ public class RedboxDonationGroup {
     @Column(name = "redbox_donation_group_id")
     private Long id;
     private Long donationUserId;
-    private Count donationAmount;
+    private int donationAmount;
     private LocalDate donationDate;
     private String donationMessage;
 
     @Builder
-    public RedboxDonationGroup(Long userId, Count donationAmount, LocalDate donationDate, String donationMessage) {
+    public RedboxDonationGroup(Long userId, int donationAmount, LocalDate donationDate, String donationMessage) {
         this.donationUserId = userId;
         this.donationAmount = donationAmount;
         this.donationDate = donationDate;
         this.donationMessage = donationMessage;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (this.getClass() != o.getClass()) {
+            return false;
+        }
+
+        RedboxDonationGroup redboxDonationGroup = (RedboxDonationGroup) o;
+        return Objects.equals(id, redboxDonationGroup.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

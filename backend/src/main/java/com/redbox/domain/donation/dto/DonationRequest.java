@@ -1,5 +1,6 @@
 package com.redbox.domain.donation.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -8,4 +9,12 @@ public class DonationRequest {
     private Long requestId; // ( 게시글 후원 )
     private int amount;
     private String message;
+
+    @Builder
+    public DonationRequest(Long userId, Long requestId, int amount, String message) {
+        this.userId = userId;
+        this.requestId = requestId;
+        this.amount = amount;
+        this.message = message;
+    }
 }

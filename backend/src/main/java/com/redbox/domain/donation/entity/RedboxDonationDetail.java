@@ -7,7 +7,6 @@ import lombok.*;
 @Entity
 @Table(name = "redbox_donation_details")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class RedboxDonationDetail {
 
     @Id
@@ -17,5 +16,9 @@ public class RedboxDonationDetail {
     private Long redboxDonationId;
     private Long redcardId;
 
-    //TODO: 모든 필드가 있어야 하므로 빌더 패턴 대신 AllArgsConstructor 사용헀는데, 빌더 패턴 써도 된다면 변경 하는 쪽으로...
+    @Builder
+    public RedboxDonationDetail(Long redboxDonationId, Long redcardId) {
+        this.redboxDonationId = redboxDonationId;
+        this.redcardId = redcardId;
+    }
 }

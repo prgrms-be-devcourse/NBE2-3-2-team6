@@ -42,20 +42,9 @@ public class RedcardService {
                 user.getId(), request.getDonationDate(), request.getCardNumber(), RedcardStatus.AVAILABLE);
     }
 
-    public void updateRedCardList(int count, Long receiveUserId) {
-        Long donateUserId = userService.getCurrentUserId();
-        List<Redcard> redcardList = redcardRepository.findByUserId(donateUserId);
-        checkCount(redcardList, count);
-
-        for (int i = 0; i < count; i++) {
-            redcardList.get(i).updateUser(receiveUserId);
-        }
-    }
-
-    //TODO: redcardList 일급 컬렉션 쓸지말지, ERROR CODE
-    public void checkCount(List<Redcard> redcardList, int count) {
-        if (redcardList.size() < count) {
-            throw new RuntimeException("보유량 보다 많은 수의 기부를 할 수 없습니다. 보유량 : " + redcardList.size() + " 기부 요청 : " + count);
+    public void updateRedCardList(List<Redcard> redcardList, Long receiveUserId) {
+        for (Redcard redcard : redcardList) {
+            redcard.updateUser(receiveUserId);
         }
     }
 }
