@@ -16,11 +16,8 @@ import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.service.UserService;
 
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,20 +26,13 @@ import java.util.List;
 public class RedboxService extends AbstractDonationService {
 
     private final RedboxRepository redboxRepository;
-    private final RedboxReceiptGroupRepository redboxReceiptGroupRepository;
-    private final DonationGroupRepository donationGroupRepository;
-    private final DonationDetailRepository donationDetailRepository;
 
     public RedboxService(UserService userService,
                          RedcardRepository redcardRepository,
                          RedboxRepository redboxRepository,
-                         RedboxReceiptGroupRepository redboxReceiptGroupRepository,
-                         RedcardService redcardService, DonationGroupRepository redboxDonationGroupRepository, DonationDetailRepository redboxDonationDetailRepository, EntityManagerFactoryBuilder entityManagerFactoryBuilder, EntityManager entityManager) {
-        super(userService, redcardRepository, redcardService); // 부모 클래스 생성자 호출
+                         RedcardService redcardService, DonationGroupRepository donationGroupRepository, DonationDetailRepository donationDetailRepository) {
+        super(userService, redcardRepository, redcardService, donationGroupRepository, donationDetailRepository); // 부모 클래스 생성자 호출
         this.redboxRepository = redboxRepository;
-        this.redboxReceiptGroupRepository = redboxReceiptGroupRepository;
-        this.donationGroupRepository = redboxDonationGroupRepository;
-        this.donationDetailRepository = redboxDonationDetailRepository;
     }
 
     public TotalCountResponse getTotalCount() {
@@ -64,38 +54,14 @@ public class RedboxService extends AbstractDonationService {
         long donationUserId = getDonationUserId();
 
         // Redcard의 userId 가 redbox 소유일 경우 0 으로 고정;
-        long receiveUserId = 0L;
+        long receiverId = 0L;
         List<Redcard> redcardList = getUsersRedCardList(donationCount); // 보유 헌혈증에서 기부할 만큼만 가져오기
         // 헌혈증 보유자 수정
-        redcardService.updateRedCardList(redcardList, receiveUserId);
+        redcardService.updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장
-        DonationGroup redboxDonationGroup = createRedboxDonationGroup(donationUserId, donationCount, donationRequest.getMessage());
+        DonationGroup redboxDonationGroup = createDonationGroup(donationUserId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
-        saveRedboxDonationDetails(redcardList, donationGroupId);
-    }
-
-    private DonationGroup createRedboxDonationGroup(long donationUserId, int donationCount, String donationMessage) {
-        DonationGroup redboxDonationGroup = DonationGroup.builder()
-                                                         .donorId(donationUserId)
-                                                         .receiverId(0L)
-                                                         .donationType(DonationType.TO_USER)
-                                                         .donationAmount(donationCount)
-                                                         .donationDate(LocalDate.now())
-                                                         .donationMessage(donationMessage)
-                                                         .build();
-
-        return donationGroupRepository.save(redboxDonationGroup);
-    }
-
-    private void saveRedboxDonationDetails(List<Redcard> redcardList, Long donationGroupId) {
-        for (Redcard redcard : redcardList) {
-            DonationDetail donationDetail = DonationDetail.builder().
-                                                                      donationGroupId(donationGroupId).
-                                                                      redcardId(redcard.getUserId()).
-                                                                      build();
-
-            donationDetailRepository.save(donationDetail);
-        }
+        saveDonationDetails(redcardList, donationGroupId);
     }
 }
