@@ -3,8 +3,10 @@ package com.redbox.domain.redcard.service;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
+import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.repository.UserRepository;
+import com.redbox.domain.user.service.UserService;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,11 +14,15 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RedcardService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final RedcardRepository redcardRepository;
 
     public void registerRedCard(RegisterRedcardRequest request){
         //security 구현이 완료되면 다르게 처리할 예정 (에러도 임시용이라서 따로 안만들었습니다)
@@ -34,5 +40,22 @@ public class RedcardService {
         // Redcard 생성
         Redcard redcard = new Redcard(
                 user.getId(), request.getDonationDate(), request.getCardNumber(), RedcardStatus.AVAILABLE);
+    }
+
+    public void updateRedCardList(int count, Long receiveUserId) {
+        Long donateUserId = userService.getCurrentUserId();
+        List<Redcard> redcardList = redcardRepository.findByUserId(donateUserId);
+        checkCount(redcardList, count);
+
+        for (int i = 0; i < count; i++) {
+            redcardList.get(i).updateUser(receiveUserId);
+        }
+    }
+
+    //TODO: redcardList 일급 컬렉션 쓸지말지, ERROR CODE
+    public void checkCount(List<Redcard> redcardList, int count) {
+        if (redcardList.size() < count) {
+            throw new RuntimeException("보유량 보다 많은 수의 기부를 할 수 없습니다. 보유량 : " + redcardList.size() + " 기부 요청 : " + count);
+        }
     }
 }

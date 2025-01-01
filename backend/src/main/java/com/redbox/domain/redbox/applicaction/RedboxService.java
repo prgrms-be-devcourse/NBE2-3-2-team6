@@ -4,9 +4,11 @@ import com.redbox.domain.donation.application.DonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.redbox.dto.TotalCountResponse;
 import com.redbox.domain.redbox.entity.Redbox;
+import com.redbox.domain.redbox.exception.RedboxNotFoundException;
 import com.redbox.domain.redbox.repository.RedboxReceiptGroupRepository;
 import com.redbox.domain.redbox.repository.RedboxRepository;
-import com.redbox.domain.redbox.exception.RedboxNotFoundException;
+import com.redbox.domain.redcard.service.RedcardService;
+
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ public class RedboxService implements DonationService {
 
     private final RedboxRepository redboxRepository;
     private final RedboxReceiptGroupRepository redboxReceiptGroupRepository;
+    private final RedcardService redcardService;
 
     public TotalCountResponse getTotalCount() {
         Redbox redbox = redboxRepository.findById(1L)
@@ -32,6 +35,9 @@ public class RedboxService implements DonationService {
 
     @Override
     public void processDonation(DonationRequest donationRequest) {
-        // 레드박스에게 기부하는 로직
+        int donationCount = donationRequest.getAmount();
+        // Redcard의 userId 가 redbox 소유일 경우 0 으로 고정;
+        long receiveUserId = 0L;
+        redcardService.updateRedCardList(donationCount, receiveUserId);
     }
 }

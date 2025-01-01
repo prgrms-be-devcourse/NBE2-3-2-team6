@@ -18,7 +18,7 @@ public class Redcard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "redcard_id")
     private Long id;
-    // null 또는 0 이라면 레드박스 소유로 취급 vs 컬럼 만들기
+    //레드박스 소유시 0
     private Long userId;
     private LocalDate donationDate;
     private String serialNumber;
