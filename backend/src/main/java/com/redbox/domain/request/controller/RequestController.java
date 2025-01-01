@@ -40,29 +40,17 @@ public class RequestController {
 
     // 요청 게시글 상세 조회 (조회수 증가 O)
     @GetMapping("/requests/{requestId}")
-    public ResponseEntity<DetailResponse> requestDetail(@PathVariable Long requestId) {
-        DetailResponse detailResponse = requestService.getRequestDetails(requestId);
+    public ResponseEntity<DetailResponse> viewRequestDetail(@PathVariable Long requestId) {
+        DetailResponse detailResponse = requestService.viewRequest(requestId);
         return ResponseEntity.ok(detailResponse);
     }
 
-    // todo : 파일 다운로드
-    // url 로 get 받으면 다운 받을 수 있도록 (download url 확인하기)
-
-    // todo : 요청 게시판에서 기부
-    // 기부 정보 전송(수량, id, comment)
-
-    @PostMapping("/requests/{requestId}")
+    // 좋아요 처리 로직
+    @PostMapping("/requests/{requestId}/like")
     public ResponseEntity<LikeResponse> requestLike(@PathVariable Long requestId) {
         requestService.likeRequest(requestId);
         LikeResponse likeResponse = new LikeResponse("처리되었습니다");
         return ResponseEntity.status(HttpStatus.OK).body(likeResponse);
-    }
-
-    // 수정 권한 확인
-    @GetMapping("/requests/modify/{requestId}/author")
-    public ResponseEntity<Boolean> requestModifyAuthor(@PathVariable Long requestId) {
-        Boolean isAuthor = requestService.modifyRequestAuthor(requestId);
-        return ResponseEntity.status(HttpStatus.OK).body(isAuthor);
     }
 
     // 내용 수정 (조회수 증가 X)
@@ -79,7 +67,8 @@ public class RequestController {
     // 수정한 내용 불러오기 (조회수 증가 X)
     @GetMapping("/requests/modify/{requestId}")
     public ResponseEntity<DetailResponse> requestModify(@PathVariable Long requestId) {
-        DetailResponse detailResponse = requestService.viewRequest(requestId);
+        requestService.modifyAuthorize(requestId);
+        DetailResponse detailResponse = requestService.getRequestDetail(requestId);
         return ResponseEntity.ok(detailResponse);
     }
 }

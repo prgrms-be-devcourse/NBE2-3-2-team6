@@ -1,8 +1,6 @@
 package com.redbox.domain.admin.dto;
 
 import com.redbox.domain.request.entity.Request;
-import com.redbox.domain.request.entity.RequestStatus;
-import com.redbox.domain.user.entity.Status;
 import lombok.Getter;
 
 import java.time.LocalDate;

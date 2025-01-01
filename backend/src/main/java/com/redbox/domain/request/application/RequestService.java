@@ -9,6 +9,7 @@ import com.redbox.domain.request.entity.Priority;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
+import com.redbox.domain.request.exception.UnauthorizedAccessException;
 import com.redbox.domain.request.exception.UserNotFoundException;
 import com.redbox.domain.request.repository.LikesRepository;
 import com.redbox.domain.request.repository.RequestRepository;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +74,7 @@ public class RequestService {
         LocalDate today = LocalDate.now();
         List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
         for (Request request : expiredRequests) {
-            request.setProgress(RequestStatus.EXPIRED);
+            request.expired();
         }
         requestRepository.saveAll(expiredRequests);
     }
@@ -89,7 +89,8 @@ public class RequestService {
 
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
-                .userId(getCurrentUserId())
+                //.userId(getCurrentUserId())
+                .userId(1L)
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
@@ -106,12 +107,11 @@ public class RequestService {
                 .build();
 
         requestRepository.save(request);
-        return viewRequest(request.getRequestId());
+        return getRequestDetail(request.getRequestId());
     }
 
-    // 게시글 상세조회
-    @Transactional
-    public DetailResponse viewRequest(Long requestId) {
+    // 게시글
+    public DetailResponse getRequestDetail(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         List<DetailResponse.AttachmentResponse> attachments = new ArrayList<>();
@@ -126,7 +126,6 @@ public class RequestService {
         }
 
         Long userId = getCurrentUserId();
-        // Long userId = 1L; // 임의값 설정
 
         // 좋아요 여부 조회
         Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
@@ -137,13 +136,10 @@ public class RequestService {
 
     // 게시글 상세조회 - 조회수 증가
     @Transactional
-    public DetailResponse getRequestDetails(Long requestId) {
+    public DetailResponse viewRequest(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
-
-        request.setRequestHits(request.getRequestHits() + 1);
-        requestRepository.save(request);
-
-        return viewRequest(request.getRequestId());
+        request.incrementHits();
+        return getRequestDetail(request.getRequestId());
     }
 
     // 좋아요 상태 변경
@@ -151,7 +147,6 @@ public class RequestService {
     public void likeRequest(Long requestId) {
 
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
-
         Long userId = getCurrentUserId();
         // Long userId = 1L;
 
@@ -160,11 +155,11 @@ public class RequestService {
         if (like != null) {
             // 존재하면 isLiked 상태 변경
             if(like.isLiked()) {
-                like.setLiked(false);
-                request.setRequestLikes(request.getRequestLikes() - 1);
+                like.falseLike();
+                request.decrementLikes();
             } else {
-                like.setLiked(true);
-                request.setRequestLikes(request.getRequestLikes() + 1);
+                like.trueLike();
+                request.incrementLikes();
             }
             likesRepository.save(like);
             requestRepository.save(request);
@@ -177,18 +172,9 @@ public class RequestService {
                 .requestId(requestId)
                 .isLiked(true)
                 .build();
-        request.setRequestLikes(request.getRequestLikes() + 1);
+        request.incrementLikes();
         likesRepository.save(newLike);
         requestRepository.save(request);
-    }
-
-    // 게시글 수정 권한
-    public Boolean modifyRequestAuthor(Long requestId) {
-        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
-        Long currentUserId = getCurrentUserId();
-        System.out.println(request.getRequestId());
-        System.out.println(currentUserId);
-        return request.getRequestId().equals(currentUserId);
     }
 
     // 게시글 수정
@@ -196,19 +182,31 @@ public class RequestService {
     public DetailResponse modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
-        request.setRequestTitle(writeRequest.getRequestTitle());
-        request.setRequestContent(writeRequest.getRequestContent());
-        request.setDonationStartDate(writeRequest.getDonationStartDate());
-        request.setDonationEndDate(writeRequest.getDonationEndDate());
-        request.setTargetAmount(writeRequest.getTargetAmount());
+        request.updateRequest(
+                writeRequest.getRequestTitle(),
+                writeRequest.getRequestContent(),
+                writeRequest.getDonationStartDate(),
+                writeRequest.getDonationEndDate(),
+                writeRequest.getTargetAmount()
+        );
 
         if (file != null && !file.isEmpty()) {
             String filePath = saveFile(file);
-            request.setRequestAttachFile(filePath);
+            request.attachFile(filePath);
         }
 
         Request modifyRequest = requestRepository.save(request);
-        return viewRequest(modifyRequest.getRequestId());
+        return getRequestDetail(modifyRequest.getRequestId());
+    }
+
+    // 수정 권한 확인 로직
+    public void modifyAuthorize(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+        Long userId = getCurrentUserId();
+        //Long userId = 1L;
+        if(!request.getUserId().equals(userId)) {
+            throw new UnauthorizedAccessException();
+        }
     }
 
     // 파일 저장 로직

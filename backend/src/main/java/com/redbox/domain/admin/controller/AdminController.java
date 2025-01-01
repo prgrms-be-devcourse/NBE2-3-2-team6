@@ -29,9 +29,12 @@ public class AdminController {
     }
 
     // 요청 게시글 승인
-    @PostMapping("/admin/requests")
-    public ResponseEntity<Void> approveRequest(@RequestBody @Valid AdminApproveRequest request) {
-        adminService.approveRequest(request);
+    @PostMapping("/admin/requests/{requestId}")
+    public ResponseEntity<Void> approveRequest(
+            @PathVariable Long requestId,
+            @RequestBody AdminApproveRequest request
+    ) {
+        adminService.approveRequest(requestId, request);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 

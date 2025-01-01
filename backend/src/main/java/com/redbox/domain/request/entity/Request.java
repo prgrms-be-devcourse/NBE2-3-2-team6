@@ -10,10 +10,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "request")
+@Table(name = "requests")
 public class Request extends BaseEntity {
 
     @Id
@@ -65,4 +64,21 @@ public class Request extends BaseEntity {
         this.requestLikes = requestLikes;
         this.fileDownloads = fileDownloads;
     }
+
+    public void updateRequest(String title, String content, LocalDate DonationStartDate, LocalDate DonationEndDate, int targetAmount) {
+        this.requestTitle = title;
+        this.requestContent = content;
+        this.donationStartDate = DonationStartDate;
+        this.donationEndDate = DonationEndDate;
+        this.targetAmount = targetAmount;
+    }
+
+    public void attachFile(String filePath){this.requestAttachFile = filePath;}
+
+    public void approve() {this.requestStatus = RequestStatus.APPROVE;}
+    public void reject() {this.requestStatus = RequestStatus.REJECT;}
+    public void expired() {this.requestStatus = RequestStatus.EXPIRED;}
+    public void incrementHits() {this.requestHits = requestHits + 1;}
+    public void incrementLikes() {this.requestLikes = requestLikes + 1;}
+    public void decrementLikes() {this.requestLikes = requestLikes - 1;}
 }

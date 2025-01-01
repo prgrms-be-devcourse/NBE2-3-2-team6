@@ -20,7 +20,13 @@ public enum ErrorCode {
     // Email 관련 에러
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     EMAIL_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 메시지 생성 중 오류가 발생했습니다."),
-    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생했습니다.");
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생했습니다."),
+
+    // 수정 권한 확인
+    FAIL_TO_ACCESS(HttpStatus.FORBIDDEN, "수정 권한이 없습니다"),
+
+    // 관리자 승인 요청 게시글
+    FAIL_TO_APPROVAL_STATUS(HttpStatus.NOT_FOUND, "해당 승인 상태값이 존재하지 않습니다");
 
     private final HttpStatus status;
     private final String message;

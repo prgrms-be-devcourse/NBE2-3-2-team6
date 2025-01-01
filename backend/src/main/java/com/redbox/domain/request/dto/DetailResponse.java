@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailResponse {
@@ -29,7 +28,6 @@ public class DetailResponse {
     private String content; // 내용
     private boolean isLiked; // 좋아요 여부
 
-    // todo : 파일 로직 처리 수정
     private List<AttachmentResponse> attachments; // 첨부 파일 리스트
 
     @Getter

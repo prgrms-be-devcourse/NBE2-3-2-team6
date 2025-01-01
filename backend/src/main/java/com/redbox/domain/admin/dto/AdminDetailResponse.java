@@ -1,18 +1,12 @@
 package com.redbox.domain.admin.dto;
 
-import com.redbox.domain.request.entity.RequestStatus;
-import com.redbox.domain.user.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminDetailResponse {
@@ -26,7 +20,4 @@ public class AdminDetailResponse {
     private String status;
     private int views; // 조회수
     private String content; // 내용
-
-    // todo : 파일 로직 처리 (사용자 요청 게시글 한 후, 수정 필요)
-
 }

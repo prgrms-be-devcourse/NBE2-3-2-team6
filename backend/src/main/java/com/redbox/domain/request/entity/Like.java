@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "likes")
@@ -30,5 +28,8 @@ public class Like {
         this.userId = userId;
         this.isLiked = isLiked;
     }
+
+    public void falseLike(){this.isLiked = false;}
+    public void trueLike(){this.isLiked = true;}
 
 }
