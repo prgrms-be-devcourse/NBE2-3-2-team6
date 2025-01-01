@@ -16,37 +16,47 @@ const AdminRequestDetailPage = () => {
  const [isLiked, setIsLiked] = useState(true);
  // TODO: 게시글 관련해서 첨부파일 다운로드 기능 개발 할건가요 현구님께 물어봅시다 딩동댕
 
- const url = `https://9891dae0-553b-40f5-9ada-4f17eb1659c2.mock.pstmn.io/redbox/request/${id}`;
+ const url = `http://localhost:8080/requests/${id}`;
 
  const fetchData = async () => {
-  try {
-    const response = await axios.get(url);
-    setRequest(response.data);
-    setLikes(response.data.likes);
-    setCurrentAmount(response.data.current_amount);
-    setIsLiked(response.data.isLiked);
-  } catch (error) {
-    console.error("데이터를 가져오는 중 오류 발생: ", error);
-  }
-};
+    try {
+      const response = await axios.get(url); // API 호출하여 요청 데이터 가져오기
+      setRequest(response.data); // 요청 데이터 상태 업데이트
+      setLikes(response.data.likes); // 좋아요 수 상태 업데이트
+      setCurrentAmount(response.data.currentAmount); // 현재 기부 금액 상태 업데이트
+      setIsLiked(response.data.liked); // 좋아요 상태 업데이트
+      console.log("좋아요 상태 업데이트 : ", response.data.liked);
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생: ", error); // 오류 처리
+    }
+  };
 
  useEffect(() => {
     fetchData(); // 2번 날라감(좋아요 시)
  }, [id, isLiked]);
 
- const handleLike = async() => {
-   try {
-     const response = await axios.post(url+"/like");
- 
-     if (response.status === 200) {
-       alert(response.data.message);
-       //TODO : 재렌더링을 위해서 isLiked로 설정했는데 fetchData()가 두 번 호출되는 issue (성능 개선)
-       setIsLiked((prevIsLiked) => !prevIsLiked);
-     }
-   } catch (error) {
-     console.error("좋아요 요청 오류:", error);
-   }
- };
+ // 좋아요 버튼 클릭 시 호출되는 함수
+ const handleLike = async () => {
+    
+    if (request.status === "만료") {
+      alert("만료된 게시글입니다.");
+      return;
+    }
+
+    try {
+      console.log(url + "/like");
+
+      const response = await axios.post(url); // 좋아요 요청 API 호출
+
+      if (response.status === 200) {
+        console.log("200 OK 좋아요 업데이트")
+        alert(response.data.message); // 성공 메시지 알림
+        setIsLiked((prevIsLiked) => !prevIsLiked); // 좋아요 상태 토글
+      }
+    } catch (error) {
+      console.error("좋아요 요청 오류:", error); // 오류 처리
+    }
+  };
 
  const handleDonate = async (quantity, comment) => {
    try {
@@ -101,26 +111,32 @@ const AdminRequestDetailPage = () => {
                  <div className="text-2xl flex-1 text-center">{request.title}</div>
                </div>
                <div className="flex bg-gray-50 py-3 border-b">
-                 <div className="w-20 text-center text-sm font-medium text-gray-500">작성자</div>
-                 <div className="w-20 text-left text-sm font-medium">{request.author}</div>
-                 <div className="w-20 text-left text-sm font-medium text-gray-500">등록일</div>
-                 <div className="w-28 text-left text-sm font-medium">{request.date}</div>
-                 <div className="w-20 text-center text-sm font-medium text-gray-500">기부 시작일</div>
-                 <div className="w-28 text-center text-sm font-medium">{request.start_date}</div>
-                 <div className="w-20 text-center text-sm font-medium text-gray-500">기부 마감일</div>
-                 <div className="w-28 text-center text-sm font-medium">{request.end_date}</div>
-                 <div className="w-36 text-center text-sm font-medium text-gray-500">목표 헌혈증 개수</div>
-                 <div className="w-15 text-left text-sm font-medium">{request.target_amount}</div>
-                 <div className="w-20 text-right text-sm font-medium">{request.status}</div>
-                 <div className="w-28 text-right text-sm font-medium text-gray-500">조회수</div>
-                 <div className="w-20 text-center text-sm font-medium">{request.views}</div>
-               </div>
-               <p className="mt-4 pl-4 h-[500px]">{request.content}</p>
+                  <div className="w-20 text-center text-sm font-medium text-gray-500">작성자</div>
+                  <div className="w-20 text-left text-sm font-medium">{request.userEmail}</div>
+                  <div className="w-20 text-left text-sm font-medium text-gray-500">등록일</div>
+                  <div className="w-28 text-left text-sm font-medium">{request.date}</div>
+                  <div className="w-20 text-center text-sm font-medium text-gray-500">기부 시작일</div>
+                  <div className="w-28 text-center text-sm font-medium">{request.startDate}</div>
+                  <div className="w-20 text-center text-sm font-medium text-gray-500">기부 마감일</div>
+                  <div className="w-28 text-center text-sm font-medium">{request.endDate}</div>
+                  <div className="w-36 text-center text-sm font-medium text-gray-500">목표 헌혈증 개수</div>
+                  <div className="w-15 text-left text-sm font-medium">{request.targetAmount}</div>
+                  <div className="w-20 text-right text-sm font-medium">{request.status}</div>
+                  <div className="w-28 text-right text-sm font-medium text-gray-500">조회수</div>
+                  <div className="w-20 text-center text-sm font-medium">{request.views}</div>
+                </div>
+
+                {/* HTML 문자열 렌더링 */}
+                <div
+                  className="mt-4 pl-4 h-[500px]"
+                  dangerouslySetInnerHTML={{ __html: request.content }}
+                ></div> {/* 요청 내용 */}
+
              </div>
              <div className="mt-4 flex items-center">
                <button
                  className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
-                 onClick={() => navigate("/community/request")}
+                 onClick={() => navigate("/admin/community/request")}
                >
                  목록
                </button>
@@ -145,14 +161,12 @@ const AdminRequestDetailPage = () => {
                  />
                </button>
                <span className="mx-2">{likes} 따봉</span>
-               <div className="w-16 text-center text-sm text-gray-500">
-                   <button
-                       onClick={() => handleDeleteBtn()}
-                       className="mx-1 px-3 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
-                   >
-                     삭제
-                   </button>
-               </div>
+              <button
+                className="ml-auto px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={handleDeleteBtn}
+              >
+                삭제
+              </button>
              </div>
 
              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">

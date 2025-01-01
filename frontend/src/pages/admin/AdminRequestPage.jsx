@@ -22,7 +22,7 @@ const AdminRequestPage = () => {
   // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
   const fetchData = async (page, size, status, option, start, end) => {
     try {
-      const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/request"
+      const url = "http://localhost:8080/requests"
 
       const statusMap = {
         "최신순": "NEW",
@@ -31,23 +31,23 @@ const AdminRequestPage = () => {
       };
 
       const optionMap = {
-        "전체글" : "TOTAL",
+        "전체글" : "",
         "관심글" : "LIKED",
       }
 
       const params = {
-        page: page-1,
+        page: page,
         size: size,
         sort: statusMap[status] || "NEW",
-        option: optionMap[option] || "TOTAL",
-        startDate: start || "전체",
-        endDate: end || "전체",
+        option: optionMap[option] || "",
+        startDate: start || "",
+        endDate: end || "",
       }
       const response = await axios.get(url, {params});
 
       if (response.status === 200) {
-        if (response.data && response.data.requests) {
-          setContent(response.data.requests);
+        if (response.data) {
+          setContent(response.data.content);
           setTotalPages(response.data.totalPages);
           setTotalElements(response.data.totalElements);
         } else {
@@ -67,7 +67,7 @@ const AdminRequestPage = () => {
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
-  const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
+  const currentGroup = Math.floor((page) / PAGE_GROUP_SIZE);
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
@@ -227,17 +227,17 @@ const AdminRequestPage = () => {
               <div className="divide-y">
                 {content && content.length > 0 ? (
                   content.map((request) => (
-                    <div key={request.id} className="flex items-center py-3 hover:bg-gray-50">
-                      <div className="w-16 text-center text-sm text-gray-500">{request.id}</div>
+                    <div key={request.requestId} className="flex items-center py-3 hover:bg-gray-50">
+                      <div className="w-16 text-center text-sm text-gray-500">{request.requestId}</div>
                       <div className="flex-1 px-6">
-                        <Link to={`/community/request/${request.id}`} className="text-gray-900 hover:text-red-600">
-                          {request.title}
+                        <Link to={`/admin/community/request/${request.requestId}`} className="text-gray-900 hover:text-red-600">
+                          {request.requestTitle}
                         </Link>
                       </div>
                       <div className="w-32 text-center text-sm text-gray-500">
-                        {new Date(request.date).toLocaleDateString()}
+                        {new Date(request.requestDate).toLocaleDateString()}
                       </div>
-                      <div className="w-20 text-center text-sm text-gray-500">{request.views}</div>
+                      <div className="w-20 text-center text-sm text-gray-500">{request.requestHits}</div>
                     </div>
                   ))
                 ) : (
