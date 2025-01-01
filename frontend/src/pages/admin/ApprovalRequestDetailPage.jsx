@@ -9,7 +9,6 @@ const ApprovalRequestDetailPage = () => {
   const [modal, setModal] = useState({ isOpen: false, action: "", title: "", id: id });
 
   const url = `http://localhost:8080/admin/requests/${id}`;
-  const aprurl = `http://localhost:8080/admin/requests`;
 
   /// 데이터 가져오기
   const fetchData = async () => {
@@ -28,15 +27,12 @@ const ApprovalRequestDetailPage = () => {
   /// 데이터 보내기 (게시판 id, status)
   const sendData = async (id, status) => {
     try {
-      const response = await fetch(aprurl, {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          requestId: id,
-          approveStatus: status,
-        }),
+        body: JSON.stringify({approveStatus: status}),
       });
 
       if (response.ok) {

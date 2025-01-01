@@ -14,7 +14,6 @@ const AdminRequestDetailPage = () => {
  const [currentAmount, setCurrentAmount] = useState(0);
  const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false); 
  const [isLiked, setIsLiked] = useState(true);
- // TODO: 게시글 관련해서 첨부파일 다운로드 기능 개발 할건가요 현구님께 물어봅시다 딩동댕
 
  const url = `http://localhost:8080/requests/${id}`;
 
@@ -32,7 +31,7 @@ const AdminRequestDetailPage = () => {
   };
 
  useEffect(() => {
-    fetchData(); // 2번 날라감(좋아요 시)
+    fetchData();
  }, [id, isLiked]);
 
  // 좋아요 버튼 클릭 시 호출되는 함수

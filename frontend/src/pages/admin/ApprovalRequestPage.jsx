@@ -28,13 +28,12 @@ const AdminRequestPage = () => {
     // 데이터 보내기
     const sendData = async(id, status) => {
         try {
-            const response = await fetch(url, {
+            const response = await fetch(url + `/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    requestId: id,
                     approveStatus: status,
                 }),
             });
