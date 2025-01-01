@@ -1,8 +1,7 @@
 package com.redbox.domain.redbox.controller;
 
-import com.redbox.domain.redbox.applicaction.RedboxSerivce;
-import com.redbox.domain.redbox.dto.RedboxInfoResponse;
-
+import com.redbox.domain.redbox.dto.TotalCountResponse;
+import com.redbox.domain.redbox.applicaction.RedboxService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,12 +12,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RedboxController {
 
-    private final RedboxSerivce redboxSerivce;
+    private final RedboxService redboxService;
 
-    @GetMapping("/R-a-seo-Su-jung-HaeYo")
-    private ResponseEntity<RedboxInfoResponse> getRedboxInfo() {
-
-        RedboxInfoResponse request = redboxSerivce.getRedboxInfo();
-        return ResponseEntity.ok(request);
+    @GetMapping("/redbox/total-count")
+    public ResponseEntity<TotalCountResponse> getTotalCount() {
+        TotalCountResponse response = redboxService.getTotalCount();
+        return ResponseEntity.ok(response);
     }
+
 }
