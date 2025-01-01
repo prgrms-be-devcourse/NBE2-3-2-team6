@@ -18,6 +18,7 @@ public class ListResponse {
     private String requestContent;
     private int targetAmount;
     private int currentAmount;
+    private double progressPercent;
 
     private RequestStatus requestStatus;
     private String progress;
@@ -34,6 +35,7 @@ public class ListResponse {
         this.requestContent = request.getRequestContent();
         this.targetAmount = request.getTargetAmount();
         this.currentAmount = request.getCurrentAmount();
+        this.progressPercent = ( (double) request.getCurrentAmount() / request.getTargetAmount()) * 100;
         this.progress = request.getProgress().getText();
         this.requestStatus = request.getRequestStatus();
         this.requestDate = request.getRequestDate();

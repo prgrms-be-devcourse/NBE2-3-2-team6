@@ -45,10 +45,10 @@ public class RequestController {
         return ResponseEntity.ok(detailResponse);
     }
 
-    // todo : 파일 다운로드 처리
+    // todo : 파일 다운로드
     // url 로 get 받으면 다운 받을 수 있도록 (download url 확인하기)
 
-    // todo : 기부 API URL 처리
+    // todo : 요청 게시판에서 기부
     // 기부 정보 전송(수량, id, comment)
 
     @PostMapping("/requests/{requestId}")
