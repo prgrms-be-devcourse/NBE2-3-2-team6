@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
+@Transactional
 @SpringBootTest
 class UserServiceTest {
 
@@ -83,13 +85,13 @@ class UserServiceTest {
                 .password("aa123123@")
                 .passwordConfirm("aa123123@")
                 .build();
-        
-        //when
-        String newPassword = encodePassword(request.getPassword());
-        user.changePassword(newPassword);
 
-        //then
-        assertThat(user.getPassword()).isEqualTo(newPassword);
+        // when
+        userService.changePassword(request);
+
+        // then
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(passwordEncoder.matches(request.getPassword(), updatedUser.getPassword())).isTrue();
     }
 
     @DisplayName("비밀번호와 비밀번호가 일치하지 않은 경우 예외가 발생한다.")

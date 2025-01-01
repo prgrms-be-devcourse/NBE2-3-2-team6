@@ -1,10 +1,13 @@
 package com.redbox.domain.user.entity;
 
 import com.redbox.domain.user.exception.EmptyPasswordException;
-import org.springframework.util.StringUtils;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +45,8 @@ public class User extends BaseEntity {
     private LocalDateTime lastLoginAt;
 
     @Builder
-    public User(String email, String password, String name, LocalDate birth, String phoneNumber, String roadAddress, String extraAddress, String detailAddress, Gender gender, RoleType roleType, Status status) {
+    public User(Long id, String email, String password, String name, LocalDate birth, String phoneNumber, String roadAddress, String extraAddress, String detailAddress, Gender gender, RoleType roleType, Status status) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
@@ -61,14 +65,6 @@ public class User extends BaseEntity {
             throw new EmptyPasswordException();
         }
         this.password = newPassword;
-    }
-
-    public void registerRedCard(Redcard redCard) {
-        this.redcards.addRedcard(redCard);
-    }
-
-    public int countRedCards() {
-        return redcards.getRedcardsCount();
     }
 
     public void changeName(String name) {

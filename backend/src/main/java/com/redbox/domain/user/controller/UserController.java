@@ -4,6 +4,7 @@ import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.service.UserService;
+import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,9 +52,8 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    //개인적으로 uri 가 조금 적합하지 않은것 같아용 (프론트와 같이 수정 필요)
-    @PostMapping("/users/me/redcards")
-    public ResponseEntity<Void> registerRedCard(@RequestBody RegisterRedcardRequest request) {
+    @PostMapping("/users/my-info/redcards")
+    public ResponseEntity<Void> registerRedCard(@RequestBody @Valid RegisterRedcardRequest request) {
         redCardService.registerRedCard(request);
         return ResponseEntity.ok().build();
     }
@@ -67,10 +67,27 @@ public class UserController {
     public UserInfoResponse updateUserInfo(@RequestBody UpdateUserInfoRequest request) {
         return userService.updateUserInfo(request);
     }
-  
+
     @PutMapping("/users/my-info/password")
     public ResponseEntity<Void> updatePassword(@RequestBody @Valid UpdatePasswordRequest request) {
         userService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/my-info/redcards")
+    public ResponseEntity<PageResponse<RedcardResponse>> getRedcards(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(redCardService.getRedcards(page, size));
+    }
+
+    @PutMapping("/users/my-info/redcards/{redcardId}")
+    public ResponseEntity<Void> updateRedcardStatus(
+            @RequestBody @Valid UpdateRedcardStatusRequest request,
+            @PathVariable Long redcardId
+    ) {
+        redCardService.updateRedcardStatus(request, redcardId);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,11 +1,11 @@
 package com.redbox.domain.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redbox.domain.user.dto.LoginRequest;
-import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.auth.service.RefreshTokenService;
+import com.redbox.domain.auth.util.JWTUtil;
+import com.redbox.domain.user.dto.LoginRequest;
 import com.redbox.global.exception.AuthException;
-import com.redbox.global.exception.BusinessException;
 import com.redbox.global.exception.ErrorCode;
 import com.redbox.global.util.error.ErrorResponseUtil;
 import jakarta.servlet.FilterChain;
@@ -64,7 +64,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         // 사용자 정보 추출
-        String email = authentication.getName();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        Long userId = userDetails.getUserId();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -72,8 +74,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = authority.getAuthority();
 
         // JWT 생성
-        String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
-        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 1일
+        String access = jwtUtil.createJwt("access", userId, email, role, 600000L); // 10분
+        String refresh = jwtUtil.createJwt("refresh", userId, email, role, 86400000L); // 1일
 
         // Refresh 토큰 저장
         refreshTokenService.saveRefreshToken(email, refresh, 86400000L); // 변경: 서비스 사용

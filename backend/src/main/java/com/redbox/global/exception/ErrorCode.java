@@ -7,6 +7,12 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    // 레드카드 관련
+    DUPLICATE_SERIAL_NUMBER(HttpStatus.BAD_REQUEST, "이미 등록된 헌혈증입니다."),
+    NOT_BELONG_TO_REDCARD(HttpStatus.BAD_REQUEST, "자신이 소유한 헌혈증이 아닙니다."),
+    PENDING_REDCARD(HttpStatus.BAD_REQUEST, "기부 진행중인 헌혈증입니다."),
+    INVALID_REDCARD_STATUS(HttpStatus.BAD_REQUEST, "올바른 헌혈증 상태가 아닙니다."),
+
     // 공지사항 관련
     FAIL_TO_FIND_NOTICE(HttpStatus.NOT_FOUND,"해당 공지사항을 찾을 수 없습니다."),
 

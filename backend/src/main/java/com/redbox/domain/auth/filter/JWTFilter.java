@@ -51,11 +51,13 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // email과 role 값을 토큰에서 가져옴
+            Long userId = jwtUtil.getUserId(accessToken);
             String email = jwtUtil.getEmail(accessToken);
             String role = jwtUtil.getRole(accessToken);
             role = role.replace("ROLE_", "");
 
             User user = User.builder()
+                    .id(userId)
                     .email(email)
                     .roleType(RoleType.valueOf(role)) // RoleType 설정
                     .build();

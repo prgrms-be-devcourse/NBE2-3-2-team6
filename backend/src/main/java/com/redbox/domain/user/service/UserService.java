@@ -34,6 +34,11 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    // 현재 로그인한 user_id
+    public Long getCurrentUserId() {
+        return getCustomUserDetails().getUserId();
+    }
+
     private CustomUserDetails getCustomUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (CustomUserDetails) authentication.getPrincipal();
@@ -107,7 +112,6 @@ public class UserService {
         // 임시 비밀번호 생성
         String tempPassword = RandomCodeGenerator.generateRandomCode();
         String encodedPassword = encodePassword(tempPassword);
-        System.out.println("Generated temporary password: " + tempPassword);
 
         // 비밀번호 변경
         user.changePassword(encodedPassword);
