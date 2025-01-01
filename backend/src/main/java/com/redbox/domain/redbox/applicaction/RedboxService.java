@@ -10,7 +10,6 @@ import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.TotalCountResponse;
 import com.redbox.domain.redbox.entity.Redbox;
 import com.redbox.domain.redbox.exception.RedboxNotFoundException;
-import com.redbox.domain.redbox.repository.RedboxReceiptGroupRepository;
 import com.redbox.domain.redbox.repository.RedboxRepository;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.repository.RedcardRepository;
@@ -33,7 +32,6 @@ public class RedboxService extends AbstractDonationService {
     private final RedboxReceiptGroupRepository redboxReceiptGroupRepository;
     private final DonationGroupRepository donationGroupRepository;
     private final DonationDetailRepository donationDetailRepository;
-    private final EntityManager entityManager;
 
     public RedboxService(UserService userService,
                          RedcardRepository redcardRepository,
@@ -45,7 +43,6 @@ public class RedboxService extends AbstractDonationService {
         this.redboxReceiptGroupRepository = redboxReceiptGroupRepository;
         this.donationGroupRepository = redboxDonationGroupRepository;
         this.donationDetailRepository = redboxDonationDetailRepository;
-        this.entityManager = entityManager;
     }
 
     public TotalCountResponse getTotalCount() {
@@ -57,7 +54,7 @@ public class RedboxService extends AbstractDonationService {
 
     public long getReceivedPatientsCount() {
         // "레드박스로부터 받음" 테이블의 행 수를 조회
-        return redboxReceiptGroupRepository.count();
+        return donationGroupRepository.countByDonorId(0L);
     }
 
     @Override
