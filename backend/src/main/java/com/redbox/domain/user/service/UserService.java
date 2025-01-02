@@ -183,6 +183,13 @@ public class UserService {
         user.changePassword(encodePassword(request.getPassword()));
     }
 
+    public CheckUserResponse checkUser(CheckUserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                                         .orElseThrow(UserNotFoundException::new);
+
+        return new CheckUserResponse(user.getId(), user.getName());
+    }
+  
     public PageResponse<DonationResponse> getDonations(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return new PageResponse<>(donationGroupRepository.findAllWithReceiverNameByDonorId(getCurrentUserId(), pageable));

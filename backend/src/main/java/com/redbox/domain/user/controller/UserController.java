@@ -91,6 +91,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/auth/email-check")
+    public ResponseEntity<CheckUserResponse> checkUserByEmail(
+            @RequestBody CheckUserRequest request) {
+        CheckUserResponse response = userService.checkUser(request);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/users/my-info/redcards/donations")
     public ResponseEntity<PageResponse<DonationResponse>> getDonations(
             @RequestParam(defaultValue = "1") int page,

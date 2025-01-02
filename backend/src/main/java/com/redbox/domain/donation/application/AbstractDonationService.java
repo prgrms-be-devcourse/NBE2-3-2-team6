@@ -37,7 +37,7 @@ public abstract class AbstractDonationService implements DonationService {
     protected List<Redcard> pickDonateRedCardList(DonationRequest donationRequest) {
         List<Redcard> redcardList = getUsersRedCardList();
         validateDonation(redcardList, donationRequest);
-        return redcardList.subList(0, donationRequest.getAmount());
+        return redcardList.subList(0, donationRequest.getQuantity());
     }
 
     protected Long getDonationUserId() {
