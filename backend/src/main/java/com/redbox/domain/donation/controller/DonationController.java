@@ -37,17 +37,4 @@ public class DonationController {
         return ResponseEntity.ok("기부 성공");
     }
 
-    @GetMapping("/users/my-donation-stats")
-    public ResponseEntity<MyDonationStatsResponse> getMyDonationStats() {
-
-        Long userId = donationStatsService.getCurrentUserId();
-
-        // 기부 통계 조회
-        int totalDonatedCards = donationStatsService.getTotalDonatedCards(userId);
-        int patientsHelped = donationStatsService.getPatientsHelped(userId);
-        // TODO: 내가 작성한 진행중인 요청 게시글 조회 추후에 추가
-
-        MyDonationStatsResponse response = new MyDonationStatsResponse(totalDonatedCards, patientsHelped);
-        return ResponseEntity.ok(response);
-    }
 }
