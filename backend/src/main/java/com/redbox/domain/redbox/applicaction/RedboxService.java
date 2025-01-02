@@ -6,14 +6,14 @@ import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
-import com.redbox.domain.redbox.dto.TotalCountResponse;
+import com.redbox.domain.redbox.dto.RedboxStatsResponse;
 import com.redbox.domain.redbox.entity.Redbox;
-import com.redbox.domain.redbox.exception.RedboxNotFoundException;
 import com.redbox.domain.redbox.repository.RedboxRepository;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.service.UserService;
+import com.redbox.domain.redbox.exception.RedboxNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +33,18 @@ public class RedboxService extends AbstractDonationService {
         this.redboxRepository = redboxRepository;
     }
 
-    public TotalCountResponse getTotalCount() {
+    public RedboxStatsResponse getRedboxStats() {
+        // Redbox 테이블의 totalCount 필드에서 누적 개수를 가져옵니다.
         Redbox redbox = redboxRepository.findById(1L)
-                .orElseThrow(RedboxNotFoundException::new); // RedboxNotFoundException 사용
+                .orElseThrow(RedboxNotFoundException::new);
 
-        return new TotalCountResponse(redbox.getTotalCount());
-    }
+        int totalDonatedCards = redbox.getTotalCount();
 
-    public long getReceivedPatientsCount() {
-        // "레드박스로부터 받음" 테이블의 행 수를 조회
-        return donationGroupRepository.countByDonorId(0L);
+        // 도움받은 환자 수를 DonationGroup 테이블에서 계산합니다.
+        Integer helpedPatients = donationGroupRepository.getHelpedPatientsCount();
+        helpedPatients = (helpedPatients != null) ? helpedPatients : 0;
+
+        return new RedboxStatsResponse(totalDonatedCards, helpedPatients);
     }
 
     @Override

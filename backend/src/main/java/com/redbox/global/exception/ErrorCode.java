@@ -61,7 +61,10 @@ public enum ErrorCode {
 
     // 기부
     NOT_FOUND_DONATION_TYPE(HttpStatus.NOT_FOUND, "기부 타입을 찾을 수 없습니다."),
-    INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다.");
+    INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다."),
+
+    // 기부 통계 관련 에러코드
+    STATS_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "기부 통계 계산 중 오류가 발생했습니다.");
     private final HttpStatus status;
     private final String message;
 }
