@@ -8,6 +8,7 @@ import com.redbox.domain.user.exception.DuplicateEmailException;
 import com.redbox.domain.user.exception.EmailNotVerifiedException;
 import com.redbox.domain.user.exception.PasswordNotMatchException;
 import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.PasswordMismatchException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.global.entity.PageResponse;
@@ -168,9 +169,25 @@ public class UserService {
         if (updateRequest.getDetailAddress() != null) {
             user.changeDetailAddress(updateRequest.getDetailAddress());
         }
-
+      
         userRepository.save(user);
         return new UserInfoResponse(user);
+    }
+
+    // 비밀 번호 일치 여부 확인 로직
+    @Transactional
+    public void dropUser(DropInfoRequest request) {
+
+        // 현재 로그인한 사용자 조회
+        User currentUser = getCurrentUser();
+
+        // 입력받은 비밀번호와 현재 사용자의 비밀번호 비교
+        if (!passwordEncoder.matches(request.getPassword(), currentUser.getPassword())) {
+            throw new PasswordMismatchException();
+        }
+
+        currentUser.inactive();
+        userRepository.save(currentUser);
     }
   
     @Transactional

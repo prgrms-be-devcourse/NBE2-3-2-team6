@@ -3,6 +3,7 @@ package com.redbox.domain.user.controller;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
@@ -58,6 +59,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/auth/drop-info")
+    public ResponseEntity<Void> dropUser(@RequestBody @Valid DropInfoRequest request){
+        userService.dropUser(request);
+        return ResponseEntity.ok().build();
+    }
+  
     @GetMapping("/users/my-info")
     public UserInfoResponse getUserInfo() {
         return userService.getUserInfo();

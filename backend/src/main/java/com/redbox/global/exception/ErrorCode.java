@@ -62,6 +62,9 @@ public enum ErrorCode {
     EMAIL_OR_PASSWORD_MISSING(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 누락되었습니다."),
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
 
+    // 탈퇴 관련
+    PASSWORD_INVALID(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다"),
+
     // 토큰
     TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "Refresh 토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
