@@ -10,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 public interface DonationGroupRepository extends JpaRepository<DonationGroup, Long> {
 
     long countByDonorId(Long donorId);
@@ -36,5 +39,8 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "LEFT JOIN User u ON d.receiverId = u.id " +
             "WHERE d.receiverId = :receiverId")
     Page<ReceptionResponse> findAllWithDonorNameByReceiverId(Long receiverId, Pageable pageable);
+
+    @Query("SELECT MAX(d.donationDate) FROM DonationGroup d WHERE d.donorId = :userId")
+    Optional<LocalDate> findLastDonationDateByDonorId(@Param("userId") Long userId);
 
 }
