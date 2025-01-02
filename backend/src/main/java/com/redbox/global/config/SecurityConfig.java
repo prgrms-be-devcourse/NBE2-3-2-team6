@@ -61,11 +61,17 @@ public class SecurityConfig {
                     // .requestMatchers("/auth/email/**").permitAll()
                     // 회원가입, 로그인 관련 엔드포인트 허용
                     // .requestMatchers("/community/request/write").permitAll()
-                    // 회원가입, 이메일, 로그인 관련 엔드포인트 허용
-                    // .requestMatchers("/auth/**").permitAll()
                     // 헌혈기사 목록 조회만 엔드포인트 허용
                     //.requestMatchers(HttpMethod.GET, "/articles").permitAll()
                     //.anyRequest().authenticated()
+                        // 회원가입, 이메일, 로그인 관련 엔드포인트 허용
+                        .requestMatchers("/auth/**").permitAll()
+                        // 헌혈기사 목록 조회만 엔드포인트 허용
+                        .requestMatchers(HttpMethod.GET, "/articles").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/redbox/stats").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/my-donation-stats").authenticated()
+                        .anyRequest().authenticated()
+
                 )
                 .formLogin(auth -> auth.disable())
                 .logout(auth -> auth.disable())

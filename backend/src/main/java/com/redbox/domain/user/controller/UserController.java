@@ -90,4 +90,20 @@ public class UserController {
         redCardService.updateRedcardStatus(request, redcardId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/users/my-info/redcards/donations")
+    public ResponseEntity<PageResponse<DonationResponse>> getDonations(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(userService.getDonations(page, size));
+    }
+
+    @GetMapping("/users/my-info/redcards/receipts")
+    public ResponseEntity<PageResponse<ReceptionResponse>> getReceptions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(userService.getReceptions(page, size));
+    }
 }

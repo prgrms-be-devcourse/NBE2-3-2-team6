@@ -68,7 +68,7 @@ class RedcardServiceTest {
 
         return user;
     }
-    
+
     @DisplayName("로그인한 사용자가 헌혈증 등록을 성공한다.")
     @Test
     void registerRedcardSuccessful() throws Exception {
@@ -82,7 +82,7 @@ class RedcardServiceTest {
 
         //when
         redcardService.registerRedCard(request);
-        
+
         //then
         Redcard savedRedcard = redcardRepository.findBySerialNumber(request.getCardNumber())
                 .orElseThrow();
@@ -93,7 +93,7 @@ class RedcardServiceTest {
         assertThat(savedRedcard.getHospitalName()).isEqualTo(request.getHospitalName());
         assertThat(savedRedcard.getRedcardStatus()).isEqualTo(RedcardStatus.AVAILABLE);
     }
-    
+
     @DisplayName("헌혈증 등록시 이미 등록된 헌혈증 번호이면 예외가 발생한다.")
     @Test
     void registerRedcardWithDuplicateSerialNumberThrowException() throws Exception {
