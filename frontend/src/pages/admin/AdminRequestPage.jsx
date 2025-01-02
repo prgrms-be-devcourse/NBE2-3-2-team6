@@ -22,8 +22,6 @@ const AdminRequestPage = () => {
   const fetchData = async (page, size, status, option, start, end) => {
     try {
 
-      const url = "http://localhost:8080/requests"
-
       const statusMap = {
         "최신순": "NEW",
         "만료순": "END",
@@ -35,18 +33,12 @@ const AdminRequestPage = () => {
         "관심글" : "LIKED",
       }
 
-      const params = {
-        page: page,
-        size: size,
-        sort: statusMap[status] || "NEW",
-        option: optionMap[option] || "",
-        startDate: start || "",
-        endDate: end || "",
-      }
-      const response = await axios.get(url, {params});
+      const url = `/requests?page=${page}&size=${size}&sort=${statusMap[status]}&option=${optionMap[option]}&startDate=${start}&endDate=${end}`;
+      const response = await api.get(url);
 
       if (response.status === 200) {
-        if (response.data) {
+        if (response) {
+
           setContent(response.data.content);
           setTotalPages(response.data.totalPages);
           setTotalElements(response.data.totalElements);
@@ -113,10 +105,6 @@ const AdminRequestPage = () => {
 
   // 필터 버튼 클릭 시
   const handleFilterClick = () => {
-    console.log("옵션:", selectedOption);
-    console.log("시작 날짜:", startDate || "전체");
-    console.log("종료 날짜:", endDate || "전체");
-
     fetchData(1, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate); // 필터링된 데이터 로드
     setPage(1);
   };
