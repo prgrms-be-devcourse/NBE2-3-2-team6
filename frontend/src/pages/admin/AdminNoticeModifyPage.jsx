@@ -209,7 +209,7 @@ const AdminNoticeModifyPage = () => {
 
             <div className="mt-6 flex justify-end space-x-2">
               <button
-                onClick={() => navigate(`/admin/notice/${id}`)}
+                onClick={() => navigate(`/admin/community/notice/${id}`)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
                 취소

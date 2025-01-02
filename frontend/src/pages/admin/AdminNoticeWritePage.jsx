@@ -62,7 +62,7 @@ const AdminNoticeWritePage = () => {
 
       if (response.status === 201) {
         alert("작성되었습니다");
-        navigate(`/admin/notice/${response.data.noticeNo}`);
+        navigate(`/admin/community/notice/${response.data.noticeNo}`);
       }
     } catch (error) {
       console.error("Error saving post:", error);
