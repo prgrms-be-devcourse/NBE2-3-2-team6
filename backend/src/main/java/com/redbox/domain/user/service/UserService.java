@@ -174,5 +174,12 @@ public class UserService {
         User user = getCurrentUser();
         user.changePassword(encodePassword(request.getPassword()));
     }
+
+    public CheckUserResponse checkUser(CheckUserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                                         .orElseThrow(UserNotFoundException::new);
+
+        return new CheckUserResponse(user.getId(), user.getName());
+    }
   
 }

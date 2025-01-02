@@ -90,4 +90,13 @@ public class UserController {
         redCardService.updateRedcardStatus(request, redcardId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/auth/email-check")
+    public ResponseEntity<CheckUserResponse> checkUserByEmail(
+            @RequestBody CheckUserRequest request) {
+        CheckUserResponse response = userService.checkUser(request);
+
+        return ResponseEntity.ok(response);
+    }
+
 }
