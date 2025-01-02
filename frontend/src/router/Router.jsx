@@ -27,7 +27,9 @@ import HistoryPage from "../pages/mypage/HistoryPage";
 import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
+
 import RequestDetailPage from "../pages/community/RequestDetailPage";
+import RequestModifyPage from "../pages/community/RequestModifyPage"
 import AdminNoticeModifyPage from "../pages/admin/AdminNoticeModifyPage";
 import { decodeJWT } from "../lib/axios";
 
@@ -72,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "/community/request/write",
         element: <RequestWritePage />,
+      },
+      {
+        path: "/community/request/modify/:id",
+        element: <RequestModifyPage/>
       },
       {
         path: "/community/article",
