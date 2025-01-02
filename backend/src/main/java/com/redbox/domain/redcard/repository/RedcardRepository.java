@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,7 +14,9 @@ public interface RedcardRepository extends JpaRepository<Redcard, Long> {
 
     Optional<Redcard> findBySerialNumber(String serialNumber);
 
-    Page<Redcard> findByUserId(Long userId, Pageable pageable);
+    Page<Redcard> findAllByUserId(Long userId, Pageable pageable);
+
+    List<Redcard> findByUserId(Long userId);
 
     Optional<Redcard> findByUserIdAndId(Long userId, Long id);
 }
