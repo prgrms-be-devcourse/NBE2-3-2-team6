@@ -19,6 +19,9 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
 
     @Query("SELECT COUNT(DISTINCT d.receiverId) FROM DonationGroup d WHERE d.donorId = :donorId AND d.receiverId != :redboxId")
     Integer countDistinctReceiverIdByDonorIdAndReceiverIdNot(@Param("donorId") Long donorId, @Param("redboxId") Long redboxId);
+  
+    @Query("SELECT COUNT(DISTINCT d.receiverId) FROM DonationGroup d WHERE d.donorId = 0 AND d.receiverId != 0")
+    Integer getHelpedPatientsCount();
 
     @Query("SELECT new com.redbox.domain.user.dto.DonationResponse(d, " +
             "CASE WHEN d.receiverId = 0 THEN '레드박스' ELSE u.name END) " +
@@ -33,4 +36,5 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "LEFT JOIN User u ON d.receiverId = u.id " +
             "WHERE d.receiverId = :receiverId")
     Page<ReceptionResponse> findAllWithDonorNameByReceiverId(Long receiverId, Pageable pageable);
+
 }

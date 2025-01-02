@@ -40,9 +40,7 @@ public class DonationController {
     @GetMapping("/users/my-donation-stats")
     public ResponseEntity<MyDonationStatsResponse> getMyDonationStats() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUserId();
+        Long userId = donationStatsService.getCurrentUserId();
 
         // 기부 통계 조회
         int totalDonatedCards = donationStatsService.getTotalDonatedCards(userId);
