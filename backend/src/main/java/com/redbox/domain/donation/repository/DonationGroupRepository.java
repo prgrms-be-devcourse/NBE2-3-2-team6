@@ -16,4 +16,6 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
     @Query("SELECT COUNT(DISTINCT d.receiverId) FROM DonationGroup d WHERE d.donorId = :donorId AND d.receiverId != :redboxId")
     Integer countDistinctReceiverIdByDonorIdAndReceiverIdNot(@Param("donorId") Long donorId, @Param("redboxId") Long redboxId);
 
+    @Query("SELECT COUNT(DISTINCT d.receiverId) FROM DonationGroup d WHERE d.donorId = 0 AND d.receiverId != 0")
+    Integer getHelpedPatientsCount();
 }
