@@ -1,6 +1,7 @@
 package com.redbox.domain.donation.application;
 
 import com.redbox.domain.donation.dto.DonationRequest;
+import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
@@ -31,21 +32,21 @@ public class UserDonationService extends AbstractDonationService {
     @Override
     public void processDonation(DonationRequest donationRequest) {
         // user 에게 기부
-        int donationCount = donationRequest.getAmount();
+        int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getUserId();
         validateReceiver(receiverId);
         long donorId = userService.getCurrentUserId();
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         redcardService.updateRedCardList(redcardList, receiverId);
-        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
+        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getComment());
         Long donationGroupId = userDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
     }
 
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
-        checkDonateAmount(redcardList, donationRequest.getAmount());
+        checkDonateAmount(redcardList, donationRequest.getQuantity());
         validateReceiver(donationRequest.getUserId());
     }
 
@@ -55,4 +56,9 @@ public class UserDonationService extends AbstractDonationService {
             throw new UserNotFoundException();
         }
     }
+
+    public List<Top5DonorResponse> getTop5Donor() {
+        return donationGroupRepository.findTop5DonorsOfTheMonth();
+    }
+
 }

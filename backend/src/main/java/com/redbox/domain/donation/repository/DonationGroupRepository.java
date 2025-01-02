@@ -1,5 +1,6 @@
 package com.redbox.domain.donation.repository;
 
+import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
 
 import com.redbox.domain.user.dto.DonationResponse;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
 public interface DonationGroupRepository extends JpaRepository<DonationGroup, Long> {
 
@@ -42,5 +44,18 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
 
     @Query("SELECT MAX(d.donationDate) FROM DonationGroup d WHERE d.donorId = :userId")
     Optional<LocalDate> findLastDonationDateByDonorId(@Param("userId") Long userId);
+  
+    @Query("SELECT new com.redbox.domain.donation.dto.Top5DonorResponse(" +
+            "RANK() OVER (ORDER BY SUM(dg.donationAmount) DESC), " +
+            "dg.donorId, u.name, SUM(dg.donationAmount)) " +
+            "FROM DonationGroup dg " +
+            "LEFT JOIN User u ON dg.donorId = u.id " +
+            "WHERE dg.donorId != 0 " +
+            "AND MONTH(dg.donationDate) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(dg.donationDate) = YEAR(CURRENT_DATE) " +
+            "GROUP BY dg.donorId, u.name " +
+            "ORDER BY SUM(dg.donationAmount) DESC " +
+            "LIMIT 5")
+    List<Top5DonorResponse> findTop5DonorsOfTheMonth();
 
 }
