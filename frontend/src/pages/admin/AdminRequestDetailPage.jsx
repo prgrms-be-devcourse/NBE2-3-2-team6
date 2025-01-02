@@ -55,9 +55,8 @@ const AdminRequestDetailPage = () => {
     }
 
     try {
-      console.log(url + "/like");
 
-      const response = await api.post(url); // 좋아요 요청 API 호출
+      const response = await api.post(url + '/like'); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
         console.log("200 OK 좋아요 업데이트")
