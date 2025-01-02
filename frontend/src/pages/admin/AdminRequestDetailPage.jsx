@@ -1,4 +1,4 @@
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import api from "../../lib/axios";
 import { ThumbsUp } from 'lucide-react';
 import { HandHeart } from 'lucide-react';
