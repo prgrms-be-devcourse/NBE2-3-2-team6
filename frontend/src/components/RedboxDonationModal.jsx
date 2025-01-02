@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Modal = ({ onSubmit, onClose }) => {
+const Modal = ({onSubmit, onClose }) => {
   const [quantity, setQuantity] = useState("");
   const [comment, setComment] = useState("");
   const handleSubmit = () => {
