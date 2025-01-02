@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
+import api from "../../lib/axios";
+import { formatDate } from "../../utils/dateUtils";
 
 const DonationListPage = () => {
   const [activeTab, setActiveTab] = useState("donation");
@@ -21,15 +23,22 @@ const DonationListPage = () => {
   ];
 
   // API 호출 함수
-  const fetchData = async (tabType, pageNum) => {
+  const fetchData = async (tabType, page) => {
     setIsLoading(true);
     try {
-      // API 호출 로직
-      const response = await fetch(
-        ""
-        // `/api/donations?type=${tabType}&page=${pageNum}&size=${size}`
-      );
-      const data = await response.json();
+      const endpoint =
+        tabType === "donation"
+          ? "/users/my-info/redcards/donations"
+          : "/users/my-info/redcards/receipts";
+
+      const response = await api.get(endpoint, {
+        params: {
+          page: page,
+          size,
+        },
+      });
+
+      const data = response.data;
 
       setContent(data.content);
       setTotalPages(data.totalPages);
@@ -101,48 +110,49 @@ const DonationListPage = () => {
               </div>
             </div>
 
-            {/* 게시판 리스트 */}
-            <div className="border rounded-lg">
-              <div className="flex bg-gray-50 py-3 border-b">
-                <div className="w-16 text-center text-sm font-medium text-gray-500">
-                  번호
-                </div>
-                <div className="flex-1 px-6 text-sm font-medium text-gray-500">
-                  제목
-                </div>
-                <div className="w-24 text-center text-sm font-medium text-gray-500">
-                  작성일
-                </div>
-                <div className="w-20 text-center text-sm font-medium text-gray-500">
-                  조회수
-                </div>
-              </div>
-
-              {/* 로딩 상태 및 데이터 표시 */}
-              {isLoading ? (
-                <div className="py-4 text-center">로딩 중...</div>
-              ) : (
-                <div className="divide-y">
-                  {content.map((data) => (
-                    <div
-                      key={data.id}
-                      className="flex items-center py-3 hover:bg-gray-50"
-                    >
-                      <div className="w-16 text-center text-sm text-gray-500">
-                        {data.id}
+            {/* 카드 리스트로 변경 */}
+            {isLoading ? (
+              <div className="py-4 text-center">로딩 중...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {content.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <span className="text-sm text-gray-500">
+                          {activeTab === "donation" ? "받는 분" : "보내신 분"}
+                        </span>
+                        <p className="font-medium">
+                          {activeTab === "donation"
+                            ? item.receiverName
+                            : item.donorName}
+                        </p>
                       </div>
-                      <div className="flex-1 px-6">{data.title}</div>
-                      <div className="w-24 text-center text-sm text-gray-500">
-                        {data.date}
-                      </div>
-                      <div className="w-20 text-center text-sm text-gray-500">
-                        {data.views}
+                      <div className="text-right">
+                        <span className="text-sm text-gray-500">기부 개수</span>
+                        <p className="font-medium text-red-600">
+                          {item.donationAmount.toLocaleString()}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+
+                    <div className="mb-3">
+                      <span className="text-sm text-gray-500">기부 메시지</span>
+                      <p className="mt-1 text-gray-700">
+                        {item.donationMessage}
+                      </p>
+                    </div>
+
+                    <div className="text-sm text-gray-500">
+                      {formatDate(item.donationDate)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
