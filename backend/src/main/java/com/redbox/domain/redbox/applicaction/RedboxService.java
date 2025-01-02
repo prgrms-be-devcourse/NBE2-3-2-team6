@@ -51,17 +51,21 @@ public class RedboxService extends AbstractDonationService {
     @Transactional
     public void processDonation(DonationRequest donationRequest) {
         int donationCount = donationRequest.getAmount();
-        long donationUserId = getDonationUserId();
+        long donorId = getDonationUserId();
+        long receiverId = 0L;  // Redcard의 userId 가 redbox 소유일 경우 0 으로 고정;
 
-        // Redcard의 userId 가 redbox 소유일 경우 0 으로 고정;
-        long receiverId = 0L;
-        List<Redcard> redcardList = getUsersRedCardList(donationCount); // 보유 헌혈증에서 기부할 만큼만 가져오기
+        List<Redcard> redcardList = getUsersRedCardList(donationRequest); // 보유 헌혈증에서 기부할 만큼만 가져오기
         // 헌혈증 보유자 수정
         redcardService.updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장
-        DonationGroup redboxDonationGroup = createDonationGroup(donationUserId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
+        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
+    }
+
+    @Override
+    public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
+        checkCount(redcardList, donationRequest.getAmount());
     }
 }

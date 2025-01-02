@@ -24,24 +24,20 @@ public abstract class AbstractDonationService implements DonationService {
     protected final DonationGroupRepository donationGroupRepository;
     protected final DonationDetailRepository donationDetailRepository;
 
+    public abstract void processDonation(DonationRequest donationRequest);
 
-    protected List<Redcard> getUsersRedCardList(int count) {
+    public abstract void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest);
+
+    protected List<Redcard> getUsersRedCardList(DonationRequest donationRequest) {
         Long donateUserId = userService.getCurrentUserId();
         List<Redcard> redcardList = redcardRepository.findByUserId(donateUserId);
 
-        checkCount(redcardList, count);
-
-        return redcardList.subList(0, count);
+        validateDonation(redcardList, donationRequest);
+        return redcardList.subList(0, donationRequest.getAmount());
     }
 
     protected Long getDonationUserId() {
         return userService.getCurrentUserId();
-    }
-
-    public void checkCount(List<Redcard> redcardList, int count) {
-        if (redcardList.size() < count) {
-            throw new RuntimeException("보유량 보다 많은 수의 기부를 할 수 없습니다. 보유량 : " + redcardList.size() + " 기부 요청 : " + count);
-        }
     }
 
     protected DonationGroup createDonationGroup(long donationUserId, long
@@ -69,5 +65,11 @@ public abstract class AbstractDonationService implements DonationService {
         }
     }
 
-    public abstract void processDonation(DonationRequest donationRequest);
-}
+    public void checkCount(List<Redcard> redcardList, int count) {
+        if (redcardList.size() < count) {
+            throw new RuntimeException("보유량 보다 많은 수의 기부를 할 수 없습니다. 보유량 : " + redcardList.size() + " 기부 요청 : " + count);
+        }
+    }
+
+};
+
