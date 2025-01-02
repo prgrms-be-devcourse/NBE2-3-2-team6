@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         // 헌혈기사 목록 조회만 엔드포인트 허용
                         .requestMatchers(HttpMethod.GET, "/articles").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/redbox/stats").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/my-donation-stats").authenticated()
                         .anyRequest().authenticated()
                 )
