@@ -38,9 +38,6 @@ const AdminRequestPage = () => {
                 }),
             });
 
-            // const result = await response.json();
-            // console.log("서버 응답 : ", result);
-
             if (response.ok) {
                 alert("처리 완료");
                 setCount(count+1); 
@@ -55,9 +52,6 @@ const AdminRequestPage = () => {
     // 대괄호에 있는 변수가 변할때 중괄에 있는 함수가 호출된다(트리거) 
     useEffect(() => {
         fetchData();
-        console.log("useEffect");
-        // sendData();
-        // alert("상태 바뀜");
     }, [
        count 
     ]);

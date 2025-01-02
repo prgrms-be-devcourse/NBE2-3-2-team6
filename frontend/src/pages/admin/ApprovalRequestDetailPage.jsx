@@ -5,15 +5,17 @@ import api from "../../lib/axios";
 const ApprovalRequestDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [count, setCount] = useState(0); //count 초기값 0
   const [request, setRequest] = useState(null);
   const [modal, setModal] = useState({ isOpen: false, action: "", title: "", id: id });
 
-  const url = `/requests/${id}`;
+  const url = `http://localhost:8080/admin/requests/${id}`;
+
+  //const url = `/admin/requests/${id}`;
 
   const handleFileClick = async (requestNo, fileNo) => {
     try {
       const response = await api.get(`/requests/${requestNo}/files/${fileNo}`);
-      
       // 파일 다운로드 처리
       window.location.href = response.data;
     } catch (error) {
@@ -31,44 +33,58 @@ const ApprovalRequestDetailPage = () => {
     }
   };
 
+  /// 데이터 보내기 (게시판 id, status)
+  const sendData = async(id, status) => {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                approveStatus: status,
+            }),
+        });
+
+
+        if (response.ok) {
+            alert("처리 완료");
+            setCount(count+1); 
+            navigate('/admin/approve');
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchData();
-  }, []);
-
-  /// 데이터 보내기 (게시판 id, status)
-  const sendData = async (id, status) => {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({approveStatus: status}),
-      });
-
-      if (response.ok) {
-        alert("처리 완료");
-        navigate("/admin/approve");
-      } else {
-        console.error("요청 처리 중 오류 발생", { id, status });
-      }
-    } catch (error) {
-      console.error("오류 발생: ", error);
-    }
-  };
+  }, [
+    count 
+  ]);
 
   /// 모달 핸들링
   const handleModal = (action, reqdata) => {
     setModal({ isOpen: true, action, title: reqdata.title, id: reqdata.id });
   };
 
+  /// 데이터 보내기 (게시판 id, status)
+  const handleEdit = (id) => {
+    sendData(id, '승인');
+  };
+
+  const handleDelete = (id) => {
+      sendData(id, '거절');
+  };
+
   const confirmAction = () => {
-    if (modal.action === "승인") {
-      sendData(modal.id, "승인");
-    } else if (modal.action === "거절") {
-      sendData(modal.id, "거절");
+    if (modal.action === '승인') {
+        handleEdit(modal.id);
+    } else if (modal.action === '거절') {
+        handleDelete(modal.id);
     }
-    setModal({ isOpen: false, action: "", title: "", id: null });
+    setModal({ isOpen: false, action: '', title: '', id: null });
   };
 
   return (
