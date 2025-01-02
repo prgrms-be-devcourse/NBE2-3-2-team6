@@ -60,6 +60,9 @@ public class RedboxService extends AbstractDonationService {
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
+        // 레드박스 보유량 수정
+        Redbox redbox = redboxRepository.findById(1L).orElseThrow(RedboxNotFoundException::new);
+        redbox.addCount(redcardList.size());
     }
 
     @Override
