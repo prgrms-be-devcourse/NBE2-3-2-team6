@@ -7,6 +7,13 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+
+    // 요청 게시판 관련
+    FAIL_TO_FIND_REQUEST(HttpStatus.NOT_FOUND,"해당 게시판을 찾을 수 없습니다."),
+
+    // 현재 로그인한 회원 찾기
+    FAIL_TO_FIND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),
+  
     // 레드카드 관련
     DUPLICATE_SERIAL_NUMBER(HttpStatus.BAD_REQUEST, "이미 등록된 헌혈증입니다."),
     NOT_BELONG_TO_REDCARD(HttpStatus.BAD_REQUEST, "자신이 소유한 헌혈증이 아닙니다."),
@@ -33,6 +40,12 @@ public enum ErrorCode {
     FAIL_TO_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생했습니다."),
     EMAIL_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 메시지 생성 중 오류가 발생했습니다."),
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생했습니다."),
+
+    // 수정 권한 확인
+    FAIL_TO_ACCESS(HttpStatus.FORBIDDEN, "수정 권한이 없습니다"),
+
+    // 관리자 승인 요청 게시글
+    FAIL_TO_APPROVAL_STATUS(HttpStatus.NOT_FOUND, "해당 승인 상태값이 존재하지 않습니다"),
 
     // 비밀번호 관련 에러
     EMPTY_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 비어있을 수 없습니다."),
