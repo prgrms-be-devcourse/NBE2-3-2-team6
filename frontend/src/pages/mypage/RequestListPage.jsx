@@ -1,44 +1,44 @@
-import { useEffect, useState } from "react";
-import api from "../../lib/axios";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import { Link, useNavigate } from "react-router-dom";
-import { formatDate } from "../../utils/dateUtils";
+import api from "../../lib/axios";
+import { useEffect, useState } from "react";
+import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
-const NoticePage = () => {
+const RequestListPage = () => {
   const navigate = useNavigate();
   // 페이지네이션 상태 관리
   const size = 10;
   const [page, setPage] = useState(1);
-  const [data, setData] = useState({ notices: [] });
+  const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-
-  useEffect(() => {
-    fetchBoards(page, size);
-  }, [page, size]);
-
-  const fetchBoards = async (page, size) => {
-    try {
-      const response = await api.get("/notices", {
-        params: {
-          page: page,
-          size,
-        },
-      });
-
-      setData({ notices: response.data.content }); // content를 notices 배열로 설정
-      setTotalPages(response.data.totalPages);
-      setTotalElements(response.data.totalElements);
-    } catch (error) {
-      console.error("Error fetching boards:", error);
-    }
-  };
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
   const currentGroup = Math.floor((page - 1) / PAGE_GROUP_SIZE);
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
+
+  const fetchBoards = async (page, size) => {
+    try {
+      const response = await api.get("/mypage/requests", {
+        params: {
+          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
+          size,
+        },
+      });
+
+      const { content, totalPages, totalElements } = response.data;
+      setContent(content);
+      setTotalPages(totalPages);
+      setTotalElements(totalElements);
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBoards(page, size);
+  }, [page, size]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -61,59 +61,75 @@ const NoticePage = () => {
     }
   };
 
+  const handleRequestWrite = () => {
+    navigate("/community/request/write");
+  };
+
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
-        <CommunitySideBar />
+        {/* 사이드바 */}
+        <MyPageSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
-            <h1 className="text-2xl font-bold mb-6">공지사항</h1>
+            <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
+
+            {/* 게시판 리스트 */}
             <div className="border rounded-lg">
+              {/* 헤더 */}
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-16 text-center text-sm font-medium text-gray-500">
                   번호
                 </div>
-                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  상태
+                </div>
+                <div className="flex-1 px-6 text-sm font-medium text-gray-500">
                   제목
                 </div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">
                   작성일
                 </div>
+                <div className="w-24 text-center text-sm font-medium text-gray-500">
+                  좋아요수
+                </div>
                 <div className="w-20 text-center text-sm font-medium text-gray-500">
                   조회수
                 </div>
               </div>
+
+              {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {data.notices.length > 0 ? (
-                  data.notices.map((notice) => (
-                    <div
-                      key={notice.noticeNo} // id 대신 noticeNo 사용
-                      className="flex items-center py-3 hover:bg-gray-50"
-                    >
-                      <div className="w-16 text-center text-sm text-gray-500">
-                        {notice.noticeNo}
-                      </div>
-                      <div className="flex-1 px-6">
-                        <Link
-                          to={`/community/notice/${notice.noticeNo}`}
-                          className="text-gray-900 hover:text-red-600"
-                        >
-                          {notice.title}
-                        </Link>
-                      </div>
-                      <div className="w-24 text-center text-sm text-gray-500">
-                        {formatDate(notice.createdDate)}
-                      </div>
-                      <div className="w-20 text-center text-sm text-gray-500">
-                        {notice.views}
-                      </div>
+                {content?.map((request) => (
+                  <div
+                    key={request.id}
+                    className="flex items-center py-3 hover:bg-gray-50"
+                  >
+                    <div className="w-16 text-center text-sm text-gray-500">
+                      {request.id}
                     </div>
-                  ))
-                ) : (
-                  <div className="flex justify-center items-center py-20 text-gray-500">
-                    등록된 공지사항이 없습니다.
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.status}
+                    </div>
+                    <div className="flex-1 px-6">
+                      <Link
+                        to={`/community/request/${request.id}`}
+                        className="text-gray-900 hover:text-red-600"
+                      >
+                        {request.title}
+                      </Link>
+                    </div>
+                    <div className="w-24 text-center text-sm text-gray-500">
+                      {new Date(request.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.likes}
+                    </div>
+                    <div className="w-20 text-center text-sm text-gray-500">
+                      {request.views}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
 
@@ -158,6 +174,12 @@ const NoticePage = () => {
                     다음
                   </button>
                 </nav>
+                <button
+                  onClick={handleRequestWrite}
+                  className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                >
+                  글쓰기
+                </button>
               </div>
 
               {/* 전체 페이지 정보 */}
@@ -172,4 +194,4 @@ const NoticePage = () => {
   );
 };
 
-export default NoticePage;
+export default RequestListPage;

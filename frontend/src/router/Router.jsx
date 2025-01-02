@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
@@ -10,6 +10,7 @@ import AuthLayout from "../layout/AuthLayout";
 import NoticeDetailPage from "../pages/community/NoticeDetailPage";
 import RequestWritePage from "../pages/community/RequestWritePage";
 import DonatePage from "../pages/DonatePage";
+import CenterFindPage from "../pages/center/CenterFindPage";
 import AdminPage from "../pages/admin/AdminPage";
 import AdminRequestPage from "../pages/admin/AdminRequestPage";
 import AdminLayout from "../layout/AdminLayout";
@@ -20,6 +21,27 @@ import AdminNoticeDetailPage from "../pages/admin/AdminNoticeDetailPage";
 import AdminRequestDetailPage from "../pages/admin/AdminRequestDetailPage";
 import AdminNoticeWritePage from "../pages/admin/AdminNoticeWritePage";
 import ApprovalRequestDetailPage from "../pages/admin/ApprovalRequestDetailPage";
+import DashboardPage from "../pages/mypage/DashboardPage";
+import RedcardPage from "../pages/mypage/RedcardPage";
+import ProfilePage from "../pages/mypage/ProfilePage";
+import HistoryPage from "../pages/mypage/HistoryPage";
+import RequestListPage from "../pages/mypage/RequestListPage";
+import FindAccountPage from "../pages/FindAccountPage";
+import FindResultPage from "../pages/FindResultPage";
+import RequestDetailPage from "../pages/community/RequestDetailPage";
+import RequestModifyPage from "../pages/community/RequestModifyPage"
+import AdminNoticeModifyPage from "../pages/admin/AdminNoticeModifyPage";
+import { decodeJWT } from "../lib/axios";
+
+const requireAdmin = () => {
+  const token = localStorage.getItem("accessToken");
+  const decodedToken = token ? decodeJWT(token) : null;
+
+  if (decodedToken?.role !== "ROLE_ADMIN") {
+    return redirect("/");
+  }
+  return null;
+};
 
 const router = createBrowserRouter([
   {
@@ -46,12 +68,44 @@ const router = createBrowserRouter([
         element: <RequestPage />,
       },
       {
+        path: "/community/request/:id",
+        element: <RequestDetailPage />,
+      },
+      {
         path: "/community/request/write",
         element: <RequestWritePage />,
       },
       {
+        path: "/community/request/modify/:id",
+        element: <RequestModifyPage/>
+      },
+      {
         path: "/community/article",
         element: <ArticlePage />,
+      },
+      {
+        path: "/center",
+        element: <CenterFindPage />,
+      },
+      {
+        path: "/mypage/dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/mypage/redcard",
+        element: <RedcardPage />,
+      },
+      {
+        path: "/mypage/profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/mypage/request",
+        element: <RequestListPage />,
+      },
+      {
+        path: "/mypage/history",
+        element: <HistoryPage />,
       },
     ],
   },
@@ -66,49 +120,62 @@ const router = createBrowserRouter([
         path: "/signup",
         element: <SignupPage />,
       },
+      {
+        path: "/find/account",
+        element: <FindAccountPage />,
+      },
+      {
+        path: "/find/result",
+        element: <FindResultPage />,
+      },
     ],
   },
   {
     element: <AdminLayout />,
+    loader: requireAdmin,
     children: [
       {
         path: "/admin",
-        element: <AdminPage/>,
+        element: <AdminPage />,
       },
       {
         path: "/admin/community/request",
-        element: <AdminRequestPage/>,
+        element: <AdminRequestPage />,
       },
       {
         path: "/admin/community/article",
-        element: <AdminArticlePage/>,
+        element: <AdminArticlePage />,
       },
       {
         path: "/admin/community/notice",
-        element: <AdminNoticePage/>,
+        element: <AdminNoticePage />,
       },
       {
         path: "/admin/approve",
-        element: <ApprovalRequestPage/>,
+        element: <ApprovalRequestPage />,
       },
       {
         path: "/admin/approve/:id",
         element: <ApprovalRequestDetailPage/>,
       },
       {
-        path: "admin/community/notice/:id",
+        path: "/admin/community/notice/:id",
         element: <AdminNoticeDetailPage />,
       },
       {
-        path: "admin/community/notice/write",
+        path: "/admin/community/notice/modify/:id",
+        element: <AdminNoticeModifyPage />,
+      },
+      {
+        path: "/admin/community/notice/write",
         element: <AdminNoticeWritePage />,
       },
       {
-        path: "admin/community/request/:id",
+        path: "/admin/community/request/:id",
         element: <AdminRequestDetailPage />,
       },
     ],
-  }
+  },
 ]);
 
 export default router;

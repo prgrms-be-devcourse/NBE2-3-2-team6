@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import AdminSideBar from "../../components/wrapper/AdminSidebar";
 import api from "../../lib/axios";
 import { ThumbsUp } from 'lucide-react';
 import { HandHeart } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import RedboxDonationModal from "../../components/RedboxDonationModal";
 
 const AdminRequestDetailPage = () => {
@@ -90,22 +90,21 @@ const AdminRequestDetailPage = () => {
      console.error("기부 오류:", error);
      alert("기부 요청 실패");
    }
-
-   setIsRedboxModalOpen(false);
- };
+    setIsRedboxModalOpen(false);
+  };
 
  const handleDeleteBtn = async() => {
    try{
        const response = await api.post(url);
 
-       if(response.ok) {
-           alert(response.data.message);
-           //TODO: 삭제 성공시 목록으로 가기
-       }
-   } catch(error) {
-       console.log("err");
-   }  
- };
+      if (response.ok) {
+        alert(response.data.message);
+        //TODO: 삭제 성공시 목록으로 가기
+      }
+    } catch (error) {
+      console.log("err");
+    }
+  };
 
  return (
    <div className="flex-1 bg-gray-50">
@@ -208,14 +207,14 @@ const AdminRequestDetailPage = () => {
        </div>
      </div>
 
-     {isRedboxModalOpen && (
-       <RedboxDonationModal
-         onClose={() => setIsRedboxModalOpen(false)}
-         onSubmit={handleDonate}
-       />
-     )}
-   </div>
- );
+      {isRedboxModalOpen && (
+        <RedboxDonationModal
+          onClose={() => setIsRedboxModalOpen(false)}
+          onSubmit={handleDonate}
+        />
+      )}
+    </div>
+  );
 };
 
 export default AdminRequestDetailPage;

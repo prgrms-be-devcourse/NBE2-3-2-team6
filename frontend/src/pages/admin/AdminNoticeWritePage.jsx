@@ -4,16 +4,14 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import AdminSideBar from "../../components/wrapper/AdminSideBar";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const AdminNoticeWritePage = () => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
-  const [attachFile, setAttachFile] = useState("선택된 파일 없음");
-
-  // const url = "https://2c065562-04c8-4d72-8c5a-4e4289daa4b5.mock.pstmn.io/admin/notice/write"
+  const [attachFiles, setAttachFiles] = useState([]);
 
   const handleTitleInput = (e) => {
     setTitle(e.target.value);
@@ -23,50 +21,49 @@ const AdminNoticeWritePage = () => {
     fileInputRef.current?.click();
   };
 
+  // 파일 처리 함수 수정
   const handleAttachFileInput = (e) => {
-    const file = e.target.files[0]; // 선택한 파일 가져오기
-    setAttachFile(file ? file.name : "선택된 파일 없음");
+    const files = Array.from(e.target.files);
+    setAttachFiles((prev) => [...prev, ...files]);
+  };
+
+  // 파일 삭제 함수 추가
+  const handleFileDelete = (index) => {
+    setAttachFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSaveButton = async () => {
     try {
       const content = editorRef.current?.getInstance().getHTML();
-      const file = fileInputRef.current?.files[0];
 
       if (!title || !content) {
         alert("제목과 내용을 입력해주세요");
         return;
       }
 
-      // FormData 생성 
       const formData = new FormData();
-      formData.append("title", title);
-      formData.append("content", content);
-      if (file) {
-        formData.append("file", file);
-      }
+      const request = {
+        title: title,
+        content: content,
+      };
 
-      // FormData 내용 확인
-    //   for (const [key, value] of formData.entries()) {
-    //     console.log("FormData 내용 확인")
-    //     console.log(key, value);
-    //   }
+      formData.append(
+        "request",
+        new Blob([JSON.stringify(request)], {
+          type: "application/json",
+        })
+      );
 
-      // API 호출
-      // TODO : formdata로 제목, 내용, 파일을 다 넣었음(erd에서는 구분되어 있음)
-      const response = await axios.post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      attachFiles.forEach((file) => {
+        formData.append("files", file);
       });
 
-      if (response.status === 200) {
-        alert("작성되었습니다");
-        navigate("/admin/community/notice");
-      } else {
-        console.log(error);
-      }
+      const response = await api.post("/notices", formData);
 
+      if (response.status === 201) {
+        alert("작성되었습니다");
+        navigate(`/admin/community/notice/${response.data.noticeNo}`);
+      }
     } catch (error) {
       console.error("Error saving post:", error);
     }
@@ -101,23 +98,48 @@ const AdminNoticeWritePage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 첨부파일
               </label>
-              <div className="flex items-center">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  accept="image/*,.pdf,.doc,.docx"
-                  onChange={handleAttachFileInput}
-                />
-                <button
-                  onClick={handleFileButton}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-                >
-                  파일 선택
-                </button>
-                <span className="ml-3 text-sm text-gray-500">
-                  {attachFile}
-                </span>
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*,.pdf,.doc,.docx"
+                    onChange={handleAttachFileInput}
+                    multiple
+                  />
+                  <button
+                    onClick={handleFileButton}
+                    className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  >
+                    파일 선택
+                  </button>
+                  {attachFiles.length === 0 && (
+                    <span className="ml-3 text-sm text-gray-500">
+                      선택된 파일 없음
+                    </span>
+                  )}
+                </div>
+                {attachFiles.length > 0 && (
+                  <div className="space-y-1 mt-2">
+                    {attachFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                      >
+                        <span className="text-sm text-gray-600">
+                          {file.name}
+                        </span>
+                        <button
+                          onClick={() => handleFileDelete(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

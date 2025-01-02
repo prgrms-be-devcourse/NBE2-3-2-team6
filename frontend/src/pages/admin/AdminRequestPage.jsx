@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../lib/axios";
 import { useEffect, useState } from "react";
-import AdminSideBar from "../../components/wrapper/AdminSidebar";
-import { Search } from 'lucide-react';
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
+import { Search } from "lucide-react";
 
 const AdminRequestPage = () => {
-
   const PAGE_SIZE = 10;
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -22,6 +21,7 @@ const AdminRequestPage = () => {
   // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
   const fetchData = async (page, size, status, option, start, end) => {
     try {
+
       const url = "http://localhost:8080/requests"
 
       const statusMap = {
@@ -53,7 +53,7 @@ const AdminRequestPage = () => {
         } else {
           setContent([]);
         }
-      }   
+      }
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생: ", error);
       setContent([]);
@@ -62,7 +62,14 @@ const AdminRequestPage = () => {
 
   // 기본 데이터 로드
   useEffect(() => {
-    fetchData(page, PAGE_SIZE, selectedStatus, selectedOption, startDate, endDate);
+    fetchData(
+      page,
+      PAGE_SIZE,
+      selectedStatus,
+      selectedOption,
+      startDate,
+      endDate
+    );
   }, [page, selectedStatus, selectedOption, startDate, endDate]);
 
   // 현재 페이지 그룹 계산을 위한 상수
@@ -106,7 +113,6 @@ const AdminRequestPage = () => {
 
   // 필터 버튼 클릭 시
   const handleFilterClick = () => {
-
     console.log("옵션:", selectedOption);
     console.log("시작 날짜:", startDate || "전체");
     console.log("종료 날짜:", endDate || "전체");
@@ -152,20 +158,24 @@ const AdminRequestPage = () => {
                 <div className="flex items-center space-x-4">
                   {/* 옵션 선택 */}
                   <div className="w-[230px] border p-1 rounded text-center">
-                    <label htmlFor="dropdown" className="me-2" style={{ fontSize: "15px", fontWeight: "bold" }} >
-                      옵션 선택 
+                    <label
+                      htmlFor="dropdown"
+                      className="me-2"
+                      style={{ fontSize: "15px", fontWeight: "bold" }}
+                    >
+                      옵션 선택
                     </label>
                     <select
                       id="dropdown"
                       className="form-select"
                       value={selectedOption}
                       onChange={(e) => setSelectedOption(e.target.value)}
-                      style={{ 
+                      style={{
                         width: "110px",
                         fontSize: "15px", // 글씨 크기 조정
                         textAlignLast: "center", // 드롭다운 화살표 오른쪽 정렬 유지
                         padding: "5px", // 패딩 조정
-                       }}
+                      }}
                     >
                       <option value="" disabled>
                         선택
@@ -193,7 +203,7 @@ const AdminRequestPage = () => {
                       type="date"
                       id="endDate"
                       className="form-control me-3"
-                      style={{ width: "120px", fontSize: "15px"  }}
+                      style={{ width: "120px", fontSize: "15px" }}
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
@@ -205,13 +215,12 @@ const AdminRequestPage = () => {
                       className="btn btn-dark flex items-center justify-center"
                       onClick={handleFilterClick}
                     >
-                      <Search className="w- h-6 text-red-500 mx-auto"/>
+                      <Search className="w- h-6 text-red-500 mx-auto" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-
 
             {/* 게시판 리스트 */}
             <div className="border rounded-lg">
@@ -245,7 +254,9 @@ const AdminRequestPage = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-4 text-gray-500">데이터가 없습니다.</div>
+                  <div className="text-center py-4 text-gray-500">
+                    데이터가 없습니다.
+                  </div>
                 )}
               </div>
             </div>
