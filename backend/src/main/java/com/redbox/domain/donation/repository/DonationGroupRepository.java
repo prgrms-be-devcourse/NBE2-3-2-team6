@@ -3,6 +3,7 @@ package com.redbox.domain.donation.repository;
 import com.redbox.domain.donation.entity.DonationGroup;
 
 import com.redbox.domain.user.dto.DonationResponse;
+import com.redbox.domain.user.dto.ReceptionResponse;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,10 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "WHERE d.donorId = :donorId")
     Page<DonationResponse> findAllWithReceiverNameByDonorId(Long donorId, Pageable pageable);
 
+    @Query("SELECT new com.redbox.domain.user.dto.ReceptionResponse(d, " +
+            "CASE WHEN d.donorId = 0 THEN '레드박스' ELSE u.name END) " +
+            "FROM DonationGroup d " +
+            "LEFT JOIN User u ON d.receiverId = u.id " +
+            "WHERE d.receiverId = :receiverId")
+    Page<ReceptionResponse> findAllWithDonorNameByReceiverId(Long receiverId, Pageable pageable);
 }
