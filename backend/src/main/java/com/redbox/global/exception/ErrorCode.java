@@ -45,7 +45,7 @@ public enum ErrorCode {
     FAIL_TO_ACCESS(HttpStatus.FORBIDDEN, "수정 권한이 없습니다"),
 
     // 관리자 승인 요청 게시글
-    FAIL_TO_APPROVAL_STATUS(HttpStatus.NOT_FOUND, "해당 승인 상태값이 존재하지 않습니다");
+    FAIL_TO_APPROVAL_STATUS(HttpStatus.NOT_FOUND, "해당 승인 상태값이 존재하지 않습니다"),
 
     // 비밀번호 관련 에러
     EMPTY_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 비어있을 수 없습니다."),

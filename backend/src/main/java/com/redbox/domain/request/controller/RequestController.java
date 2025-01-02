@@ -1,5 +1,8 @@
 package com.redbox.domain.request.controller;
 
+import com.redbox.domain.attach.dto.AttachFileResponse;
+import com.redbox.domain.attach.entity.Category;
+import com.redbox.domain.attach.service.AttachFileService;
 import com.redbox.domain.request.dto.*;
 import com.redbox.domain.request.application.RequestService;
 import com.redbox.global.entity.PageResponse;
@@ -7,23 +10,27 @@ import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class RequestController {
 
+    private final AttachFileService attachFileService;
     private final RequestService requestService;
 
     // 게시글 등록 (조회수 증가 X)
     @PostMapping("/requests")
     public ResponseEntity<DetailResponse> requestWrite(
             @RequestPart("post") @Valid WriteRequest writeRequest,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
-        DetailResponse detailResponse = requestService.createRequest(writeRequest, file);
+        DetailResponse detailResponse = requestService.createRequest(writeRequest, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(detailResponse);
     }
 
@@ -57,10 +64,9 @@ public class RequestController {
     @PutMapping("/requests/{requestId}")
     public ResponseEntity<DetailResponse> requestModify(
             @PathVariable Long requestId,
-            @RequestPart("post") @Valid WriteRequest writeRequest,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestBody @Valid WriteRequest writeRequest
     ) {
-        DetailResponse detailResponse = requestService.modifyRequest(requestId, writeRequest, file);
+        DetailResponse detailResponse = requestService.modifyRequest(requestId, writeRequest);
         return ResponseEntity.ok(detailResponse);
     }
 
@@ -70,5 +76,28 @@ public class RequestController {
         requestService.modifyAuthorize(requestId);
         DetailResponse detailResponse = requestService.getRequestDetail(requestId);
         return ResponseEntity.ok(detailResponse);
+    }
+
+    @GetMapping("/requests/{requestId}/files/{fileId}")
+    public ResponseEntity<String> downloadFile(
+            @PathVariable Long requestId,
+            @PathVariable Long fileId) {
+        return ResponseEntity.ok(attachFileService.getFileDownloadUrl(requestId, fileId));
+    }
+
+    @PostMapping(value = "/requests/{requestId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AttachFileResponse> addFile(
+            @PathVariable Long requestId,
+            @RequestPart(value = "file") MultipartFile file
+    ) {
+        return ResponseEntity.ok(attachFileService.addFile(Category.REQUEST, requestId, file));
+    }
+
+    @DeleteMapping("/requests/{requestId}/files/{fileId}")
+    public ResponseEntity<Void> removeFile(
+            @PathVariable Long requestId,
+            @PathVariable Long fileId) {
+        attachFileService.removeFile(Category.REQUEST, requestId, fileId);
+        return ResponseEntity.ok().build();
     }
 }

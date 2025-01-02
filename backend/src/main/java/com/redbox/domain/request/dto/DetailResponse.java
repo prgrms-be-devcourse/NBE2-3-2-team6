@@ -1,5 +1,6 @@
 package com.redbox.domain.request.dto;
 
+import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.request.entity.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,19 +29,9 @@ public class DetailResponse {
     private String content; // 내용
     private boolean isLiked; // 좋아요 여부
 
-    private List<AttachmentResponse> attachments; // 첨부 파일 리스트
+    private List<AttachFileResponse> attachFileResponses; // 첨부 파일 리스트
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class AttachmentResponse {
-        private String name; // 파일 이름
-        private int downloads; // 다운로드 수
-        private String downloadUrl; // 파일 다운로드 URL
-    }
-
-    public DetailResponse(Request request, Boolean isLiked, List<AttachmentResponse> attachments) {
+    public DetailResponse(Request request, Boolean isLiked) {
         this.id = request.getRequestId();
         this.userEmail = request.getCreatedBy();
         this.date = request.getCreatedAt().toLocalDate();
@@ -54,6 +45,7 @@ public class DetailResponse {
         this.status = request.getProgress().getText();
         this.content = request.getRequestContent();
         this.isLiked = isLiked;
-        this.attachments = attachments;
+        this.attachFileResponses = request.getAttachFiles()
+                .stream().map(AttachFileResponse::new).toList();
     }
 }

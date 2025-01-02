@@ -117,15 +117,3 @@ cloud:
       secret-key: test
     s3:
       bucket: test
-      
-# ---
-# 로컬에 저장시 사용 로직(s3 사용 예정)
-# spring:
-#   servlet:
-#     multipart:
-#       max-file-size: 10MB
-#       max-request-size: 10MB
-#       enabled: true
-#   file:
-# # TODO : 경로 .env 로 바꾸기
-#     upload-dir: "C:\\Java\\Project2"

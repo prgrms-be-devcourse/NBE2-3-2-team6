@@ -1,5 +1,7 @@
 package com.redbox.domain.request.application;
 
+import com.redbox.domain.attach.entity.AttachFile;
+import com.redbox.domain.attach.entity.Category;
 import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
 import com.redbox.domain.request.dto.RequestFilter;
@@ -15,9 +17,11 @@ import com.redbox.domain.request.repository.LikesRepository;
 import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.repository.UserRepository;
+import com.redbox.domain.user.service.UserService;
 import com.redbox.global.entity.PageResponse;
+import com.redbox.global.infra.s3.S3Service;
+import com.redbox.global.util.FileUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,22 +32,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RequestService {
 
-    @Value("${spring.file.upload-dir}")
-    private String uploadDir;
-
+    private final S3Service s3Service;
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     // 현재 로그인한 사용자 정보 가져오기
     private Long getCurrentUserId() {
@@ -81,32 +81,42 @@ public class RequestService {
 
     // 게시글 등록
     @Transactional
-    public DetailResponse createRequest(WriteRequest writeRequest, MultipartFile file) {
-        String filePath = null;
-        if (file != null && !file.isEmpty()) {
-            filePath = saveFile(file);
-        }
-
+    public DetailResponse createRequest(WriteRequest writeRequest, List<MultipartFile> files) {
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
-                //.userId(getCurrentUserId())
-                .userId(1L)
+                .userId(getCurrentUserId())
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
-                .currentAmount(0) // 초기값
                 .requestStatus(RequestStatus.REQUEST)
                 .progress(RequestStatus.IN_PROGRESS)
                 .donationStartDate(writeRequest.getDonationStartDate())
                 .donationEndDate(writeRequest.getDonationEndDate())
-                .requestAttachFile(filePath) // 저장된 파일 경로
                 .priority(Priority.MEDIUM) // 초기 중요도
-                .requestHits(0) // 초기 조회수
-                .requestLikes(0) // 초기 좋아요 수
-                .fileDownloads(0) // 초기 다운로드 수
                 .build();
 
         requestRepository.save(request);
+
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                // S3에 파일 업로드
+                String newFilename = FileUtils.generateNewFilename();
+                String extension = FileUtils.getExtension(file);
+                String fullFilename = newFilename + "." + extension;
+                s3Service.uploadFile(file, Category.REQUEST, request.getRequestId(), fullFilename);
+
+                // 파일 데이터 저장
+                AttachFile attachFile = AttachFile.builder()
+                        .category(Category.REQUEST)
+                        .request(request)
+                        .originalFilename(file.getOriginalFilename())
+                        .newFilename(fullFilename)
+                        .build();
+
+                request.addAttachFiles(attachFile);
+            }
+        }
+
         return getRequestDetail(request.getRequestId());
     }
 
@@ -114,24 +124,13 @@ public class RequestService {
     public DetailResponse getRequestDetail(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
-        List<DetailResponse.AttachmentResponse> attachments = new ArrayList<>();
-        if (request.getRequestAttachFile() != null) {
-            String fullFileName = new File(request.getRequestAttachFile()).getName();
-            String fileName = fullFileName.substring(fullFileName.indexOf("_") + 1);
-            attachments.add(new DetailResponse.AttachmentResponse(
-                    fileName,
-                    request.getFileDownloads(),
-                    "/community/request/download/" + fileName
-            ));
-        }
-
         Long userId = getCurrentUserId();
 
         // 좋아요 여부 조회
         Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
         boolean isLiked = like != null && like.isLiked();
 
-        return new DetailResponse(request, isLiked, attachments);
+        return new DetailResponse(request, isLiked);
     }
 
     // 게시글 상세조회 - 조회수 증가
@@ -148,7 +147,8 @@ public class RequestService {
 
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
         Long userId = getCurrentUserId();
-        // Long userId = 1L;
+
+        // TODO : getCurrentUserId가 null 인경우 예외 처리 필요
 
         // 좋아요 로직
         Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
@@ -179,7 +179,7 @@ public class RequestService {
 
     // 게시글 수정
     @Transactional
-    public DetailResponse modifyRequest(Long requestId, WriteRequest writeRequest, MultipartFile file) {
+    public DetailResponse modifyRequest(Long requestId, WriteRequest writeRequest) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
 
         request.updateRequest(
@@ -190,11 +190,6 @@ public class RequestService {
                 writeRequest.getTargetAmount()
         );
 
-        if (file != null && !file.isEmpty()) {
-            String filePath = saveFile(file);
-            request.attachFile(filePath);
-        }
-
         Request modifyRequest = requestRepository.save(request);
         return getRequestDetail(modifyRequest.getRequestId());
     }
@@ -203,28 +198,8 @@ public class RequestService {
     public void modifyAuthorize(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
         Long userId = getCurrentUserId();
-        //Long userId = 1L;
         if(!request.getUserId().equals(userId)) {
             throw new UnauthorizedAccessException();
-        }
-    }
-
-    // 파일 저장 로직
-    private String saveFile(MultipartFile file) {
-        try {
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            String filePath = uploadDir + File.separator + fileName;
-
-            File dest = new File(filePath);
-            if (!dest.getParentFile().exists()) {
-                dest.getParentFile().mkdirs();
-            }
-
-            file.transferTo(dest);
-            return filePath;
-
-        } catch (IOException e) {
-            throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
         }
     }
 }

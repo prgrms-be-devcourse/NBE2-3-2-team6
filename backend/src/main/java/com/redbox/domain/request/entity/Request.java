@@ -1,5 +1,6 @@
 package com.redbox.domain.request.entity;
 
+import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -44,10 +47,11 @@ public class Request extends BaseEntity {
     private int requestHits;
     private int requestLikes; // 좋아요 수
 
-    private int fileDownloads;
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AttachFile> attachFiles = new ArrayList<>();
 
     @Builder
-    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, RequestStatus requestStatus, RequestStatus progress, LocalDate donationStartDate, LocalDate donationEndDate, LocalDate requestDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes, int fileDownloads) {
+    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, RequestStatus requestStatus, RequestStatus progress, LocalDate donationStartDate, LocalDate donationEndDate, LocalDate requestDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes) {
         this.userId = userId;
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
@@ -62,7 +66,21 @@ public class Request extends BaseEntity {
         this.priority = priority;
         this.requestHits = requestHits;
         this.requestLikes = requestLikes;
-        this.fileDownloads = fileDownloads;
+    }
+
+    public void addAttachFiles(AttachFile attachFile) {
+        attachFile.validateNull();
+        if (attachFile.isDuplicateIn(this.attachFiles)) return;
+
+        this.attachFiles.add(attachFile);
+        attachFile.setRequest(this);
+    }
+
+    public void removeAttachFiles(AttachFile attachFile) {
+        attachFile.validateNull();
+
+        this.attachFiles.remove(attachFile);
+        attachFile.setRequest(null);
     }
 
     public void updateRequest(String title, String content, LocalDate DonationStartDate, LocalDate DonationEndDate, int targetAmount) {
@@ -73,11 +91,9 @@ public class Request extends BaseEntity {
         this.targetAmount = targetAmount;
     }
 
-    public void attachFile(String filePath){this.requestAttachFile = filePath;}
-
     public void approve() {this.requestStatus = RequestStatus.APPROVE;}
     public void reject() {this.requestStatus = RequestStatus.REJECT;}
-    public void expired() {this.requestStatus = RequestStatus.EXPIRED;}
+    public void expired() {this.progress = RequestStatus.EXPIRED;}
     public void incrementHits() {this.requestHits = requestHits + 1;}
     public void incrementLikes() {this.requestLikes = requestLikes + 1;}
     public void decrementLikes() {this.requestLikes = requestLikes - 1;}

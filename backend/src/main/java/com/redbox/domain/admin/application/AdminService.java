@@ -4,6 +4,7 @@ import com.redbox.domain.admin.dto.AdminApproveRequest;
 import com.redbox.domain.admin.dto.AdminDetailResponse;
 import com.redbox.domain.admin.dto.AdminListResponse;
 import com.redbox.domain.admin.exception.InvalidApproveStatusException;
+import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
@@ -62,7 +63,9 @@ public class AdminService {
                 request.getTargetAmount(),
                 request.getRequestStatus().getText(),
                 request.getRequestHits(),
-                request.getRequestContent()
+                request.getRequestContent(),
+                request.getAttachFiles()
+                        .stream().map(AttachFileResponse::new).toList()
         );
     }
 }

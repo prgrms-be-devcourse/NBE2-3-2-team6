@@ -1,10 +1,13 @@
 package com.redbox.domain.admin.dto;
 
+import com.redbox.domain.attach.dto.AttachFileResponse;
+import com.redbox.domain.request.entity.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,4 +23,5 @@ public class AdminDetailResponse {
     private String status;
     private int views; // 조회수
     private String content; // 내용
+    private List<AttachFileResponse> attachFileResponses; // 첨부 파일 리스트
 }
