@@ -3,7 +3,9 @@ package com.redbox.domain.donation.controller;
 import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.donation.application.DonationService;
 import com.redbox.domain.donation.application.DonationStatsService;
+import com.redbox.domain.donation.application.UserDonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
+import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.exception.InvalidDonationTypeException;
 
 import com.redbox.domain.donation.dto.MyDonationStatsResponse;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +26,7 @@ public class DonationController {
     private final Map<String, DonationService> donationServiceMap;
 
     private final DonationStatsService donationStatsService;
+    private final UserDonationService userDonationService;
 
     @PostMapping("/donate/{type}")
     public ResponseEntity<String> donate(@PathVariable String type, @RequestBody DonationRequest donationRequest) {
@@ -49,5 +53,10 @@ public class DonationController {
 
         MyDonationStatsResponse response = new MyDonationStatsResponse(totalDonatedCards, patientsHelped);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/donations/top")
+    public ResponseEntity<List<Top5DonorResponse>> getTop5Donor() {
+        return ResponseEntity.ok(userDonationService.getTop5Donor());
     }
 }

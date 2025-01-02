@@ -1,6 +1,7 @@
 package com.redbox.domain.donation.application;
 
 import com.redbox.domain.donation.dto.DonationRequest;
+import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
@@ -55,4 +56,9 @@ public class UserDonationService extends AbstractDonationService {
             throw new UserNotFoundException();
         }
     }
+
+    public List<Top5DonorResponse> getTop5Donor() {
+        return donationGroupRepository.findTop5DonorsOfTheMonth();
+    }
+
 }
