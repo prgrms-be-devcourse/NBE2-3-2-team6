@@ -5,7 +5,7 @@ import { formatDate } from "../../utils/dateUtils";
 
 const DonationListPage = () => {
   const [activeTab, setActiveTab] = useState("donation");
-  const size = 10;
+  const size = 6;
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
