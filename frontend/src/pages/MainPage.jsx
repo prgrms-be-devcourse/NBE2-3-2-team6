@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "../lib/axios";
 
 const MainPage = () => {
   const navigate = useNavigate();
+  const [rankings, setRankings] = useState([]);
 
   // 샘플 데이터 - 실제로는 API나 props로 받아와야 합니다
   const boardItems = [
@@ -20,13 +23,24 @@ const MainPage = () => {
     { id: 5, title: "헌혈증 기부 감사합니다", date: "2024.12.13" },
   ];
 
-  const rankings = [
-    { rank: 1, name: "김선행", donations: 50 },
-    { rank: 2, name: "이나눔", donations: 45 },
-    { rank: 3, name: "박사랑", donations: 38 },
-    { rank: 4, name: "정희망", donations: 32 },
-    { rank: 5, name: "최기쁨", donations: 30 },
-  ];
+  useEffect(() => {
+    const fetchRankings = async () => {
+      try {
+        const response = await api.get("/donations/top");
+        const formattedRankings = response.data.map((donor) => ({
+          rank: donor.rank,
+          name: donor.donorName,
+          donations: donor.totalAmount,
+        }));
+        setRankings(formattedRankings);
+      } catch (error) {
+        console.error("Failed to fetch rankings:", error);
+        // 에러 처리 로직 추가 (필요한 경우)
+      }
+    };
+
+    fetchRankings();
+  }, []);
 
   return (
     <main className="flex-grow bg-gray-50 py-8">
@@ -74,30 +88,36 @@ const MainPage = () => {
             </div>
           </div>
 
-          {/* Ranking Section */}
+          {/* Ranking Section - 데이터 로딩 상태 처리 추가 */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h3 className="text-xl font-bold mb-4">이달의 기부왕</h3>
             <div className="space-y-4">
-              {rankings.map((rank) => (
-                <div
-                  key={rank.rank}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
-                >
-                  <div className="flex items-center">
-                    <span
-                      className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                        rank.rank <= 3
-                          ? "bg-red-600 text-white"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {rank.rank}
-                    </span>
-                    <span className="ml-3 text-gray-800">{rank.name}</span>
+              {rankings.length > 0 ? (
+                rankings.map((rank) => (
+                  <div
+                    key={rank.rank}
+                    className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
+                  >
+                    <div className="flex items-center">
+                      <span
+                        className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                          rank.rank <= 3
+                            ? "bg-red-600 text-white"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {rank.rank}
+                      </span>
+                      <span className="ml-3 text-gray-800">{rank.name}</span>
+                    </div>
+                    <span className="text-gray-600">{rank.donations}장</span>
                   </div>
-                  <span className="text-gray-600">{rank.donations}장</span>
+                ))
+              ) : (
+                <div className="text-center text-gray-500 py-4">
+                  랭킹 데이터를 불러오는 중...
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
