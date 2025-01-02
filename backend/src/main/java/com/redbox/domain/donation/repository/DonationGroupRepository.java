@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.List;
 
 public interface DonationGroupRepository extends JpaRepository<DonationGroup, Long> {
@@ -40,6 +42,9 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "WHERE d.receiverId = :receiverId")
     Page<ReceptionResponse> findAllWithDonorNameByReceiverId(Long receiverId, Pageable pageable);
 
+    @Query("SELECT MAX(d.donationDate) FROM DonationGroup d WHERE d.donorId = :userId")
+    Optional<LocalDate> findLastDonationDateByDonorId(@Param("userId") Long userId);
+  
     @Query("SELECT new com.redbox.domain.donation.dto.Top5DonorResponse(" +
             "RANK() OVER (ORDER BY SUM(dg.donationAmount) DESC), " +
             "dg.donorId, u.name, SUM(dg.donationAmount)) " +

@@ -3,20 +3,16 @@ package com.redbox.domain.donation.application;
 import com.redbox.domain.donation.exception.DonationStatsException;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.global.exception.ErrorCode;
-import com.redbox.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class DonationStatsService {
 
     private final DonationGroupRepository donationGroupRepository;
-    private final UserService userService;
-
-    public Long getCurrentUserId() {
-        return userService.getCurrentUserId();
-    }
 
     public int getTotalDonatedCards(Long userId) {
         try {
@@ -34,6 +30,12 @@ public class DonationStatsService {
         } catch (Exception e) {
             throw new DonationStatsException(ErrorCode.STATS_CALCULATION_FAILED);
         }
+    }
+
+    // 최근 기부 일자 조회
+    public LocalDate getLastDonationDate(Long userId) {
+        return donationGroupRepository.findLastDonationDateByDonorId(userId)
+                .orElse(null); // 없으면 null 반환
     }
 
     // TODO: 내가 작성한 진행중인 요청 게시글 조회 기능 추후에 추가
