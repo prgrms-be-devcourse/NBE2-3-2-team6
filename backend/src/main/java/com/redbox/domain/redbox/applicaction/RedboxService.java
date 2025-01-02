@@ -48,7 +48,7 @@ public class RedboxService extends AbstractDonationService {
     @Override
     @Transactional
     public void processDonation(DonationRequest donationRequest) {
-        int donationCount = donationRequest.getAmount();
+        int donationCount = donationRequest.getQuantity();
         long donorId = getDonationUserId();
         long receiverId = 0L;  // redbox 일 경우 0
 
@@ -56,7 +56,7 @@ public class RedboxService extends AbstractDonationService {
         // 헌혈증 보유자 수정
         redcardService.updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장
-        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
+        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getComment());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
@@ -64,6 +64,6 @@ public class RedboxService extends AbstractDonationService {
 
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
-        checkDonateAmount(redcardList, donationRequest.getAmount());
+        checkDonateAmount(redcardList, donationRequest.getQuantity());
     }
 }
