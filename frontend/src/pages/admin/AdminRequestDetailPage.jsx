@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminSideBar from "../../components/wrapper/AdminSidebar";
-import axios from "axios";
+import api from "../../lib/axios";
 import { ThumbsUp } from 'lucide-react';
 import { HandHeart } from 'lucide-react';
 import RedboxDonationModal from "../../components/RedboxDonationModal";
@@ -15,11 +15,23 @@ const AdminRequestDetailPage = () => {
  const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false); 
  const [isLiked, setIsLiked] = useState(true);
 
- const url = `http://localhost:8080/requests/${id}`;
+ const url = `/requests/${id}`;
+
+ const handleFileClick = async (requestNo, fileNo) => {
+  try {
+    const response = await api.get(`/requests/${requestNo}/files/${fileNo}`);
+    
+    // 파일 다운로드 처리
+    window.location.href = response.data;
+  } catch (error) {
+    console.error("파일 다운로드 실패:", error);
+  }
+};
 
  const fetchData = async () => {
     try {
-      const response = await axios.get(url); // API 호출하여 요청 데이터 가져오기
+      const response = await api.get(url); // API 호출하여 요청 데이터 가져오기
+      console.log(response);
       setRequest(response.data); // 요청 데이터 상태 업데이트
       setLikes(response.data.likes); // 좋아요 수 상태 업데이트
       setCurrentAmount(response.data.currentAmount); // 현재 기부 금액 상태 업데이트
@@ -45,7 +57,7 @@ const AdminRequestDetailPage = () => {
     try {
       console.log(url + "/like");
 
-      const response = await axios.post(url); // 좋아요 요청 API 호출
+      const response = await api.post(url); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
         console.log("200 OK 좋아요 업데이트")
@@ -66,7 +78,7 @@ const AdminRequestDetailPage = () => {
        comment,
      };
      console.log('요청 로그: ', payload);
-     const response = await axios.post(donationUrl, payload);
+     const response = await api.post(donationUrl, payload);
      console.log('응답 로그: ', response);
      
      if (response.status === 200) {
@@ -85,7 +97,7 @@ const AdminRequestDetailPage = () => {
 
  const handleDeleteBtn = async() => {
    try{
-       const response = await axios.post(url);
+       const response = await api.post(url);
 
        if(response.ok) {
            alert(response.data.message);
@@ -170,17 +182,28 @@ const AdminRequestDetailPage = () => {
              </div>
 
              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
-               <h2 className="text-lg font-bold mb-2">첨부파일</h2>
-               <div className="bg-gray-50 p-4 rounded-md">
-                 {request.attachments &&
-                   request.attachments.map((attachment, index) => (
-                     <div key={index} className="flex items-center mb-2">
-                       <span className="mr-2">📎 {attachment.name} (다운로드: {attachment.downloads}회)</span>
-                       <button className="text-black border border-gray-300 bg-white rounded px-2">미리보기</button>
-                     </div>
-                   ))}
-               </div>
-             </div>
+                <h2 className="text-lg font-bold mb-2">첨부파일</h2>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  {request.attachFileResponses &&
+                  request.attachFileResponses.length > 0 ? (
+                    request.attachFileResponses.map((file, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <span className="mr-2">📎 {file.originFilename}</span>
+                        <button
+                          className="text-black border border-gray-300 bg-white rounded px-2"
+                          onClick={() =>
+                            handleFileClick(request.id, file.fileNo)
+                          }
+                        >
+                          다운로드
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">첨부된 파일이 없습니다.</div>
+                  )}
+                </div>
+              </div>
            </>
          )}
        </div>

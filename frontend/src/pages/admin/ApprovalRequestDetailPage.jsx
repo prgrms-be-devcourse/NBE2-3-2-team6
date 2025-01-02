@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const ApprovalRequestDetailPage = () => {
   const { id } = useParams();
@@ -8,12 +8,23 @@ const ApprovalRequestDetailPage = () => {
   const [request, setRequest] = useState(null);
   const [modal, setModal] = useState({ isOpen: false, action: "", title: "", id: id });
 
-  const url = `http://localhost:8080/admin/requests/${id}`;
+  const url = `/requests/${id}`;
+
+  const handleFileClick = async (requestNo, fileNo) => {
+    try {
+      const response = await api.get(`/requests/${requestNo}/files/${fileNo}`);
+      
+      // 파일 다운로드 처리
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("파일 다운로드 실패:", error);
+    }
+  };
 
   /// 데이터 가져오기
   const fetchData = async () => {
     try {
-      const response = await axios.get(url);
+      const response = await api.get(url);
       setRequest(response.data);
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생 : ", error);
@@ -91,14 +102,27 @@ const ApprovalRequestDetailPage = () => {
                 dangerouslySetInnerHTML={{ __html: request.content }}
               ></div>
 
-              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl">
+            <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
                 <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  {request.attachments?.map((attachment, index) => (
-                    <div key={index} className="flex items-center mb-2">
-                      <button className="text-black border border-gray-300 bg-white rounded px-2">미리보기</button>
-                    </div>
-                  )) || <p className="text-gray-500">첨부파일이 없습니다.</p>}
+                  {request.attachFileResponses &&
+                  request.attachFileResponses.length > 0 ? (
+                    request.attachFileResponses.map((file, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <span className="mr-2">📎 {file.originFilename}</span>
+                        <button
+                          className="text-black border border-gray-300 bg-white rounded px-2"
+                          onClick={() =>
+                            handleFileClick(request.id, file.fileNo)
+                          }
+                        >
+                          다운로드
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">첨부된 파일이 없습니다.</div>
+                  )}
                 </div>
               </div>
 
