@@ -89,9 +89,8 @@ const RequestPage = () => {
                         {request.requestTitle}
                       </Link>
                     </div>
-                    <div className="w-36 text-center text-sm text-gray-500">{request.userId}</div>
+                    <div className="w-36 text-center text-sm text-gray-500">{request.userEmail}</div>
                     <div className="w-36 text-center text-sm text-gray-500">{request.requestDate}</div>
-                    {/* <div className="w-36 text-center text-sm text-gray-500">{new Date(request.requestDate).toLocaleDateString()}</div> */}
                     <div className="w-36 text-center text-sm text-red-600">{request.progress}</div>
                     <div className="w-24 text-center text-sm text-gray-500">{request.requestHits}</div>
                     <div className="w-24 text-center text-sm text-gray-500">{request.requestLikes}</div>
