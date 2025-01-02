@@ -52,7 +52,7 @@ public class RedboxService extends AbstractDonationService {
         long donorId = getDonationUserId();
         long receiverId = 0L;  // redbox 일 경우 0
 
-        List<Redcard> redcardList = getUsersRedCardList(donationRequest);
+        List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         // 헌혈증 보유자 수정
         redcardService.updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장
@@ -64,6 +64,6 @@ public class RedboxService extends AbstractDonationService {
 
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
-        checkCount(redcardList, donationRequest.getAmount());
+        checkDonateAmount(redcardList, donationRequest.getAmount());
     }
 }

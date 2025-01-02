@@ -29,10 +29,13 @@ public abstract class AbstractDonationService implements DonationService {
 
     public abstract void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest);
 
-    protected List<Redcard> getUsersRedCardList(DonationRequest donationRequest) {
+    protected List<Redcard> getUsersRedCardList() {
         Long donateUserId = userService.getCurrentUserId();
-        List<Redcard> redcardList = redcardRepository.findByUserId(donateUserId);
+        return redcardRepository.findByUserId(donateUserId);
+    }
 
+    protected List<Redcard> pickDonateRedCardList(DonationRequest donationRequest) {
+        List<Redcard> redcardList = getUsersRedCardList();
         validateDonation(redcardList, donationRequest);
         return redcardList.subList(0, donationRequest.getAmount());
     }
@@ -66,7 +69,7 @@ public abstract class AbstractDonationService implements DonationService {
         }
     }
 
-    public void checkCount(List<Redcard> redcardList, int count) {
+    public void checkDonateAmount(List<Redcard> redcardList, int count) {
         if (redcardList.size() < count) {
             throw new DonationAmountExceededException();
         }

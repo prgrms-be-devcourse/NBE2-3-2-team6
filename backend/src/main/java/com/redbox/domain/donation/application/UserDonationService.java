@@ -11,7 +11,6 @@ import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.UserRepository;
 import com.redbox.domain.user.service.UserService;
-import com.redbox.global.exception.ErrorCode;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,7 @@ public class UserDonationService extends AbstractDonationService {
         validateReceiver(receiverId);
         long donorId = userService.getCurrentUserId();
 
-        List<Redcard> redcardList = getUsersRedCardList(donationRequest);
+        List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         redcardService.updateRedCardList(redcardList, receiverId);
         DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getMessage());
         Long donationGroupId = userDonationGroup.getId();
@@ -46,7 +45,7 @@ public class UserDonationService extends AbstractDonationService {
 
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
-        checkCount(redcardList, donationRequest.getAmount());
+        checkDonateAmount(redcardList, donationRequest.getAmount());
         validateReceiver(donationRequest.getUserId());
     }
 

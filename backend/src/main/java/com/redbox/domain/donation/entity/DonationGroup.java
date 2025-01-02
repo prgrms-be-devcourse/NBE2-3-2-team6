@@ -21,6 +21,7 @@ public class DonationGroup {
     private Long id;
     private Long donorId;
     private Long receiverId;
+    @Enumerated(EnumType.STRING)
     private DonationType donationType;
     private int donationAmount;
     private LocalDate donationDate;
