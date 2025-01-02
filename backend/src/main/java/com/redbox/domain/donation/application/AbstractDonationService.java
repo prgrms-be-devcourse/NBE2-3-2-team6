@@ -4,6 +4,7 @@ import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
+import com.redbox.domain.donation.exception.DonationAmountExceededException;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
@@ -67,9 +68,8 @@ public abstract class AbstractDonationService implements DonationService {
 
     public void checkCount(List<Redcard> redcardList, int count) {
         if (redcardList.size() < count) {
-            throw new RuntimeException("보유량 보다 많은 수의 기부를 할 수 없습니다. 보유량 : " + redcardList.size() + " 기부 요청 : " + count);
+            throw new DonationAmountExceededException();
         }
     }
-
 };
 

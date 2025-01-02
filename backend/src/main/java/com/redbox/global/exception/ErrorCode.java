@@ -56,7 +56,12 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
 
     // 레드박스
-    REDBOX_NOT_FOUND(HttpStatus.NOT_FOUND, "Redbox 정보가 존재하지 않습니다.");
+    REDBOX_NOT_FOUND(HttpStatus.NOT_FOUND, "Redbox 정보가 존재하지 않습니다."),
+    INVALID_REDCARD_COUNT(HttpStatus.BAD_REQUEST, "보유 수량은 0보다 작을 수 없습니다."),
+
+    // 기부
+    NOT_FOUND_DONATION_TYPE(HttpStatus.NOT_FOUND, "기부 타입을 찾을 수 없습니다."),
+    INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다.");
     private final HttpStatus status;
     private final String message;
 }

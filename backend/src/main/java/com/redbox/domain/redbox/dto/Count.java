@@ -1,5 +1,8 @@
 package com.redbox.domain.redbox.dto;
 
+import com.redbox.domain.donation.exception.DonationAmountExceededException;
+import com.redbox.domain.redbox.exception.NegativeQuantityException;
+
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
@@ -14,8 +17,7 @@ public class Count {
 
     public Count(int count) {
         if (count < 0) {
-            //TODO: ERROR CODE 지정
-            throw new IllegalArgumentException("보유량이 0보다 작을 수는 없습니다.");
+            throw new NegativeQuantityException();
         }
         this.value = count;
     }
@@ -26,8 +28,7 @@ public class Count {
 
     public Count subtract(int amount) {
         if (this.value < amount) {
-            //TODO: ERROR CODE 지정
-            throw new IllegalArgumentException("보유량보다 많은 수를 기부 할 수 없습니다.");
+            throw new DonationAmountExceededException();
         }
         return new Count(value - amount);
     }

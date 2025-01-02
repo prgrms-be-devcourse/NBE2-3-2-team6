@@ -19,7 +19,8 @@ public class DonationServiceConfig {
             RedboxService redboxService) {
 
         return Map.of(
-                "redbox", redboxService
+                "redbox", redboxService,
+                "user", userDonationService
         );
     }
 }

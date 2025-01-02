@@ -2,7 +2,6 @@ package com.redbox.domain.redbox.applicaction;
 
 import com.redbox.domain.donation.application.AbstractDonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
-import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
@@ -19,7 +18,6 @@ import com.redbox.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -52,9 +50,9 @@ public class RedboxService extends AbstractDonationService {
     public void processDonation(DonationRequest donationRequest) {
         int donationCount = donationRequest.getAmount();
         long donorId = getDonationUserId();
-        long receiverId = 0L;  // Redcard의 userId 가 redbox 소유일 경우 0 으로 고정;
+        long receiverId = 0L;  // redbox 일 경우 0
 
-        List<Redcard> redcardList = getUsersRedCardList(donationRequest); // 보유 헌혈증에서 기부할 만큼만 가져오기
+        List<Redcard> redcardList = getUsersRedCardList(donationRequest);
         // 헌혈증 보유자 수정
         redcardService.updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장

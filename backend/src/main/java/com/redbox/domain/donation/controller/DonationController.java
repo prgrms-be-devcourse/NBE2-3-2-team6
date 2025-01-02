@@ -2,6 +2,7 @@ package com.redbox.domain.donation.controller;
 
 import com.redbox.domain.donation.application.DonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
+import com.redbox.domain.donation.exception.InvalidDonationTypeException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,10 @@ public class DonationController {
 
     @PostMapping("/donate/{type}")
     public ResponseEntity<String> donate(@PathVariable String type, @RequestBody DonationRequest donationRequest) {
-        // 기부 방식에 따른 서비스 선택
         DonationService donationService = donationServiceMap.get(type.toLowerCase());
 
-        // TODO: ERROR CODE 변경
         if (donationService == null) {
-            return ResponseEntity.badRequest().body("잘못된 기부 방식 요청");
+            throw new InvalidDonationTypeException();
         }
 
         donationService.processDonation(donationRequest);
