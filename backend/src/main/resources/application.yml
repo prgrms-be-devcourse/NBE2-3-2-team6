@@ -25,6 +25,47 @@ server:
 spring:
   config:
     activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${PROD_DATASOURCE_URL}
+    username: ${PROD_DATASOURCE_USERNAME}
+    password: ${PROD_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MariaDBDialect
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: 10MB        # 단일 파일 최대 크기
+      max-request-size: 50MB     # 요청당 전체 파일 크기
+      enabled: true
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+---
+spring:
+  config:
+    activate:
       on-profile: local
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
@@ -51,10 +92,6 @@ spring:
       max-file-size: 10MB        # 단일 파일 최대 크기
       max-request-size: 50MB     # 요청당 전체 파일 크기
       enabled: true
-logging:
-  level:
-    root: INFO
-    org.springframework.security: DEBUG
 cloud:
   aws:
     region:
@@ -66,6 +103,12 @@ cloud:
       secret-key: ${AWS_SECRET_KEY}
     s3:
       bucket: ${AWS_S3_BUCKET}
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    com.redbox: DEBUG               # 애플리케이션 전반적인 로그
+    org.springframework.web: DEBUG  # 웹 요청/응답 로그
 ---
 spring:
   config:
@@ -88,4 +131,35 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      password:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      access-key: test
+      secret-key: test
+    s3:
+      bucket: test
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    com.redbox: DEBUG               # 애플리케이션 전반적인 로그

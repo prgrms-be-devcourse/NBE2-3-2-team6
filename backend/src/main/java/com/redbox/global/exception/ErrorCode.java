@@ -7,6 +7,19 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+
+    // 요청 게시판 관련
+    FAIL_TO_FIND_REQUEST(HttpStatus.NOT_FOUND,"해당 게시판을 찾을 수 없습니다."),
+
+    // 현재 로그인한 회원 찾기
+    FAIL_TO_FIND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),
+  
+    // 레드카드 관련
+    DUPLICATE_SERIAL_NUMBER(HttpStatus.BAD_REQUEST, "이미 등록된 헌혈증입니다."),
+    NOT_BELONG_TO_REDCARD(HttpStatus.BAD_REQUEST, "자신이 소유한 헌혈증이 아닙니다."),
+    PENDING_REDCARD(HttpStatus.BAD_REQUEST, "기부 진행중인 헌혈증입니다."),
+    INVALID_REDCARD_STATUS(HttpStatus.BAD_REQUEST, "올바른 헌혈증 상태가 아닙니다."),
+
     // 공지사항 관련
     FAIL_TO_FIND_NOTICE(HttpStatus.NOT_FOUND,"해당 공지사항을 찾을 수 없습니다."),
 
@@ -28,8 +41,15 @@ public enum ErrorCode {
     EMAIL_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 메시지 생성 중 오류가 발생했습니다."),
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 중 오류가 발생했습니다."),
 
+    // 수정 권한 확인
+    FAIL_TO_ACCESS(HttpStatus.FORBIDDEN, "수정 권한이 없습니다"),
+
+    // 관리자 승인 요청 게시글
+    FAIL_TO_APPROVAL_STATUS(HttpStatus.NOT_FOUND, "해당 승인 상태값이 존재하지 않습니다"),
+
     // 비밀번호 관련 에러
     EMPTY_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 비어있을 수 없습니다."),
+    NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     // 사용자 없음 에러
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
@@ -48,9 +68,19 @@ public enum ErrorCode {
     // 토큰
     TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "Refresh 토큰이 존재하지 않습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 만료되었습니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
 
+    // 레드박스
+    REDBOX_NOT_FOUND(HttpStatus.NOT_FOUND, "Redbox 정보가 존재하지 않습니다."),
+    INVALID_REDCARD_COUNT(HttpStatus.BAD_REQUEST, "보유 수량은 0보다 작을 수 없습니다."),
+
+    // 기부
+    NOT_FOUND_DONATION_TYPE(HttpStatus.NOT_FOUND, "기부 타입을 찾을 수 없습니다."),
+    INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다."),
+
+    // 기부 통계 관련 에러코드
+    STATS_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "기부 통계 계산 중 오류가 발생했습니다.");
     private final HttpStatus status;
     private final String message;
 }

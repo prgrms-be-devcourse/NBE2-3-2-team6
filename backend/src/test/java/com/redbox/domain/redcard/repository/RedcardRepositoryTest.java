@@ -1,17 +1,20 @@
-package com.redbox.domain.redcard.entity;
+package com.redbox.domain.redcard.repository;
 
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.redbox.domain.redcard.entity.Redcard;
+import com.redbox.domain.redcard.entity.RedcardStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-class RedCardTest {
+@ActiveProfiles("test")
+@DataJpaTest
+class RedcardRepositoryTest {
 
     @Test
     @DisplayName("레드카드 생성 테스트")
@@ -25,11 +28,11 @@ class RedCardTest {
 
         //When
         Redcard cardData = Redcard.builder()
-                        .userId(userId)
-                        .donation_date(donationDate)
-                        .serialNumber(serialNumber)
-                        .redcardStatus(status)
-                        .build();
+                .userId(userId)
+                .donationDate(donationDate)
+                .serialNumber(serialNumber)
+                .redcardStatus(status)
+                .build();
 
         // Then
         assertEquals(userId, cardData.getUserId());
