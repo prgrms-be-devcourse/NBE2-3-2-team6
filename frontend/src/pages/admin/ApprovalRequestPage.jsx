@@ -9,8 +9,7 @@ const AdminRequestPage = () => {
     // plag : result 개수에서 요청 개수 변경시 flag 값 변경하고 useEffect 넣기기 
 
     const navigate = useNavigate();
-    const url = 'https://316fa20d-ea61-4140-9970-98cd5e0fda23.mock.pstmn.io/redbox/requests';
-    const requrl = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/approve';
+    const url = 'http://localhost:8080/admin/requests';
 
     const [reqdata, reqSetdata] = useState([]);
     
@@ -29,52 +28,41 @@ const AdminRequestPage = () => {
     // 데이터 보내기
     const sendData = async(id, status) => {
         try {
-            const response = await fetch(requrl, {
+            const response = await fetch(url + `/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    article_id: id,
-                    status: status,
+                    approveStatus: status,
                 }),
             });
-
-            const result = await response.json();
-            console.log("서버 응답 : ", result);
 
             if (response.ok) {
                 alert("처리 완료");
                 setCount(count+1); 
-                // navigate('/admin/request');
+                navigate('/admin/approve');
             }
 
         } catch (error) {
-            console.log("err");
+            console.log(error);
         }
     }
 
     // 대괄호에 있는 변수가 변할때 중괄에 있는 함수가 호출된다(트리거) 
     useEffect(() => {
         fetchData();
-        console.log("useEffect");
-        // sendData();
-        // alert("상태 바뀜");
     }, [
        count 
     ]);
 
     /// 데이터 보내기 (게시판 id, status)
     const handleEdit = (id) => {
-        console.log("승인된 요청 ID:", id);
-        /** 서버에 id, state(승인) 보내기 **/
-        sendData(id, '승인됨');
+        sendData(id, '승인');
     };
 
     const handleDelete = (id) => {
-        console.log("거절된 요청 ID:", id);
-        /** 서버에 id, state(승인) 보내기 -> console 에 출력해놓기 **/
-        sendData(id, '거절됨');
+        sendData(id, '거절');
     };
 
     const [modal, setModal] = useState({ isOpen: false, action: '', title: '', id: null });
@@ -120,7 +108,7 @@ const AdminRequestPage = () => {
             {/* 리스트 아이템들 */}
             <section className="max-h-[600px] overflow-y-auto divide-y">
 
-                {reqdata.requests?.filter((data) => data.status !== "승인됨").map((data) => (
+                {reqdata.map((data) => (
                     <div
                     key={data.id}
                     className="flex items-center py-3 hover:bg-gray-50"
@@ -131,7 +119,7 @@ const AdminRequestPage = () => {
                     
                     <div className="flex-1 px-6 text-gray-500">
                         <Link
-                        to={`/admin/request/${data.id}`}
+                        to={`/admin/approve/${data.id}`}
                         className="text-gray-900 hover:text-red-600"
                         >
                           {data.title}

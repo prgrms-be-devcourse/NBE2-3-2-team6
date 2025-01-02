@@ -20,6 +20,7 @@ import ApprovalRequestPage from "../pages/admin/ApprovalRequestPage";
 import AdminNoticeDetailPage from "../pages/admin/AdminNoticeDetailPage";
 import AdminRequestDetailPage from "../pages/admin/AdminRequestDetailPage";
 import AdminNoticeWritePage from "../pages/admin/AdminNoticeWritePage";
+import ApprovalRequestDetailPage from "../pages/admin/ApprovalRequestDetailPage";
 import DashboardPage from "../pages/mypage/DashboardPage";
 import RedcardPage from "../pages/mypage/RedcardPage";
 import ProfilePage from "../pages/mypage/ProfilePage";
@@ -27,7 +28,6 @@ import HistoryPage from "../pages/mypage/HistoryPage";
 import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
-
 import RequestDetailPage from "../pages/community/RequestDetailPage";
 import RequestModifyPage from "../pages/community/RequestModifyPage"
 import AdminNoticeModifyPage from "../pages/admin/AdminNoticeModifyPage";
@@ -153,6 +153,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/approve",
         element: <ApprovalRequestPage />,
+      },
+      {
+        path: "/admin/approve/:id",
+        element: <ApprovalRequestDetailPage/>,
       },
       {
         path: "/admin/community/notice/:id",
