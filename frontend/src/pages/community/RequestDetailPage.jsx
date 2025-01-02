@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import axios from "axios";
-import { ThumbsUp, HandHeart } from 'lucide-react';
+import api from "../../lib/axios";
+import { ThumbsUp, HandHeart } from "lucide-react";
 import RedboxDonationModal from "../../components/RedboxDonationModal"; // 기부 모달 컴포넌트 임포트
 
 const RequestDetailPage = () => {
@@ -15,12 +15,23 @@ const RequestDetailPage = () => {
   const [isLiked, setIsLiked] = useState(false); // 좋아요 상태
 
   // 요청 상세 정보를 가져오기 위한 URL
-  const url = `http://localhost:8080/requests/${id}`;
+  const url = `/requests/${id}`;
+
+  const handleFileClick = async (requestNo, fileNo) => {
+    try {
+      const response = await api.get(`/requests/${requestNo}/files/${fileNo}`);
+      
+      // 파일 다운로드 처리
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("파일 다운로드 실패:", error);
+    }
+  };
 
   // 요청 데이터 가져오기 함수
   const fetchData = async () => {
     try {
-      const response = await axios.get(url); // API 호출하여 요청 데이터 가져오기
+      const response = await api.get(url); // API 호출하여 요청 데이터 가져오기
       setRequest(response.data); // 요청 데이터 상태 업데이트
       setLikes(response.data.likes); // 좋아요 수 상태 업데이트
       setCurrentAmount(response.data.currentAmount); // 현재 기부 금액 상태 업데이트
@@ -47,7 +58,7 @@ const RequestDetailPage = () => {
     try {
       console.log(url + "/like");
 
-      const response = await axios.post(url + "/like"); // 좋아요 요청 API 호출
+      const response = await api.post(url + "/like"); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
         console.log("200 OK 좋아요 업데이트")
@@ -71,13 +82,13 @@ const RequestDetailPage = () => {
   // 기부 요청 처리 함수
   const handleDonate = async (quantity, comment) => {
     try {
-      const donationUrl = 'http://localhost:8080/requests/{id}/donate'; // 실제 기부 API URL
+      const donationUrl = '/requests/{id}/donate'; // 실제 기부 API URL
       const payload = {
         quantity: parseInt(quantity), // 기부 수량
         requestId: id, // 현재 요청 ID
         comment, // 기부에 대한 코멘트
       };
-      const response = await axios.post(donationUrl, payload); // 기부 요청 API 호출
+      const response = await api.post(donationUrl, payload); // 기부 요청 API 호출
       if (response.status === 200) {
         setCurrentAmount((prevAmount) => prevAmount + parseInt(quantity)); // 기부 금액 업데이트
         alert("기부가 성공적으로 처리되었습니다."); // 성공 메시지 알림
@@ -99,10 +110,10 @@ const RequestDetailPage = () => {
         alert("만료된 게시글입니다.");
         return;
       }
-      await axios.get(`http://localhost:8080/requests/modify/${id}`);
+      const response = await api.get(`/requests/modify/${id}`);
       navigate(`/community/requests/modify/${id}`); 
     } catch (error) {
-      if (error.response && error.response.status === 403) {
+      if (error.response.status === 403) {
         alert("수정 권한이 없습니다");
       } else {
         console.error("권한 확인 중 오류:", error);
@@ -123,7 +134,10 @@ const RequestDetailPage = () => {
                 <h1 className="text-2xl font-bold mb-6">요청게시판</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
                 <div className="flex bg-gray-50 py-3 border-b">
-                  <div className="text-2xl flex-1 text-center">{request.title}</div> {/* 요청 제목 */}
+                  <div className="text-2xl flex-1 text-center">
+                    {request.title}
+                  </div>{" "}
+                  {/* 요청 제목 */}
                 </div>
 
                 <div className="flex bg-gray-50 py-3 border-b">
@@ -163,16 +177,18 @@ const RequestDetailPage = () => {
                 >
                   <HandHeart />
                 </button>
-                <span className="mx-2">{currentAmount} 기부</span> {/* 현재 기부 금액 표시 */}
+                <span className="mx-2">{currentAmount} 기부</span>{" "}
+                {/* 현재 기부 금액 표시 */}
                 <button
-                  className={`mx-1 px-3 py-2 transition-colors duration-200 ${isLiked
-                    ? 'bg-red-500 text-white hover:bg-red-600'
-                    : 'bg-gray-300 text-black hover:bg-gray-400'
-                    }`}
+                  className={`mx-1 px-3 py-2 transition-colors duration-200 ${
+                    isLiked
+                      ? "bg-red-500 text-white hover:bg-red-600"
+                      : "bg-gray-300 text-black hover:bg-gray-400"
+                  }`}
                   onClick={handleLike} // 좋아요 버튼 클릭 시
                 >
                   <ThumbsUp
-                    className={`${isLiked ? 'fill-current animate-pulse' : ''}`}
+                    className={`${isLiked ? "fill-current animate-pulse" : ""}`}
                     size={20}
                   />
                 </button>
@@ -187,23 +203,27 @@ const RequestDetailPage = () => {
                 </button>
               </div>
               
-              {/* <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto max-w-6xl"> */}
               <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
                 <h2 className="text-lg font-bold mb-2">첨부파일</h2>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  {request.attachments &&
-                    request.attachments.map((attachment, index) => (
+                  {request.attachFileResponses &&
+                  request.attachFileResponses.length > 0 ? (
+                    request.attachFileResponses.map((file, index) => (
                       <div key={index} className="flex items-center mb-2">
-                        <span className="mr-2">📎 {attachment.name} (다운로드: {attachment.downloads}회)</span>
-                        <a
-                          href={attachment.url} // 첨부파일의 URL
-                          download // 다운로드 속성
-                          className="text-black border border-gray-300 bg-white rounded px-2 mr-2"
-                        >                  
+                        <span className="mr-2">📎 {file.originFilename}</span>
+                        <button
+                          className="text-black border border-gray-300 bg-white rounded px-2"
+                          onClick={() =>
+                            handleFileClick(request.id, file.fileNo)
+                          }
+                        >
                           다운로드
-                        </a>
-                      </div>  
-                    ))}
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">첨부된 파일이 없습니다.</div>
+                  )}
                 </div>
               </div>
             </>

@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import axios from "axios"; // axios 임포트
+import api from "../../lib/axios";
 
-const url = "http://localhost:8080/requests"
+const url = "/requests"
 const PAGE_SIZE = 10; // 페이지 크기 상수화
 
 const RequestPage = () => {
@@ -17,7 +17,7 @@ const RequestPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${url}?page=${page}&size=${PAGE_SIZE}&sort=NEW&option=&startDate=&endDate=`);
+        const response = await api.get(`${url}?page=${page}&size=${PAGE_SIZE}&sort=NEW&option=&startDate=&endDate=`);
         setRequests(response.data.content); // requests 배열 설정
         setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
         setTotalElements(response.data.totalElements); // 전체 요청 수 설정
@@ -58,10 +58,6 @@ const RequestPage = () => {
   };
 
   const handleRequestWrite = () => {
-    if (userId == null) {
-      alert("로그인이 필요합니다");
-      return;
-    }
     navigate("/community/requests/write");
   };
 
@@ -128,10 +124,11 @@ const RequestPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 border rounded ${pageNum === page
+                      className={`px-3 py-1 border rounded ${
+                        pageNum === page
                           ? "bg-red-600 text-white"
                           : "hover:bg-gray-50"
-                        }`}
+                      }`}
                     >
                       {pageNum}
                     </button>

@@ -4,7 +4,7 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
-import axios from "axios";
+import api from "../../lib/axios";
 
 const RequestModifyPage = () => {
   const { id } = useParams(); // URL에서 ID를 가져옴
@@ -12,15 +12,17 @@ const RequestModifyPage = () => {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [newAttachFiles, setNewAttachFiles] = useState([]);
   const [donationStartDate, setDonationStartDate] = useState("");
   const [donationEndDate, setDonationEndDate] = useState("");
   const [donationAmount, setDonationAmount] = useState("1");
-  const [attachFile, setAttachFile] = useState("선택된 파일 없음");
+  //const [attachFile, setAttachFile] = useState("선택된 파일 없음");
   const [initialContent, setInitialContent] = useState(""); // 에디터 초기값
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/requests/modify/${id}`);
+      const response = await api.get(`/requests/modify/${id}`);
       const data = response.data;
 
       setTitle(data.title);
@@ -28,10 +30,7 @@ const RequestModifyPage = () => {
       setDonationEndDate(data.endDate);
       setDonationAmount(data.targetAmount);
       setInitialContent(data.content);
-
-      if (data.attachments && data.attachments.length > 0) {
-        setAttachFile(data.attachments[0].name);
-      }
+      setExistingFiles(response.data.attachFileResponses || []);
     } catch (error) {
       console.error("요청 데이터를 불러오는 중 오류가 발생했습니다.", error);
     }
@@ -48,18 +47,57 @@ const RequestModifyPage = () => {
     }
   }, [initialContent]);
 
+  const handleFileButton = () => fileInputRef.current?.click();
+
+  const handleAttachFileInput = (e) => {
+    const files = Array.from(e.target.files);
+    setNewAttachFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleNewFileDelete = (index) => {
+    setNewAttachFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleExistingFileDelete = async (fileNo) => {
+    if (window.confirm("파일을 삭제하시겠습니까?")) {
+      try {
+        await api.delete(`/requests/${id}/files/${fileNo}`);
+        setExistingFiles((prev) =>
+          prev.filter((file) => file.fileNo !== fileNo)
+        );
+      } catch (error) {
+        console.error("Error deleting file:", error);
+      }
+    }
+  };
+
+  const handleFileUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await api.post(`/requests/${id}/files`, formData);
+
+      alert("저장이 완료되었습니다.");
+      // 파일 목록 새로고침
+      const response = await api.get(`/requests/${id}`);
+      setExistingFiles(response.data.attachFileResponses);
+      // 새 파일 목록에서 제거
+      setNewAttachFiles((prev) => prev.filter((f) => f !== file));
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
   const handleSaveButton = async () => {
     try {
       const content = editorRef.current?.getInstance().getHTML();
-      const file = fileInputRef.current?.files[0];
 
       if (!title || !content) {
         alert("제목과 내용을 입력해주세요");
         return;
       }
 
-      const formData = new FormData();
-      const postData = {
+      const request = {
         requestTitle: title,
         requestContent: content,
         targetAmount: donationAmount,
@@ -67,20 +105,7 @@ const RequestModifyPage = () => {
         donationEndDate: donationEndDate,
       };
 
-      formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
-      if (file) {
-        formData.append("file", file);
-      }
-
-      const response = await axios.put(
-        `http://localhost:8080/requests/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.put(`/requests/${id}`, request);
 
       if (response.status === 200) {
         alert("수정이 완료되었습니다.");
@@ -157,24 +182,79 @@ const RequestModifyPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 첨부파일
               </label>
-              <div className="flex items-center">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  accept="image/*,.pdf,.doc,.docx"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setAttachFile(file ? file.name : "선택된 파일 없음");
-                  }}
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-                >
-                  파일 선택
-                </button>
-                <span className="ml-3 text-sm text-gray-500">{attachFile}</span>
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*,.pdf,.doc,.docx"
+                    onChange={handleAttachFileInput}
+                    multiple
+                  />
+                  <button
+                    onClick={handleFileButton}
+                    className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  >
+                    파일 선택
+                  </button>
+                </div>
+
+                {existingFiles.length > 0 && (
+                  <div className="space-y-1 mt-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      기존 파일
+                    </p>
+                    {existingFiles.map((file) => (
+                      <div
+                        key={file.fileNo}
+                        className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                      >
+                        <span className="text-sm text-gray-600">
+                          {file.originFilename}
+                        </span>
+                        <button
+                          onClick={() => handleExistingFileDelete(file.fileNo)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {newAttachFiles.length > 0 && (
+                  <div className="space-y-1 mt-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      새로운 파일
+                    </p>
+                    {newAttachFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                      >
+                        <span className="text-sm text-gray-600">
+                          {file.name}
+                        </span>
+                        <div>
+                          <button
+                            onClick={() => handleFileUpload(file)}
+                            className="text-blue-500 hover:text-blue-700 mr-2"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={() => handleNewFileDelete(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
