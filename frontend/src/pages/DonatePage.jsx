@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import api from "../lib/axios";
 import MemberDonationModal from "../components/MemberDonationModal";
 import RedboxDonationModal from "../components/RedboxDonationModal";
 
@@ -8,24 +9,16 @@ const DonatePage = () => {
   const [data, setData] = useState({});
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false);
+  const [donationType, setDonationType] = useState("");
 
-  const url = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/redbox';
-
-  const handleSubmit = async ( quantity, comment, memberId = null) => {
+  const handleSubmit = async ( quantity, comment, userId = null) => {
     try {
-      const payload = memberId ? { quantity, comment, memberId } : { quantity, comment };
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+      const response = await api.post(`/donate/${donationType}`, {
+        userId,
+        quantity,
+        comment,
       });
-      if (response.ok) {
-        alert("기부 성공");
-      } else {
-        throw new Error("기부 요청 실패");
-      }
+      alert("기부 성공")
     } catch (error) {
       console.error("기부 오류:", error);
       alert("기부 실패");
@@ -62,13 +55,19 @@ const DonatePage = () => {
               당신의 작은 기부가 누군가에게는 큰 희망이 됩니다
             </p>
             <button className="bg-green-500 hover:bg-pink-500 transition-colors rounded-lg mr-8"
-              onClick={() => setIsRedboxModalOpen(true)}
+              onClick={() => {
+                setDonationType("redbox")
+                setIsRedboxModalOpen(true)
+              }}
             >
               <img src="/src/assets/image.png" alt="레드 박스" className="w-25 h-25" />
               레드박스 기부하기
             </button>
             <button className="bg-yellow-500 hover:bg-blue-500 transition-colors rounded-lg ml-8"
-              onClick={() => setIsMemberModalOpen(true)}
+              onClick={() => {
+                setDonationType("user")
+                setIsMemberModalOpen(true)
+              }}
             >
               <img src="/src/assets/image.png" alt="레드 박스" className="w-25 h-25" />
               개인에게 기부하기
@@ -101,12 +100,14 @@ const DonatePage = () => {
       {/* 모달 컴포넌트 */}
       {isMemberModalOpen && (
         <MemberDonationModal
+          setDonationType
           onClose={() => setIsMemberModalOpen(false)}
           onSubmit={handleSubmit}
         />
       )}
       {isRedboxModalOpen && (
         <RedboxDonationModal
+          setDonationType
           onClose={() => setIsRedboxModalOpen(false)}
           onSubmit={handleSubmit}
         />

@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import api from "../lib/axios";
 
 const Modal = ({ onSubmit, onClose }) => {
   // const 
   const [quantity, setQuantity] = useState("");
   const [comment, setComment] = useState("");
-  const [memberId, setMemberId] = useState("");
+  const [userId, setUserId] = useState("");
   const [memberName, setMemberName] = useState("");
   const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
-    if (!memberId || !memberName) {
+    if (!userId || !memberName) {
       alert("회원을 등록해주세요");
       return;
     }
@@ -17,29 +18,16 @@ const Modal = ({ onSubmit, onClose }) => {
       alert("유효한 개수를 입력하세요.");
       return;
     }
-    onSubmit(quantity, comment, memberId); 
+    onSubmit(quantity, comment, userId); 
   };
-  const url = 'https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/redbox/email';
   const validEmail = async (email) => {
     try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({email}),
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setMemberName(data.name);  // 서버에서 받은 이름을 상태로 설정
-          setMemberId(data.id);    
+        const response = await api.post("/auth/email-check", {
+          email
+        });
+          setMemberName(response.data.name)
+          setUserId(response.data.userId)
           alert("확인되었습니다.");
-        } else {
-          setMemberName("");
-          setMemberId("");
-          throw new Error("등록되지 않은 사용자입니다.");
-        }
     } catch (error) {
       console.error("이메일 인증 요청 오류:", error);
       alert("이메일 확인 실패");
