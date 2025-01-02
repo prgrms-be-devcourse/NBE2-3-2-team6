@@ -1,15 +1,11 @@
 package com.redbox.domain.donation.controller;
 
-import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.donation.application.DonationService;
 import com.redbox.domain.donation.application.DonationStatsService;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.exception.InvalidDonationTypeException;
 
-import com.redbox.domain.donation.dto.MyDonationStatsResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
