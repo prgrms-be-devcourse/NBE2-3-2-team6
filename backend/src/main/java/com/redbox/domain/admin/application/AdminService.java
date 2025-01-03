@@ -39,10 +39,11 @@ public class AdminService {
         switch (approveStatus) {
             case "승인" :
                 changeRequest.approve();
+                changeRequest.inProgress();
                 break;
             case "거절" :
                 changeRequest.reject();
-                changeRequest.expired();
+                changeRequest.rejectProgress();
                 break;
             default:
                 throw new InvalidApproveStatusException();
