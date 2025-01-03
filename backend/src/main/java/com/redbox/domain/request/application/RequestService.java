@@ -44,7 +44,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
     private final UserRepository userRepository;
-    private final RequestDonationService requestDonationService;
+//    private final RequestDonationService requestDonationService;
 
     // 현재 로그인한 사용자 정보 가져오기
     private Long getCurrentUserId() {
@@ -75,7 +75,7 @@ public class RequestService {
         LocalDate today = LocalDate.now();
         List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
         for (Request request : expiredRequests) {
-            requestDonationService.donationConfirm(request.getRequestId(), request.getUserId());
+//            requestDonationService.donationConfirm(request.getRequestId(), request.getUserId());
             request.expired();
         }
         requestRepository.saveAll(expiredRequests);

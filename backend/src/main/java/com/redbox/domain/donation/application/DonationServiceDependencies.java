@@ -5,6 +5,7 @@ import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
+import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.service.UserService;
@@ -36,8 +37,8 @@ public class DonationServiceDependencies {
         return userService.getCurrentUserId();
     }
 
-    public List<Redcard> getUserRedcards(Long userId) {
-        return redcardRepository.findByUserId(userId);
+    public List<Redcard> getUserRedcards(Long userId, RedcardStatus status) {
+        return redcardRepository.findByUserIdAndRedcardStatus(userId, status);
     }
 
     public DonationGroup saveDonationGroup(DonationGroup donationGroup) {

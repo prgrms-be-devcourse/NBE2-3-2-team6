@@ -60,7 +60,7 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "LIMIT 5")
     List<Top5DonorResponse> findTop5DonorsOfTheMonth();
 
-    @Query("SELECT d FROM DonationGroup  d WHERE d.donorId =: donorId AND d.receiverId =: receiverId AND d.donationType =:donationType")
+    @Query("SELECT d FROM DonationGroup  d WHERE d.donorId =:donorId AND d.receiverId =:receiverId AND d.donationType =:donationType")
     DonationGroup findByDonorIdAndReceiverIdAndDonationType(@Param("donorId") long donorId, @Param("receiverId") long receiverId, @Param("donationType") DonationType donationType);
 
     List<DonationGroup> findByReceiverIdAndDonationType(long receiverId, DonationType donationType);

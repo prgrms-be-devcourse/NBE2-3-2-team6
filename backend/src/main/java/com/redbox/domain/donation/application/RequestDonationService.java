@@ -44,6 +44,13 @@ public class RequestDonationService extends AbstractDonationService {
         }
     }
 
+    @Transactional
+    public void donationRedCardCancel(List<DonationDetail> donationDetails) {
+        for (DonationDetail donationDetail : donationDetails) {
+            redcardService.updateRedCardCancel(donationDetail.getRedcardId());
+        }
+    }
+
     // 하위 세 메서드들은 다른 곳으로 분리 고려
     public List<DonationDetail> getDonationDetails(long groupId) {
         return dependencies.getDonationDetailRepository().findByDonationGroupId(groupId);
@@ -95,6 +102,11 @@ public class RequestDonationService extends AbstractDonationService {
         long userId = dependencies.getCurrentUserId();
         DonationGroup donationGroup = getDonationGroup(userId, receiveId, DonationType.PENDING);
         donationGroup.donateCancel();
+
+        List<DonationDetail> cancelData = getDonationDetails(donationGroup.getId());
+        donationRedCardCancel(cancelData);
+//        dependencies.getDonationGroupRepository().save(donationGroup);
+//        dependencies.getDonationGroupRepository().flush();
     }
 
     @Override

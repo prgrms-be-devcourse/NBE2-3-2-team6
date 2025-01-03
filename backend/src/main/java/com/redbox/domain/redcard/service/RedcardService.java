@@ -92,4 +92,9 @@ public class RedcardService {
             redcard.changeRedcardStatus(RedcardStatus.PENDING);
         }
     }
+
+    public void updateRedCardCancel(long redcardId) {
+        Redcard redcard = getRedcardById(redcardId);
+        redcard.changeRedcardStatus(RedcardStatus.AVAILABLE);
+    }
 }

@@ -1,6 +1,8 @@
 package com.redbox.domain.redcard.repository;
 
 import com.redbox.domain.redcard.entity.Redcard;
+import com.redbox.domain.redcard.entity.RedcardStatus;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +21,7 @@ public interface RedcardRepository extends JpaRepository<Redcard, Long> {
     List<Redcard> findByUserId(Long userId);
 
     Optional<Redcard> findByUserIdAndId(Long userId, Long id);
+
+    List<Redcard> findByUserIdAndRedcardStatus(Long userId, RedcardStatus redcardStatus);
 }
 

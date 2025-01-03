@@ -6,6 +6,7 @@ import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAmountExceededException;
 import com.redbox.domain.redcard.entity.Redcard;
+import com.redbox.domain.redcard.entity.RedcardStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,8 @@ public abstract class AbstractDonationService implements DonationService {
 
     protected List<Redcard> getUsersRedCardList() {
         Long donateUserId = dependencies.getCurrentUserId();
-        return dependencies.getUserRedcards(donateUserId);
+
+        return dependencies.getUserRedcards(donateUserId, RedcardStatus.AVAILABLE);
     }
 
     protected List<Redcard> pickDonateRedCardList(DonationRequest donationRequest) {
@@ -53,7 +55,7 @@ public abstract class AbstractDonationService implements DonationService {
         for (Redcard redcard : redcardList) {
             DonationDetail donationDetail = DonationDetail.builder().
                                                           donationGroupId(donationGroupId).
-                                                          redcardId(redcard.getUserId()).
+                                                          redcardId(redcard.getId()).
                                                           build();
 
             dependencies.saveDonationDetail(donationDetail);
