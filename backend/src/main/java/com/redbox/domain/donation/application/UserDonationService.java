@@ -39,7 +39,7 @@ public class UserDonationService extends AbstractDonationService {
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         redcardService.updateRedCardList(redcardList, receiverId);
-        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, donationCount, donationRequest.getComment());
+        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.USER, donationCount, donationRequest.getComment());
         Long donationGroupId = userDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
     }
@@ -50,7 +50,8 @@ public class UserDonationService extends AbstractDonationService {
         validateReceiver(donationRequest.getUserId());
     }
 
-    private void validateReceiver(long receiverId) {
+    @Override
+    protected void validateReceiver(long receiverId) {
         boolean exists = userRepository.existsById(receiverId);
         if (!exists) {
             throw new UserNotFoundException();

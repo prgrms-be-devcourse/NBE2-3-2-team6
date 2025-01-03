@@ -29,6 +29,8 @@ public abstract class AbstractDonationService implements DonationService {
 
     public abstract void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest);
 
+    protected abstract void validateReceiver(long receiverId);
+
     protected List<Redcard> getUsersRedCardList() {
         Long donateUserId = userService.getCurrentUserId();
         return redcardRepository.findByUserId(donateUserId);
