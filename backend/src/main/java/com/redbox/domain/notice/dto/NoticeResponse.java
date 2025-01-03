@@ -1,5 +1,7 @@
 package com.redbox.domain.notice.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.notice.entity.Notice;
 import com.redbox.domain.user.entity.User;
@@ -10,15 +12,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Getter
+@JsonDeserialize
 public class NoticeResponse {
 
-    private final Long noticeNo;
-    private final String title;
-    private final String content;
-    private final LocalDate createdDate;
-    private final String writer;
-    private final int views;
-    private final List<AttachFileResponse> attachFileResponses;
+    private Long noticeNo;
+    private String title;
+    private String content;
+    private LocalDate createdDate;
+    private String writer;
+    private int views;
+    private List<AttachFileResponse> attachFileResponses;
+
+    @JsonCreator
+    public NoticeResponse() {
+    }
 
     public NoticeResponse(Notice notice) {
         this.noticeNo = notice.getId();
