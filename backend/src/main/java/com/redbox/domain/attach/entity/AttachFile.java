@@ -2,6 +2,7 @@ package com.redbox.domain.attach.entity;
 
 import com.redbox.domain.attach.exception.NullAttachFileException;
 import com.redbox.domain.notice.entity.Notice;
+import com.redbox.domain.request.entity.Request;
 import com.redbox.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -25,10 +26,9 @@ public class AttachFile extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    // 아직 request 와 merge 하기 전
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "request_id")
-//    private Request request;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
+    private Request request;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
@@ -38,9 +38,10 @@ public class AttachFile extends BaseEntity {
     private String newFilename;
 
     @Builder
-    public AttachFile(Category category, Notice notice, String originalFilename, String newFilename) {
+    public AttachFile(Category category, Notice notice, Request request, String originalFilename, String newFilename) {
         this.category = category;
         this.notice = notice;
+        this.request = request;
         this.originalFilename = originalFilename;
         this.newFilename = newFilename;
     }
@@ -49,6 +50,10 @@ public class AttachFile extends BaseEntity {
     @SuppressWarnings("lombok")
     public void setNotice(Notice notice) {
         this.notice = notice;
+    }
+    @SuppressWarnings("lombok")
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
     public void validateNull() {
@@ -74,7 +79,6 @@ public class AttachFile extends BaseEntity {
     }
 
     private boolean isRequestFile(Long postId) {
-        return true; // 향후 구현
-        // return this.request != null;
+        return this.request != null;
     }
 }

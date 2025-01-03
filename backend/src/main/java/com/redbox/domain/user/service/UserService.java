@@ -1,14 +1,22 @@
 package com.redbox.domain.user.service;
 
-import com.redbox.domain.user.dto.*;
 import com.redbox.domain.auth.dto.CustomUserDetails;
+import com.redbox.domain.donation.repository.DonationGroupRepository;
+import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
-import com.redbox.domain.user.exception.*;
+import com.redbox.domain.user.exception.DuplicateEmailException;
+import com.redbox.domain.user.exception.EmailNotVerifiedException;
+import com.redbox.domain.user.exception.PasswordNotMatchException;
+import com.redbox.domain.user.exception.UserNotFoundException;
+import com.redbox.domain.user.exception.PasswordMismatchException;
 import com.redbox.domain.user.repository.EmailVerificationCodeRepository;
 import com.redbox.domain.user.repository.UserRepository;
+import com.redbox.global.entity.PageResponse;
 import com.redbox.global.util.RandomCodeGenerator;
 import com.redbox.global.util.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +34,7 @@ public class UserService {
     private final EmailVerificationCodeRepository emailVerificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final DonationGroupRepository donationGroupRepository;
 
     // 현재 로그인한 사용자의 전체 정보 조회
     public User getCurrentUser() {
@@ -160,9 +169,25 @@ public class UserService {
         if (updateRequest.getDetailAddress() != null) {
             user.changeDetailAddress(updateRequest.getDetailAddress());
         }
-
+      
         userRepository.save(user);
         return new UserInfoResponse(user);
+    }
+
+    // 비밀 번호 일치 여부 확인 로직
+    @Transactional
+    public void dropUser(DropInfoRequest request) {
+
+        // 현재 로그인한 사용자 조회
+        User currentUser = getCurrentUser();
+
+        // 입력받은 비밀번호와 현재 사용자의 비밀번호 비교
+        if (!passwordEncoder.matches(request.getPassword(), currentUser.getPassword())) {
+            throw new PasswordMismatchException();
+        }
+
+        currentUser.inactive();
+        userRepository.save(currentUser);
     }
   
     @Transactional
@@ -174,5 +199,21 @@ public class UserService {
         User user = getCurrentUser();
         user.changePassword(encodePassword(request.getPassword()));
     }
+
+    public CheckUserResponse checkUser(CheckUserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                                         .orElseThrow(UserNotFoundException::new);
+
+        return new CheckUserResponse(user.getId(), user.getName());
+    }
   
+    public PageResponse<DonationResponse> getDonations(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return new PageResponse<>(donationGroupRepository.findAllWithReceiverNameByDonorId(getCurrentUserId(), pageable));
+    }
+
+    public PageResponse<ReceptionResponse> getReceptions(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return new PageResponse<>(donationGroupRepository.findAllWithDonorNameByReceiverId(getCurrentUserId(), pageable));
+    }
 }

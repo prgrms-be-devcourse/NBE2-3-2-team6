@@ -20,6 +20,7 @@ public class Redcard extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "redcard_id")
     private Long id;
+    //레드박스 소유시 0
     private Long userId;
     private LocalDate donationDate;
     private String serialNumber;

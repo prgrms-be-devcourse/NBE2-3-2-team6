@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RedcardService {
@@ -50,7 +52,7 @@ public class RedcardService {
 
     public PageResponse<RedcardResponse> getRedcards(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Redcard> redcards = redcardRepository.findByUserId(userService.getCurrentUserId(), pageable);
+        Page<Redcard> redcards = redcardRepository.findAllByUserId(userService.getCurrentUserId(), pageable);
         return new PageResponse<>(redcards.map(RedcardResponse::new));
     }
 
@@ -62,5 +64,11 @@ public class RedcardService {
             throw new PendingRedcardException();
         }
         redcard.changeRedcardStatus(request.validateAndGetOppositeStatus());
+    }
+
+    public void updateRedCardList(List<Redcard> redcardList, Long receiveUserId) {
+        for (Redcard redcard : redcardList) {
+            redcard.updateUser(receiveUserId);
+        }
     }
 }
