@@ -15,4 +15,7 @@ public interface RequestRepository extends JpaRepository<Request, Long>, Request
 
     @Query("SELECT COUNT(r) FROM Request r WHERE r.userId = :userId AND r.requestStatus = 'APPROVE' AND r.progress = 'IN_PROGRESS'")
     int countInProgressRequestsByUserId(Long userId);
+
+    @Query("SELECT COUNT(r) FROM Request r WHERE r.requestStatus = 'APPROVE' AND r.progress = 'IN_PROGRESS'")
+    int countAllInProgressRequests();
 }
