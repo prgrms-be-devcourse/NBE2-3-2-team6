@@ -2,6 +2,7 @@ package com.redbox.domain.request.application;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.entity.Category;
+import com.redbox.domain.donation.application.RequestDonationService;
 import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
 import com.redbox.domain.request.dto.RequestFilter;
@@ -43,7 +44,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
+    private final RequestDonationService requestDonationService;
 
     // 현재 로그인한 사용자 정보 가져오기
     private Long getCurrentUserId() {
@@ -74,6 +75,7 @@ public class RequestService {
         LocalDate today = LocalDate.now();
         List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
         for (Request request : expiredRequests) {
+            requestDonationService.donationConfirm(request.getRequestId(), request.getUserId());
             request.expired();
         }
         requestRepository.saveAll(expiredRequests);

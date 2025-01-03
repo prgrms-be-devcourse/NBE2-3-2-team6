@@ -1,16 +1,14 @@
 package com.redbox.domain.donation.application;
 
 import com.redbox.domain.donation.dto.DonationRequest;
+import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
-import com.redbox.domain.donation.repository.DonationDetailRepository;
-import com.redbox.domain.donation.repository.DonationGroupRepository;
+import com.redbox.domain.donation.exception.DonationGroupNotFoundException;
 import com.redbox.domain.redcard.entity.Redcard;
-import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.request.application.RequestService;
 import com.redbox.domain.request.exception.RequestNotFoundException;
-import com.redbox.domain.user.service.UserService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +25,50 @@ public class RequestDonationService extends AbstractDonationService {
         super(dependencies);
         this.requestService = requestService;
         this.redcardService = dependencies.getRedcardService();
+    }
+
+    @Transactional
+    public void donationConfirm(long requestId, long receiverId) {
+        List<DonationGroup> donationGroups = getDonationGroups(requestId, DonationType.PENDING);
+
+        for (DonationGroup donationGroup : donationGroups) {
+            donationGroup.donateConfirm();
+            List<DonationDetail> donationDetails = getDonationDetails(donationGroup.getId());
+            donationRedCardConfirm(donationDetails, receiverId);
+        }
+    }
+
+    public void donationRedCardConfirm(List<DonationDetail> donationDetails, long receiverId) {
+        for (DonationDetail donationDetail : donationDetails) {
+            redcardService.updateRedCardUser(donationDetail.getRedcardId(), receiverId);
+        }
+    }
+
+    // 하위 세 메서드들은 다른 곳으로 분리 고려
+    public List<DonationDetail> getDonationDetails(long groupId) {
+        return dependencies.getDonationDetailRepository().findByDonationGroupId(groupId);
+    }
+
+    public List<DonationGroup> getDonationGroups(long requestId, DonationType donationType) {
+        List<DonationGroup> donationGroups = dependencies.getDonationGroupRepository()
+                                                         .findByReceiverIdAndDonationType(requestId, donationType);
+
+        if (donationGroups == null) {
+            throw new DonationGroupNotFoundException();
+        }
+
+        return donationGroups;
+    }
+
+    public DonationGroup getDonationGroup(long userId, long receivedId, DonationType donationType) {
+        DonationGroup donationGroup = dependencies.getDonationGroupRepository()
+                                                  .findByDonorIdAndReceiverIdAndDonationType(userId, receivedId, donationType);
+
+        if (donationGroup == null) {
+            throw new DonationGroupNotFoundException();
+        }
+
+        return donationGroup;
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.exception.DuplicateSerialNumberException;
 import com.redbox.domain.redcard.exception.PendingRedcardException;
 import com.redbox.domain.redcard.exception.RedcardNotBelongException;
+import com.redbox.domain.redcard.exception.RedcardNotFoundException;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.user.dto.RedcardResponse;
 import com.redbox.domain.user.dto.UpdateRedcardStatusRequest;
@@ -54,6 +55,20 @@ public class RedcardService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Redcard> redcards = redcardRepository.findAllByUserId(userService.getCurrentUserId(), pageable);
         return new PageResponse<>(redcards.map(RedcardResponse::new));
+    }
+
+    public void updateRedCardUser(long redcardId, long receiverId) {
+        Redcard redcard = getRedcardById(redcardId);
+        redcard.updateUser(receiverId);
+    }
+
+    public Redcard getRedcardById(long redcardId) {
+        Redcard redcard = redcardRepository.findById(redcardId).orElse(null);
+
+        if (redcard == null) {
+            throw new RedcardNotFoundException();
+        }
+        return redcard;
     }
 
     @Transactional

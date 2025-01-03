@@ -4,14 +4,10 @@ import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
-import com.redbox.domain.donation.repository.DonationDetailRepository;
-import com.redbox.domain.donation.repository.DonationGroupRepository;
+import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
 import com.redbox.domain.redcard.entity.Redcard;
-import com.redbox.domain.redcard.repository.RedcardRepository;
-import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.UserRepository;
-import com.redbox.domain.user.service.UserService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,5 +62,4 @@ public class UserDonationService extends AbstractDonationService {
     public List<Top5DonorResponse> getTop5Donor() {
         return dependencies.getDonationGroupRepository().findTop5DonorsOfTheMonth();
     }
-
 }
