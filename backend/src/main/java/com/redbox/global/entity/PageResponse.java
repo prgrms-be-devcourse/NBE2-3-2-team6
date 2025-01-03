@@ -1,17 +1,24 @@
 package com.redbox.global.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
+@JsonDeserialize
 public class PageResponse<T> {
-    private final List<T> content;
-    private final int currentPage;
-    private final int size;
-    private final long totalElements;
-    private final int totalPages;
+    private List<T> content;
+    private int currentPage;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+
+    @JsonCreator
+    public PageResponse() {
+    }
 
     public PageResponse(Page<T> page) {
         this.content = page.getContent();

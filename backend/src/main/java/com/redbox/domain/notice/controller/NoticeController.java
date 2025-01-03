@@ -94,7 +94,7 @@ public class NoticeController {
     }
 
     @GetMapping("/notices/top5")
-    public ResponseEntity<List<RecentNoticeResponse>> getTop5Notices() {
+    public ResponseEntity<NoticeListWrapper> getTop5Notices() {
         return ResponseEntity.ok(noticeService.getCachedTop5Notices());
     }
 }
