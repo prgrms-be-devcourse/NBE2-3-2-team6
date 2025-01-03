@@ -8,10 +8,10 @@ export default function ProfilePage() {
   const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const [userInfo, setUserInfo] = useState({
-    email: "loading@example.com",
-    name: "로딩 중...",
-    phoneNumber: "010-0000-0000",
-    roadAddress: "로딩 중...",
+    email: "",
+    name: "",
+    phoneNumber: "",
+    roadAddress: "",
     extraAddress: "",
     detailAddress: "",
     currentPassword: "",
@@ -19,7 +19,6 @@ export default function ProfilePage() {
     newPasswordConfirm: "",
   });
 
-  // 헬퍼 함수: 사용자 정보 업데이트
   const updateUserInfoState = (data) => {
     setUserInfo((prev) => ({
       ...prev,
@@ -32,7 +31,6 @@ export default function ProfilePage() {
     }));
   };
 
-  // 회원 정보 조회
   const fetchUserInfo = useCallback(async () => {
     try {
       const response = await api.get("/users/my-info");
