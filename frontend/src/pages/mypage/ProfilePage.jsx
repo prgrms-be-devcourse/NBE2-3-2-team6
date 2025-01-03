@@ -394,13 +394,14 @@ export default function ProfilePage() {
                 )}
               </section>
               <div className="flex justify-end">
-                <button
+              
+              <button
                   onClick={handleOpenModal}
-                  className="text-red-600 hover:text-red-700 text-sm font-medium"
+                  className="text-gray-500 hover:text-gray-700 bg-gray-200 hover:bg-gray-300 text-xs font-medium py-1 px-3 rounded"
                 >
                   회원 탈퇴
                 </button>
-
+                
                 {/* 모달 */}
                 {isModalOpen && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
