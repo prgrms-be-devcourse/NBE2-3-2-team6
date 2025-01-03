@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 import api from "../../lib/axios";
 
 const RequestModifyPage = () => {
@@ -121,7 +121,7 @@ const RequestModifyPage = () => {
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
-        <CommunitySideBar />
+        <MyPageSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h1 className="text-2xl font-bold mb-6">글 수정</h1>
@@ -158,23 +158,28 @@ const RequestModifyPage = () => {
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   value={donationEndDate}
                   onChange={(e) => setDonationEndDate(e.target.value)}
-                  readOnly
                 />
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                헌혈증 요청 개수
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">헌혈증 요청 개수</label>
               <input
                 type="number"
                 min="1"
                 placeholder="요청할 헌혈증 개수를 입력하세요"
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 value={donationAmount}
-                onChange={(e) => setDonationAmount(e.target.value)}
-                readOnly
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "0") {
+                    alert("헌혈증 요청 개수는 1 이상이어야 합니다.");
+                    // 값이 0이면 1로 자동 변경
+                    handleDonationAmountInput({ target: { value: "1" } });
+                  } else {
+                    handleDonationAmountInput(e);
+                  }
+                }}
               />
             </div>
 
@@ -272,7 +277,7 @@ const RequestModifyPage = () => {
 
             <div className="mt-6 flex justify-end space-x-2">
               <button
-                onClick={() => navigate(`/community/request/${id}`)}
+                onClick={() => navigate(`/mypage/request/${id}`)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
                 취소

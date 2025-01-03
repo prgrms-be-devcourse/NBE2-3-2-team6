@@ -15,8 +15,29 @@ const AdminRequestPage = () => {
   // 필터링 관련 상태
   const [selectedStatus, setSelectedStatus] = useState("최신순"); // 기본 정렬
   const [selectedOption, setSelectedOption] = useState("전체글"); // 기본 옵션
-  const [startDate, setStartDate] = useState(""); // 시작 날짜
-  const [endDate, setEndDate] = useState(""); // 종료 날짜
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  
+  const handleDonationStartDateInput = (e) => {
+    const selectedStartDate = e.target.value;
+    setStartDate(selectedStartDate);
+
+    // 시작 날짜가 변경되면 마감 날짜를 시작 날짜와 같거나 그 이후로 설정
+    if (endDate && selectedStartDate > endDate) {
+      setEndDate(selectedStartDate); // 마감 날짜를 시작 날짜로 변경
+    }
+  };
+
+  const handleDonationEndDateInput = (e) => {
+    const selectedEndDate = e.target.value;
+    // 마감 날짜가 시작 날짜보다 이전이면 마감 날짜를 시작 날짜로 설정
+    if (selectedEndDate < startDate) {
+      alert('마감 날짜는 시작 날짜보다 같거나 커야 합니다.');
+      setEndDate(startDate); // 마감 날짜를 시작 날짜로 설정
+    } else {
+      setEndDate(selectedEndDate);
+    }
+  };
 
   // 페이지, 사이즈, (최신,만료,좋아요), (전체글,관심글), 시작 날짜, 종료 날짜
   const fetchData = async (page, size, status, option, start, end) => {
@@ -182,7 +203,7 @@ const AdminRequestPage = () => {
                       className="form-control me-3"
                       style={{ width: "120px", fontSize: "15px" }}
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={handleDonationStartDateInput}
                     />
                     <label htmlFor="endDate" className="me-2">
                       ~
@@ -193,7 +214,7 @@ const AdminRequestPage = () => {
                       className="form-control me-3"
                       style={{ width: "120px", fontSize: "15px" }}
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={handleDonationEndDateInput}
                     />
                   </div>
 

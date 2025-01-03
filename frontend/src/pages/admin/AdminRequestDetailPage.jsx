@@ -93,19 +93,6 @@ const AdminRequestDetailPage = () => {
     setIsRedboxModalOpen(false);
   };
 
- const handleDeleteBtn = async() => {
-   try{
-       const response = await api.post(url);
-
-      if (response.ok) {
-        alert(response.data.message);
-        //TODO: 삭제 성공시 목록으로 가기
-      }
-    } catch (error) {
-      console.log("err");
-    }
-  };
-
  return (
    <div className="flex-1 bg-gray-50">
      <div className="flex">
@@ -171,12 +158,6 @@ const AdminRequestDetailPage = () => {
                  />
                </button>
                <span className="mx-2">{likes} 따봉</span>
-              <button
-                className="ml-auto px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={handleDeleteBtn}
-              >
-                삭제
-              </button>
              </div>
 
              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">

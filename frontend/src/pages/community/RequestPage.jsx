@@ -91,7 +91,9 @@ const RequestPage = () => {
                     </div>
                     <div className="w-36 text-center text-sm text-gray-500">{request.userEmail}</div>
                     <div className="w-36 text-center text-sm text-gray-500">{request.requestDate}</div>
-                    <div className="w-36 text-center text-sm text-red-600">{request.progress}</div>
+                    <div className={`w-36 text-center text-sm ${request.progress === "진행중" ? 'text-blue-500' : 'text-gray-500'}`}>
+                      {request.progress}
+                    </div>
                     <div className="w-24 text-center text-sm text-gray-500">{request.requestHits}</div>
                     <div className="w-24 text-center text-sm text-gray-500">{request.requestLikes}</div>
 
