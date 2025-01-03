@@ -41,5 +41,17 @@ public class DonationController {
     public ResponseEntity<List<Top5DonorResponse>> getTop5Donor() {
         return ResponseEntity.ok(userDonationService.getTop5Donor());
     }
-  
+
+    @PutMapping("/donate/cancel/{type}/{receiveId}")
+    public ResponseEntity<String> donateCancel(@PathVariable String type, @PathVariable long receiveId) {
+        DonationService donationService = donationServiceMap.get(type.toLowerCase());
+
+        if (donationService == null) {
+            throw new InvalidDonationTypeException();
+        }
+
+        donationService.cancelDonation(receiveId);
+
+        return ResponseEntity.ok("기부 취소");
+    }
 }

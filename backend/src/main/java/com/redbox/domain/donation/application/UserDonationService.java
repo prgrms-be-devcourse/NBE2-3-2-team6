@@ -45,6 +45,11 @@ public class UserDonationService extends AbstractDonationService {
     }
 
     @Override
+    public void cancelDonation(long receiveId) {
+        throw new DonationAlreadyConfirmedException();
+    }
+
+    @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
         checkDonateAmount(redcardList, donationRequest.getQuantity());
         validateReceiver(donationRequest.getReceiveId());

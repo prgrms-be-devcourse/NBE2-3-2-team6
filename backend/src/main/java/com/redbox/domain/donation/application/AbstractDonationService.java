@@ -5,12 +5,7 @@ import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAmountExceededException;
-import com.redbox.domain.donation.repository.DonationDetailRepository;
-import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
-import com.redbox.domain.redcard.repository.RedcardRepository;
-import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +17,8 @@ public abstract class AbstractDonationService implements DonationService {
     protected final DonationServiceDependencies dependencies;
 
     public abstract void processDonation(DonationRequest donationRequest);
+
+    public abstract void cancelDonation(long receiveId);
 
     public abstract void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest);
 

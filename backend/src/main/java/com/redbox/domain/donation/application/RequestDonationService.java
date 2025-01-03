@@ -47,8 +47,18 @@ public class RequestDonationService extends AbstractDonationService {
         saveDonationDetails(redcardList, donationGroupId);
     }
 
+    @Transactional
+    @Override
+    public void cancelDonation(long receiveId) {
+        long userId = dependencies.getCurrentUserId();
+        DonationGroup donationGroup = getDonationGroup(userId, receiveId, DonationType.PENDING);
+        donationGroup.donateCancel();
+    }
+
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
+        checkDonateAmount(redcardList, donationRequest.getQuantity());
+        validateReceiver(dependencies.getCurrentUserId());
     }
 
     @Override

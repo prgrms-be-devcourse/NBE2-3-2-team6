@@ -5,6 +5,7 @@ import com.redbox.domain.donation.application.DonationServiceDependencies;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
+import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.RedboxStatsResponse;
@@ -65,6 +66,11 @@ public class RedboxService extends AbstractDonationService {
         // 레드박스 보유량 수정
         Redbox redbox = redboxRepository.findById(1L).orElseThrow(RedboxNotFoundException::new);
         redbox.addCount(redcardList.size());
+    }
+
+    @Override
+    public void cancelDonation(long receiveId) {
+        throw new DonationAlreadyConfirmedException();
     }
 
     @Override

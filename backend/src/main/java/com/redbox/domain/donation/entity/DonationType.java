@@ -1,5 +1,5 @@
 package com.redbox.domain.donation.entity;
 
 public enum DonationType {
-    USER, REQUEST, PENDING
+    USER, REQUEST, PENDING, CANCEL, REDBOX
 }
