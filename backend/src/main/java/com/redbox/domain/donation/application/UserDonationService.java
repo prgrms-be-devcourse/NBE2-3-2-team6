@@ -23,8 +23,8 @@ public class UserDonationService extends AbstractDonationService {
 
     private final UserRepository userRepository;
 
-    public UserDonationService(UserService userService, RedcardRepository redcardRepository, RedcardService redcardService, DonationGroupRepository donationGroupRepository, DonationDetailRepository donationDetailRepository, UserRepository userRepository) {
-        super(userService, redcardRepository, redcardService, donationGroupRepository, donationDetailRepository);
+    public UserDonationService(DonationServiceDependencies dependencies, UserRepository userRepository) {
+        super(dependencies);
         this.userRepository = userRepository;
     }
 
@@ -35,10 +35,10 @@ public class UserDonationService extends AbstractDonationService {
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
         validateReceiver(receiverId);
-        long donorId = userService.getCurrentUserId();
+        long donorId = dependencies.getCurrentUserId();
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
-        redcardService.updateRedCardList(redcardList, receiverId);
+        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId);
         DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.USER, donationCount, donationRequest.getComment());
         Long donationGroupId = userDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
@@ -59,7 +59,7 @@ public class UserDonationService extends AbstractDonationService {
     }
 
     public List<Top5DonorResponse> getTop5Donor() {
-        return donationGroupRepository.findTop5DonorsOfTheMonth();
+        return dependencies.getDonationGroupRepository().findTop5DonorsOfTheMonth();
     }
 
 }

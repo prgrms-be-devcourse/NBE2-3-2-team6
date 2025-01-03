@@ -19,11 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class AbstractDonationService implements DonationService {
-    protected final UserService userService;
-    protected final RedcardRepository redcardRepository;
-    protected final RedcardService redcardService;
-    protected final DonationGroupRepository donationGroupRepository;
-    protected final DonationDetailRepository donationDetailRepository;
+    protected final DonationServiceDependencies dependencies;
 
     public abstract void processDonation(DonationRequest donationRequest);
 
@@ -32,18 +28,14 @@ public abstract class AbstractDonationService implements DonationService {
     protected abstract void validateReceiver(long receiverId);
 
     protected List<Redcard> getUsersRedCardList() {
-        Long donateUserId = userService.getCurrentUserId();
-        return redcardRepository.findByUserId(donateUserId);
+        Long donateUserId = dependencies.getCurrentUserId();
+        return dependencies.getUserRedcards(donateUserId);
     }
 
     protected List<Redcard> pickDonateRedCardList(DonationRequest donationRequest) {
         List<Redcard> redcardList = getUsersRedCardList();
         validateDonation(redcardList, donationRequest);
         return redcardList.subList(0, donationRequest.getQuantity());
-    }
-
-    protected Long getDonationUserId() {
-        return userService.getCurrentUserId();
     }
 
     protected DonationGroup createDonationGroup(long donationUserId, long
@@ -57,7 +49,7 @@ public abstract class AbstractDonationService implements DonationService {
                                                          .donationMessage(donationMessage)
                                                          .build();
 
-        return donationGroupRepository.save(redboxDonationGroup);
+        return dependencies.saveDonationGroup(redboxDonationGroup);
     }
 
     protected void saveDonationDetails(List<Redcard> redcardList, Long donationGroupId) {
@@ -67,7 +59,7 @@ public abstract class AbstractDonationService implements DonationService {
                                                           redcardId(redcard.getUserId()).
                                                           build();
 
-            donationDetailRepository.save(donationDetail);
+            dependencies.saveDonationDetail(donationDetail);
         }
     }
 

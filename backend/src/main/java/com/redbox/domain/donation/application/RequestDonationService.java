@@ -21,10 +21,12 @@ import java.util.List;
 public class RequestDonationService extends AbstractDonationService {
 
     private final RequestService requestService;
+    private final RedcardService redcardService;
 
-    public RequestDonationService(UserService userService, RedcardRepository redcardRepository, RedcardService redcardService, DonationGroupRepository donationGroupRepository, DonationDetailRepository donationDetailRepository, RequestService requestService) {
-        super(userService, redcardRepository, redcardService, donationGroupRepository, donationDetailRepository);
+    public RequestDonationService(DonationServiceDependencies dependencies, RequestService requestService) {
+        super(dependencies);
         this.requestService = requestService;
+        this.redcardService = dependencies.getRedcardService();
     }
 
     @Transactional
@@ -34,7 +36,7 @@ public class RequestDonationService extends AbstractDonationService {
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
         validateReceiver(receiverId);
-        long donorId = userService.getCurrentUserId();
+        long donorId = dependencies.getCurrentUserId();
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         // 기부 취소가 이루어질 수 있으니 RedCard 소유자는 변경되지 않음 -> 기부 확정 시점에 이전

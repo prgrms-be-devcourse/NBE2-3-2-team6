@@ -1,6 +1,7 @@
 package com.redbox.domain.redbox.applicaction;
 
 import com.redbox.domain.donation.application.AbstractDonationService;
+import com.redbox.domain.donation.application.DonationServiceDependencies;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
@@ -25,11 +26,10 @@ public class RedboxService extends AbstractDonationService {
 
     private final RedboxRepository redboxRepository;
 
-    public RedboxService(UserService userService,
-                         RedcardRepository redcardRepository,
-                         RedboxRepository redboxRepository,
-                         RedcardService redcardService, DonationGroupRepository donationGroupRepository, DonationDetailRepository donationDetailRepository) {
-        super(userService, redcardRepository, redcardService, donationGroupRepository, donationDetailRepository); // 부모 클래스 생성자 호출
+    public RedboxService(DonationServiceDependencies dependencies,
+                         RedboxRepository redboxRepository
+                         ) {
+        super(dependencies); // 부모 클래스 생성자 호출
         this.redboxRepository = redboxRepository;
     }
 
@@ -41,7 +41,7 @@ public class RedboxService extends AbstractDonationService {
         int totalDonatedCards = redbox.getTotalCount();
 
         // 도움받은 환자 수를 DonationGroup 테이블에서 계산합니다.
-        Integer helpedPatients = donationGroupRepository.getHelpedPatientsCount();
+        Integer helpedPatients = dependencies.getDonationGroupRepository().getHelpedPatientsCount();
         helpedPatients = (helpedPatients != null) ? helpedPatients : 0;
 
         return new RedboxStatsResponse(totalDonatedCards, helpedPatients);
@@ -51,12 +51,12 @@ public class RedboxService extends AbstractDonationService {
     @Transactional
     public void processDonation(DonationRequest donationRequest) {
         int donationCount = donationRequest.getQuantity();
-        long donorId = getDonationUserId();
+        long donorId = dependencies.getCurrentUserId();
         long receiverId = 0L;  // redbox 일 경우 0
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         // 헌혈증 보유자 수정
-        redcardService.updateRedCardList(redcardList, receiverId);
+        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId);
         // 레드박스 기부 기록 생성 & 저장
         DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.USER, donationCount, donationRequest.getComment());
         // 레드박스 디테일 생성 & 저장
