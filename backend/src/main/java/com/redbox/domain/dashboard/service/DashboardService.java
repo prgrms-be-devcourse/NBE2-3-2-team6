@@ -3,6 +3,7 @@ package com.redbox.domain.dashboard.service;
 import com.redbox.domain.dashboard.dto.DashboardResponse;
 import com.redbox.domain.dashboard.dto.UserInfo;
 import com.redbox.domain.dashboard.dto.DonationStats;
+import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.service.UserService;
 import com.redbox.domain.donation.application.DonationStatsService;
@@ -17,6 +18,7 @@ public class DashboardService {
 
     private final UserService userService;
     private final DonationStatsService donationStatsService;
+    private final RequestRepository requestRepository;
 
     public DashboardResponse getDashboardData() {
         // 1. 사용자 정보 조회
@@ -34,11 +36,14 @@ public class DashboardService {
         int patientsHelped = donationStatsService.getPatientsHelped(userId);
         LocalDate lastDonationDate = donationStatsService.getLastDonationDate(userId);
 
-        // 3. 등급 계산
+        // 3. 진행 중인 요청 게시글 수 조회
+        int inProgressRequests = requestRepository.countInProgressRequestsByUserId(userId);
+
+        // 4. 등급 계산
         String grade = calculateGrade(totalDonatedCards);
 
-        // 4. 대시보드 응답 생성
-        DonationStats donationStats = new DonationStats(totalDonatedCards, patientsHelped, grade, lastDonationDate);
+        // 5. 대시보드 응답 생성
+        DonationStats donationStats = new DonationStats(totalDonatedCards, patientsHelped, grade, lastDonationDate, inProgressRequests);
         return new DashboardResponse(userInfo, donationStats);
     }
 
