@@ -5,23 +5,7 @@ import api from "../lib/axios";
 const MainPage = () => {
   const navigate = useNavigate();
   const [rankings, setRankings] = useState([]);
-
-  // 샘플 데이터 - 실제로는 API나 props로 받아와야 합니다
-  const boardItems = [
-    {
-      id: 1,
-      title: "긴급) 백혈병 환우를 위한 헌혈증이 필요합니다",
-      date: "2024.12.15",
-    },
-    {
-      id: 2,
-      title: "수술을 앞둔 딸을 위해 도움을 요청드립니다",
-      date: "2024.12.14",
-    },
-    { id: 3, title: "희귀혈액형 보유자를 찾습니다", date: "2024.12.14" },
-    { id: 4, title: "정기 헌혈 캠페인 참여해주세요", date: "2024.12.13" },
-    { id: 5, title: "헌혈증 기부 감사합니다", date: "2024.12.13" },
-  ];
+  const [boardItems, setBoardItems] = useState([]);
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -38,8 +22,23 @@ const MainPage = () => {
         // 에러 처리 로직 추가 (필요한 경우)
       }
     };
-
     fetchRankings();
+
+    const fetchBoardItems = async () => {
+      try {
+        const response = await api.get("/notices/top5");
+        const formattedBoardItems = response.data.notices.map((item) => ({
+          id: item.noticeNo,
+          title: item.title,
+          date: item.createdDate,
+        }));
+        setBoardItems(formattedBoardItems);
+      } catch (error) {
+        console.error("Failed to fetch rankings:", error);
+        // 에러 처리 로직 추가 (필요한 경우)
+      }
+    };
+    fetchBoardItems();
   }, []);
 
   return (
@@ -69,29 +68,40 @@ const MainPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Board Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-bold mb-4">최근 게시글</h3>
-            <div className="space-y-4">
-              {boardItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between items-center hover:bg-gray-50 p-2 rounded cursor-pointer"
-                  onClick={() => navigate(`/board/${item.id}`)}
-                >
-                  <span className="text-gray-800 flex-1 truncate">
-                    {item.title}
-                  </span>
-                  <span className="text-gray-500 text-sm ml-4">
-                    {item.date}
-                  </span>
+            <h3 className="text-xl font-bold mb-4">최근 공지사항</h3>
+            <div className="space-y-4 h-[250px]">
+              {" "}
+              {/* 높이 고정 */}
+              {boardItems.length > 0 ? (
+                boardItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center hover:bg-gray-50 p-2 rounded cursor-pointer"
+                    onClick={() => navigate(`/community/notice/${item.id}`)}
+                  >
+                    <span className="text-gray-800 flex-1 truncate">
+                      {item.title}
+                    </span>
+                    <span className="text-gray-500 text-sm ml-4">
+                      {item.date}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex items-center justify-center text-gray-500">
+                  등록된 공지사항이 없습니다.
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
           {/* Ranking Section - 데이터 로딩 상태 처리 추가 */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-bold mb-4">이달의 기부왕</h3>
-            <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">이달의 기부왕</h3>
+              <span className="text-sm text-gray-500">30분마다 갱신</span>
+            </div>
+            <div className="space-y-4 h-[250px]">
               {rankings.length > 0 ? (
                 rankings.map((rank) => (
                   <div

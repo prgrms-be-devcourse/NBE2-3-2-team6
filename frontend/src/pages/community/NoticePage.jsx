@@ -119,8 +119,7 @@ const NoticePage = () => {
 
             {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
-              <div className="flex justify-between items-center w-full">
-                <div className="w-16"></div>
+              <div className="flex justify-center items-center w-full">
                 <nav className="flex space-x-2 justify-between">
                   {/* 이전 그룹 버튼 */}
                   <button
