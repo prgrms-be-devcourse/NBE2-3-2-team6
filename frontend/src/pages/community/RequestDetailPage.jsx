@@ -82,10 +82,10 @@ const RequestDetailPage = () => {
   // 기부 요청 처리 함수
   const handleDonate = async (quantity, comment) => {
     try {
-      const donationUrl = '/request/{id}/donate'; // 실제 기부 API URL
+      const donationUrl = '/donate/request'; // 실제 기부 API URL
       const payload = {
         quantity: parseInt(quantity), // 기부 수량
-        requestId: id, // 현재 요청 ID
+        receiveId: id, // 현재 요청 ID
         comment, // 기부에 대한 코멘트
       };
       const response = await api.post(donationUrl, payload); // 기부 요청 API 호출
