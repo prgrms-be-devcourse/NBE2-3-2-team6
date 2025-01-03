@@ -42,6 +42,7 @@ public class AdminService {
                 break;
             case "거절" :
                 changeRequest.reject();
+                changeRequest.expired();
                 break;
             default:
                 throw new InvalidApproveStatusException();

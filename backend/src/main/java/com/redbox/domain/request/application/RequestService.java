@@ -43,7 +43,6 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final LikesRepository likesRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
 
     // 현재 로그인한 사용자 정보 가져오기
     private Long getCurrentUserId() {

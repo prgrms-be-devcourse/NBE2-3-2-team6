@@ -1,9 +1,11 @@
 package com.redbox.domain.request.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Setter
 @Getter
 public class RequestFilter {
     private int page;
