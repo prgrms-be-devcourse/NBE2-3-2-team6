@@ -33,7 +33,7 @@ public class UserDonationService extends AbstractDonationService {
     public void processDonation(DonationRequest donationRequest) {
         // user 에게 기부
         int donationCount = donationRequest.getQuantity();
-        long receiverId = donationRequest.getUserId();
+        long receiverId = donationRequest.getReceiveId();
         validateReceiver(receiverId);
         long donorId = userService.getCurrentUserId();
 
@@ -47,7 +47,7 @@ public class UserDonationService extends AbstractDonationService {
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
         checkDonateAmount(redcardList, donationRequest.getQuantity());
-        validateReceiver(donationRequest.getUserId());
+        validateReceiver(donationRequest.getReceiveId());
     }
 
     @Override

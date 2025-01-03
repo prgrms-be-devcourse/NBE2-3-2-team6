@@ -12,10 +12,12 @@ import com.redbox.domain.request.application.RequestService;
 import com.redbox.domain.request.exception.RequestNotFoundException;
 import com.redbox.domain.user.service.UserService;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 public class RequestDonationService extends AbstractDonationService {
 
     private final RequestService requestService;
@@ -30,7 +32,7 @@ public class RequestDonationService extends AbstractDonationService {
     public void processDonation(DonationRequest donationRequest) {
         // 게시글에 기부 (대기 상태)
         int donationCount = donationRequest.getQuantity();
-        long receiverId = donationRequest.getRequestId();
+        long receiverId = donationRequest.getReceiveId();
         validateReceiver(receiverId);
         long donorId = userService.getCurrentUserId();
 
@@ -45,7 +47,6 @@ public class RequestDonationService extends AbstractDonationService {
 
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
-
     }
 
     @Override
