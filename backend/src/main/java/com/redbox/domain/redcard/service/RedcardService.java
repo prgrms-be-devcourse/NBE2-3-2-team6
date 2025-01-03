@@ -71,4 +71,10 @@ public class RedcardService {
             redcard.updateUser(receiveUserId);
         }
     }
+
+    public void updateRedCardStatusPending(List<Redcard> redcardList) {
+        for (Redcard redcard : redcardList) {
+            redcard.changeRedcardStatus(RedcardStatus.PENDING);
+        }
+    }
 }

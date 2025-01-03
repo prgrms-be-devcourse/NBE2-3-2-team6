@@ -202,4 +202,8 @@ public class RequestService {
             throw new UnauthorizedAccessException();
         }
     }
+
+    public boolean existsRequestById(long requestId) {
+        return requestRepository.existsById(requestId);
+    }
 }
