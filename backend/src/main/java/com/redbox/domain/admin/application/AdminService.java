@@ -9,6 +9,7 @@ import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
 import com.redbox.domain.request.repository.RequestRepository;
+import com.redbox.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     private final RequestRepository requestRepository;
+    private final UserService userService;
 
     // 요청 게시글 리스트 조회
     public List<AdminListResponse> getRequests() {
@@ -69,5 +71,17 @@ public class AdminService {
                 request.getAttachFiles()
                         .stream().map(AttachFileResponse::new).toList()
         );
+    }
+
+    public List<AdminListResponse> getHotBoards() {
+        return requestRepository.findTop5RequestWithLikeCount().stream()
+                .map(AdminListResponse::new).toList();
+    }
+
+    public List<AdminListResponse> getLikedBoards() {
+        Long userId = userService.getCurrentUserId();
+
+        return requestRepository.findLikedTop5RequestsByUserId(userId).stream()
+                .map(AdminListResponse::new).toList();
     }
 }
