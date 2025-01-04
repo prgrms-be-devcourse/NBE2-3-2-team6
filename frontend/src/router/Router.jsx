@@ -29,8 +29,11 @@ import RequestListPage from "../pages/mypage/RequestListPage";
 import FindAccountPage from "../pages/FindAccountPage";
 import FindResultPage from "../pages/FindResultPage";
 import RequestDetailPage from "../pages/community/RequestDetailPage";
-import RequestModifyPage from "../pages/community/RequestModifyPage"
 import AdminNoticeModifyPage from "../pages/admin/AdminNoticeModifyPage";
+
+import MyRequestDetailPage from "../pages/mypage/MyRequestDetailPage";
+import MyRequestModifyPage from "../pages/mypage/MyRequestModifyPage";
+
 import { decodeJWT } from "../lib/axios";
 
 const requireAdmin = () => {
@@ -76,10 +79,6 @@ const router = createBrowserRouter([
         element: <RequestWritePage />,
       },
       {
-        path: "/community/request/modify/:id",
-        element: <RequestModifyPage/>
-      },
-      {
         path: "/community/article",
         element: <ArticlePage />,
       },
@@ -102,6 +101,14 @@ const router = createBrowserRouter([
       {
         path: "/mypage/request",
         element: <RequestListPage />,
+      },
+      {
+        path: "/mypage/request/:id",
+        element: <MyRequestDetailPage />,
+      },
+      {
+        path: "/mypage/request/modify/:id",
+        element: <MyRequestModifyPage />,
       },
       {
         path: "/mypage/history",

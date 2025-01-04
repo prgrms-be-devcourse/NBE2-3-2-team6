@@ -5,6 +5,7 @@ import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
 import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import api from "../../lib/axios";
+import { useEffect } from 'react';
 
 const url = "/requests";
 
@@ -21,8 +22,16 @@ const RequestWritePage = () => {
   const [attachFiles, setAttachFiles] = useState([]);
 
   const handleTitleInput = (e) => setTitle(e.target.value);
+  const handleDonationStartDateInput = (e) => setDonationStartDate(e.target.value);
   const handleDonationEndDateInput = (e) => setDonationEndDate(e.target.value);
   const handleDonationAmountInput = (e) => setDonationAmount(e.target.value);
+
+  useEffect(() => {
+    // 오늘 날짜를 yyyy-mm-dd 형식으로 설정
+    const today = new Date().toISOString().split('T')[0];
+    setDonationStartDate(today); // 기본적으로 시작일자를 오늘 날짜로 설정
+    setDonationEndDate(today);   // 기본적으로 종료일자를 시작일자와 동일하게 설정
+  }, []);
 
   const handleFileButton = () => {
     fileInputRef.current?.click();
@@ -70,7 +79,7 @@ const RequestWritePage = () => {
       if (response.status === 201) {
         const { id } = response.data;
         alert("등록 완료");
-        navigate(`/community/request/${id}`);
+        navigate(`/mypage/request/${id}`);
       } else {
         alert("등록 실패");
       }
@@ -106,7 +115,8 @@ const RequestWritePage = () => {
                   type="date"
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   value={donationStartDate}
-                  readOnly
+                  min={new Date().toISOString().split('T')[0]} // 오늘 날짜 이후로 선택 가능
+                  onChange={handleDonationStartDateInput}
                 />
               </div>
               <div>
@@ -115,7 +125,7 @@ const RequestWritePage = () => {
                   type="date"
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   value={donationEndDate}
-                  min={donationStartDate}
+                  min={donationStartDate} // 기부 시작일자보다 같거나 더 큰 날짜로 설정
                   onChange={handleDonationEndDateInput}
                 />
               </div>
@@ -129,7 +139,16 @@ const RequestWritePage = () => {
                 placeholder="요청할 헌혈증 개수를 입력하세요"
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 value={donationAmount}
-                onChange={handleDonationAmountInput}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "0") {
+                    alert("헌혈증 요청 개수는 1 이상이어야 합니다.");
+                    // 값이 0이면 1로 자동 변경
+                    handleDonationAmountInput({ target: { value: "1" } });
+                  } else {
+                    handleDonationAmountInput(e);
+                  }
+                }}
               />
             </div>
 
