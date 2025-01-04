@@ -2,6 +2,7 @@ package com.redbox.domain.request.application;
 
 import com.redbox.domain.attach.entity.AttachFile;
 import com.redbox.domain.attach.entity.Category;
+import com.redbox.domain.donation.application.RequestDonationService;
 import com.redbox.domain.request.dto.DetailResponse;
 import com.redbox.domain.request.dto.WriteRequest;
 import com.redbox.domain.request.dto.RequestFilter;
@@ -67,16 +68,17 @@ public class RequestService {
         return new PageResponse<>(responsePage);
     }
 
-    // 게시글 만료 처리
-    @Transactional
-    public void updateExpiredRequests() {
-        LocalDate today = LocalDate.now();
-        List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
-        for (Request request : expiredRequests) {
-            request.expired();
-        }
-        requestRepository.saveAll(expiredRequests);
-    }
+//    // 게시글 만료 처리
+//    @Transactional
+//    public void updateExpiredRequests() {
+//        LocalDate today = LocalDate.now();
+//        List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
+//        for (Request request : expiredRequests) {
+////            requestDonationService.donationConfirm(request.getRequestId(), request.getUserId());
+//            request.expired();
+//        }
+//        requestRepository.saveAll(expiredRequests);
+//    }
 
     // 게시글 등록
     @Transactional
@@ -201,6 +203,9 @@ public class RequestService {
             throw new UnauthorizedAccessException();
         }
     }
+
+    public boolean existsRequestById(long requestId) {
+        return requestRepository.existsById(requestId);
 
     // 게시글 삭제
     public void deleteRequest(Long requestId) {

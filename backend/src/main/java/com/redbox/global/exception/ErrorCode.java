@@ -19,6 +19,7 @@ public enum ErrorCode {
     NOT_BELONG_TO_REDCARD(HttpStatus.BAD_REQUEST, "자신이 소유한 헌혈증이 아닙니다."),
     PENDING_REDCARD(HttpStatus.BAD_REQUEST, "기부 진행중인 헌혈증입니다."),
     INVALID_REDCARD_STATUS(HttpStatus.BAD_REQUEST, "올바른 헌혈증 상태가 아닙니다."),
+    NOT_FOUND_REDCARD(HttpStatus.NOT_FOUND, "헌혈증을 찾을 수 없습니다"),
 
     // 공지사항 관련
     FAIL_TO_FIND_NOTICE(HttpStatus.NOT_FOUND,"해당 공지사항을 찾을 수 없습니다."),
@@ -78,6 +79,8 @@ public enum ErrorCode {
     // 기부
     NOT_FOUND_DONATION_TYPE(HttpStatus.NOT_FOUND, "기부 타입을 찾을 수 없습니다."),
     INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다."),
+    DONATION_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST, "기부가 확정되어 취소할 수 없습니다."),
+    NOT_FOUND_DONATION_GROUP(HttpStatus.NOT_FOUND, "해당 게시글에 대한 기부 이력이 없습니다"),
 
     // 기부 통계 관련 에러코드
     STATS_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "기부 통계 계산 중 오류가 발생했습니다.");
