@@ -2,18 +2,20 @@ package com.redbox.domain.donation.repository;
 
 import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
-
+import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.user.dto.DonationResponse;
 import com.redbox.domain.user.dto.ReceptionResponse;
-import io.lettuce.core.dynamic.annotation.Param;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import io.lettuce.core.dynamic.annotation.Param;
+
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 public interface DonationGroupRepository extends JpaRepository<DonationGroup, Long> {
 
@@ -58,4 +60,8 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "LIMIT 5")
     List<Top5DonorResponse> findTop5DonorsOfTheMonth();
 
+    @Query("SELECT d FROM DonationGroup  d WHERE d.donorId =:donorId AND d.receiverId =:receiverId AND d.donationType =:donationType")
+    DonationGroup findByDonorIdAndReceiverIdAndDonationType(@Param("donorId") long donorId, @Param("receiverId") long receiverId, @Param("donationType") DonationType donationType);
+
+    List<DonationGroup> findByReceiverIdAndDonationType(long receiverId, DonationType donationType);
 }

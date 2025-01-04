@@ -5,12 +5,8 @@ import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAmountExceededException;
-import com.redbox.domain.donation.repository.DonationDetailRepository;
-import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
-import com.redbox.domain.redcard.repository.RedcardRepository;
-import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.service.UserService;
+import com.redbox.domain.redcard.entity.RedcardStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,29 +15,26 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class AbstractDonationService implements DonationService {
-    protected final UserService userService;
-    protected final RedcardRepository redcardRepository;
-    protected final RedcardService redcardService;
-    protected final DonationGroupRepository donationGroupRepository;
-    protected final DonationDetailRepository donationDetailRepository;
+    protected final DonationServiceDependencies dependencies;
 
     public abstract void processDonation(DonationRequest donationRequest);
 
+    public abstract void cancelDonation(long receiveId);
+
     public abstract void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest);
 
+    protected abstract void validateReceiver(long receiverId);
+
     protected List<Redcard> getUsersRedCardList() {
-        Long donateUserId = userService.getCurrentUserId();
-        return redcardRepository.findByUserId(donateUserId);
+        Long donateUserId = dependencies.getCurrentUserId();
+
+        return dependencies.getUserRedcards(donateUserId, RedcardStatus.AVAILABLE);
     }
 
     protected List<Redcard> pickDonateRedCardList(DonationRequest donationRequest) {
         List<Redcard> redcardList = getUsersRedCardList();
         validateDonation(redcardList, donationRequest);
         return redcardList.subList(0, donationRequest.getQuantity());
-    }
-
-    protected Long getDonationUserId() {
-        return userService.getCurrentUserId();
     }
 
     protected DonationGroup createDonationGroup(long donationUserId, long
@@ -55,17 +48,17 @@ public abstract class AbstractDonationService implements DonationService {
                                                          .donationMessage(donationMessage)
                                                          .build();
 
-        return donationGroupRepository.save(redboxDonationGroup);
+        return dependencies.saveDonationGroup(redboxDonationGroup);
     }
 
     protected void saveDonationDetails(List<Redcard> redcardList, Long donationGroupId) {
         for (Redcard redcard : redcardList) {
             DonationDetail donationDetail = DonationDetail.builder().
                                                           donationGroupId(donationGroupId).
-                                                          redcardId(redcard.getUserId()).
+                                                          redcardId(redcard.getId()).
                                                           build();
 
-            donationDetailRepository.save(donationDetail);
+            dependencies.saveDonationDetail(donationDetail);
         }
     }
 

@@ -58,8 +58,8 @@ class RedboxServiceTest {
     void donationProcessTest() {
         // Arrange
         DonationRequest donationRequest = DonationRequest.builder()
-                                                         .amount(2)
-                                                         .message("힘내세용")
+                                                         .quantity(2)
+                                                         .comment("힘내세용")
                                                          .build();
         Long donationUserId = 1L;
 
@@ -105,8 +105,8 @@ class RedboxServiceTest {
     void processDonation_shouldHandleInsufficientRedcards() {
         // Arrange
         DonationRequest donationRequest = DonationRequest.builder()
-                                                         .amount(5)
-                                                         .message("힘내세용")
+                                                         .quantity(5)
+                                                         .comment("힘내세용")
                                                          .build();
         Long donationUserId = 1L;
 

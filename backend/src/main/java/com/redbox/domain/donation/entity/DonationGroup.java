@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Getter
 @Entity
@@ -35,5 +34,13 @@ public class DonationGroup {
         this.donationAmount = donationAmount;
         this.donationDate = donationDate;
         this.donationMessage = donationMessage;
+    }
+
+    public void donateConfirm() {
+        this.donationType = DonationType.REQUEST;
+    }
+
+    public void donateCancel() {
+        this.donationType = DonationType.CANCEL;
     }
 }
