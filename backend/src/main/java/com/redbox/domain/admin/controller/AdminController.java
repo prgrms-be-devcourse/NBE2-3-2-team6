@@ -4,13 +4,9 @@ import com.redbox.domain.admin.application.AdminService;
 import com.redbox.domain.admin.dto.AdminApproveRequest;
 import com.redbox.domain.admin.dto.AdminDetailResponse;
 import com.redbox.domain.admin.dto.AdminListResponse;
-import com.redbox.domain.request.application.RequestService;
-import com.redbox.domain.request.dto.DetailResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,5 +40,14 @@ public class AdminController {
         AdminDetailResponse detailResponse = adminService.getRequestDetails(requestId);
         return ResponseEntity.ok(detailResponse);
     }
-    
+
+    @GetMapping("/admin/hot")
+    public ResponseEntity<List<AdminListResponse>> getHotBoards() {
+        return ResponseEntity.ok(adminService.getHotBoards());
+    }
+
+    @GetMapping("/admin/like")
+    public ResponseEntity<List<AdminListResponse>> getLikedBoards() {
+        return ResponseEntity.ok(adminService.getLikedBoards());
+    }
 }

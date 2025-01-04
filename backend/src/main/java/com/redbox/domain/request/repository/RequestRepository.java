@@ -25,4 +25,10 @@ public interface RequestRepository extends JpaRepository<Request, Long>, Request
 
     @Query("SELECT COUNT(r) FROM Request r WHERE r.requestStatus = 'APPROVE' AND r.progress = 'IN_PROGRESS'")
     int countAllInProgressRequests();
+
+    @Query("SELECT r FROM Request r WHERE r.requestStatus = 'APPROVE' AND r.progress = 'IN_PROGRESS' order by r.requestLikes desc limit 5")
+    List<Request> findTop5RequestWithLikeCount();
+
+    @Query("SELECT r FROM Request r join fetch Like l on r.requestId = l.requestId WHERE l.userId = :userId and l.isLiked = true order by l.updatedAt desc limit 5")
+    List<Request> findLikedTop5RequestsByUserId(Long userId);
 }
