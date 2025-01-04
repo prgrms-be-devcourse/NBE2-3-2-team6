@@ -16,11 +16,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
-import java.util.Map;
-
 @Service
 @AllArgsConstructor
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
 
