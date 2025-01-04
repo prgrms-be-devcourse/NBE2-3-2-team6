@@ -3,7 +3,6 @@ package com.redbox.domain.user.controller;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
