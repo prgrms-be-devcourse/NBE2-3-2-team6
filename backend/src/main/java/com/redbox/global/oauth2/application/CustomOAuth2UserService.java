@@ -1,5 +1,6 @@
-package com.redbox.global.oauth2.service;
+package com.redbox.global.oauth2.application;
 
+import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.user.entity.RoleType;
 import com.redbox.domain.user.entity.Status;
 import com.redbox.domain.user.entity.User;
@@ -41,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String userEmail = oAuth2Response.getEmail();
-        User existData = userRepository.findByEmail(userEmail);
+        User existData = userRepository.findByEmail(userEmail).orElse(null);
 
         if (existData == null) {
             // email 을 가진 유저가 없는 경우 (처음 가입)
@@ -55,11 +56,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         }
 
-        SocialUserDTO socialUserDTO = new SocialUserDTO();
-        socialUserDTO.setName(existData.getName());
-        socialUserDTO.setEmail(existData.getEmail());
-        socialUserDTO.setRole(existData.getRoleType());
+        return new CustomUserDetails(existData);
+//        SocialUserDTO socialUserDTO = new SocialUserDTO();
+//        socialUserDTO.setUserId(existData.getId());
+//        socialUserDTO.setName(existData.getName());
+//        socialUserDTO.setEmail(existData.getEmail());
+//        socialUserDTO.setRole(existData.getRoleType());
 
-        return new CustomOAuth2User(socialUserDTO);
+//        return new CustomOAuth2User(socialUserDTO);
     }
 }

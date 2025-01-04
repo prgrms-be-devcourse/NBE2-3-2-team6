@@ -1,8 +1,9 @@
 package com.redbox.global.config;
 
 
+import com.redbox.global.oauth2.application.CustomSuccessHandler;
 import com.redbox.global.oauth2.repository.CustomClientRegistrationRepo;
-import com.redbox.global.oauth2.service.CustomOAuth2UserService;
+import com.redbox.global.oauth2.application.CustomOAuth2UserService;
 
 import com.redbox.domain.auth.filter.CustomLogoutFilter;
 import com.redbox.domain.auth.filter.JWTFilter;
@@ -27,8 +28,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import lombok.AllArgsConstructor;
-
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -41,13 +41,15 @@ public class SecurityConfig {
     private final RefreshTokenService refreshTokenService; // 변경: RefreshTokenService 주입
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomClientRegistrationRepo customClientRegistrationRepo;
+    private final CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomClientRegistrationRepo customClientRegistrationRepo, AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomClientRegistrationRepo customClientRegistrationRepo, AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshTokenService refreshTokenService, CustomSuccessHandler customSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customClientRegistrationRepo = customClientRegistrationRepo;
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService; // 주입
+        this.customSuccessHandler = customSuccessHandler;
     }
 
     @Bean
@@ -65,9 +67,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // API 서버이므로
                 .oauth2Login((oauth2) -> oauth2
-                        .loginPage("/login")
+                        .loginPage("/")
                         .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
-                        .userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))))
+                        .userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService)))
+                        .successHandler(customSuccessHandler))
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/**").permitAll()
                     // .requestMatchers("/community/request/write").permitAll()
@@ -106,6 +109,11 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*"));
         configuration.setExposedHeaders(List.of("access", "Content-Type"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+        configuration.setExposedHeaders(Collections.singletonList("access"));
+        configuration.setExposedHeaders(Collections.singletonList("refresh"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

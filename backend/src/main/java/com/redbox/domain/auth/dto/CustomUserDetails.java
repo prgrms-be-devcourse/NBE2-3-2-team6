@@ -2,16 +2,21 @@ package com.redbox.domain.auth.dto;
 
 import com.redbox.domain.user.entity.Status;
 import com.redbox.domain.user.entity.User;
+import com.redbox.global.oauth2.dto.SocialUserDTO;
+
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Getter
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, OAuth2User {
 
     private final User user;
 
@@ -61,5 +66,15 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         // 계정이 활성 상태인지 확인
         return user.getStatus() == Status.ACTIVE;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return user.getName();
     }
 }

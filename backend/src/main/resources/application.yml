@@ -133,15 +133,6 @@ spring:
         format_sql: true
 ---
 spring:
-  security:
-    oauth2:
-      client:
-        #등록 필수
-        registration:
-          naver:
-            client-id: ${NAVER_API}
-            client-secret: ${NAVER_SECRET}
-
   data:
     redis:
       port: 6379
