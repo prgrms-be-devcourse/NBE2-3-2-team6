@@ -206,6 +206,7 @@ public class RequestService {
 
     public boolean existsRequestById(long requestId) {
         return requestRepository.existsById(requestId);
+    }
 
     // 게시글 삭제
     public void deleteRequest(Long requestId) {
