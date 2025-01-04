@@ -24,6 +24,7 @@ public class Request extends BaseEntity {
     private Long requestId; // 게시글 아이디
 
     private Long userId;
+    private String userName;
     private String requestTitle;
     private String requestContent;
     private int targetAmount;
@@ -51,8 +52,9 @@ public class Request extends BaseEntity {
     private List<AttachFile> attachFiles = new ArrayList<>();
 
     @Builder
-    public Request(Long userId, String requestTitle, String requestContent, int targetAmount, int currentAmount, RequestStatus requestStatus, RequestStatus progress, LocalDate donationStartDate, LocalDate donationEndDate, LocalDate requestDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes) {
+    public Request(Long userId, String userName, String requestTitle, String requestContent, int targetAmount, int currentAmount, RequestStatus requestStatus, RequestStatus progress, LocalDate donationStartDate, LocalDate donationEndDate, LocalDate requestDate, String requestAttachFile, Priority priority, int requestHits, int requestLikes) {
         this.userId = userId;
+        this.userName = userName;
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
         this.targetAmount = targetAmount;

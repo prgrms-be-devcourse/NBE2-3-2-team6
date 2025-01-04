@@ -14,6 +14,7 @@ public class ListResponse {
 
     private Long userId;
     private String userEmail;
+    private String userName;
 
     private String requestTitle;
     private String requestContent;
@@ -33,6 +34,7 @@ public class ListResponse {
         this.requestId = request.getRequestId();
         this.userId = request.getUserId();
         this.userEmail = request.getCreatedBy();
+        this.userName = request.getUserName();
         this.requestTitle = request.getRequestTitle();
         this.requestContent = request.getRequestContent();
         this.targetAmount = request.getTargetAmount();
