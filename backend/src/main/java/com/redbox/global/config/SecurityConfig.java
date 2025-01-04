@@ -1,11 +1,10 @@
 package com.redbox.global.config;
 
-import com.redbox.global.oauth.service.CustomOAuthUserService;
+import com.redbox.global.oauth2.repository.CustomClientRegistrationRepo;
 import com.redbox.global.oauth2.service.CustomOAuth2UserService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,8 +25,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private final CustomOAuthUserService customOAuthUserService;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomClientRegistrationRepo customClientRegistrationRepo;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,7 +37,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // API 서버이므로
-                .oauth2Login((oauth2) -> oauth2.userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))))
+                .oauth2Login((oauth2) -> oauth2
+                        .loginPage("/login")
+                        .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
+                        .userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))))
                 .authorizeHttpRequests(auth -> auth
                     // 이메일 인증 관련 엔드포인트 허용
                     .requestMatchers("/auth/email/**").permitAll()
