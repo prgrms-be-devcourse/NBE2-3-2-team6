@@ -75,8 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/write/requests").authenticated()
                         .requestMatchers(HttpMethod.POST, "/requests/**").authenticated()
                         // 관리자 목록 확인
-                        .requestMatchers(HttpMethod.GET,"/admin/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/admin/**").permitAll()
+                        .requestMatchers("/admin/**").permitAll()
                         .anyRequest().authenticated()
 
                 )
