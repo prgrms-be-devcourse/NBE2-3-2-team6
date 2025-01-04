@@ -46,6 +46,10 @@ public class NoticeService {
     // 메인페이지 기능이기 때문에
     @PostConstruct
     public void initializeCache() {
+        // 기존 캐시 삭제
+        redisTemplate.delete(TOP5_NOTICES_KEY);
+
+        // 새로운 캐시 생성
         updateTop5NoticesCache();
     }
 
@@ -95,41 +99,40 @@ public class NoticeService {
     public NoticeListWrapper getCachedTop5Notices() {
         try {
             Object cachedObject = redisTemplate.opsForValue().get(TOP5_NOTICES_KEY);
+
             if (cachedObject != null) {
                 return (NoticeListWrapper) cachedObject;
             }
 
-            List<RecentNoticeResponse> notices = getTop5NoticesFromDB();
-            NoticeListWrapper wrapper = new NoticeListWrapper(notices);
-            redisTemplate.opsForValue().set(TOP5_NOTICES_KEY, wrapper, CACHE_TTL);
-            return wrapper;
+            NoticeListWrapper notices = getTop5NoticesFromDB();
+            redisTemplate.opsForValue().set(TOP5_NOTICES_KEY, notices, CACHE_TTL);
+            return notices;
         } catch (RedisConnectionException e) {
             log.error("Redis 연결 실패, DB에서 직접 조회합니다", e);
-            return new NoticeListWrapper(getTop5NoticesFromDB());
+            return getTop5NoticesFromDB();
         }
     }
 
     // 캐시 갱신 로직
-    private List<RecentNoticeResponse> updateTop5NoticesCache() {
-        List<RecentNoticeResponse> top5Notices = getTop5NoticesFromDB();
+    private void updateTop5NoticesCache() {
+        NoticeListWrapper top5Notices = getTop5NoticesFromDB();
         try {
             redisTemplate.opsForValue().set(TOP5_NOTICES_KEY, top5Notices, CACHE_TTL);
         } catch (RedisConnectionException e) {
             log.error("Redis 캐시 갱신 실패", e);
         }
-        return top5Notices;
     }
 
     // 최신순 공지사항 5개 조회
     // DB에서 직접 조회
-    public List<RecentNoticeResponse> getTop5NoticesFromDB() {
-        return noticeRepository.findTop5ByOrderByCreatedAtDesc().stream()
+    public NoticeListWrapper getTop5NoticesFromDB() {
+        return new NoticeListWrapper(noticeRepository.findTop5ByOrderByCreatedAtDesc().stream()
                 .map(notice -> new RecentNoticeResponse(
                         notice.getId(),
                         notice.getNoticeTitle(),
                         notice.getCreatedAt().toLocalDate()
                 ))
-                .toList();
+                .toList());
     }
 
     @Transactional(readOnly = true)
