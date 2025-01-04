@@ -93,7 +93,7 @@ const ApprovalRequestDetailPage = () => {
         {/* 메인 컨텐츠 */}
         <div className="flex-1 p-8">
           {request && (
-            <div className="bg-white max-w-screen-lg mx-auto rounded-lg shadow-md p-6 h-[800px]">
+            <div className="bg-white max-w-screen-lg mx-auto rounded-lg shadow-md p-6 h-auto">
               <h1 className="text-2xl text-center font-bold mb-6">게시글 승인 요청</h1>
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="text-2xl flex-1 text-center">{request.title}</div>
@@ -173,7 +173,7 @@ const ApprovalRequestDetailPage = () => {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <h2 className="text-lg font-bold mb-4">{modal.action} 확인</h2>
-              <p className="mb-4">'{modal.title}'을 {modal.action}하시겠습니까?</p>
+              <p className="mb-4">'{modal.id}'번 게시물을 {modal.action}하시겠습니까?</p>
               <div className="flex justify-end space-x-2">
                 <button
                   onClick={confirmAction}

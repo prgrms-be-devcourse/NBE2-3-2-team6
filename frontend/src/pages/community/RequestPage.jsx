@@ -59,8 +59,19 @@ const RequestPage = () => {
     }
   };
 
-  const handleRequestWrite = () => {
-    navigate("/community/request/write");
+  const handleRequestWrite = async() => {
+    try {
+      const response = await api.get(`/write/requests`);
+      console.log(response.status);
+      navigate("/community/request/write");
+    } catch (error) {
+      if (error.response.status === 403){
+        alert("로그인이 필요합니다");
+      } else {
+        console.error("권한 확인 중 오류 : ", error);
+        alert("권한 확인 중 오류가 발생했습니다")
+      }
+    }
   };
 
   return (
@@ -99,35 +110,17 @@ const RequestPage = () => {
               <div className="divide-y">
                 {requests.length > 0 ? (
                   requests.map((request) => (
-                    <div
-                      key={request.requestId}
-                      className="flex items-center py-3 hover:bg-gray-50"
-                    >
-                      <div className="w-24 text-center text-sm text-gray-500">
-                        {request.requestId}
-                      </div>
-                      <div className="flex-1 px-6">
-                        <Link
-                          to={`/community/request/${request.requestId}`}
-                          className="text-gray-900 hover:text-red-600"
-                        >
-                          {request.requestTitle}
-                        </Link>
-                      </div>
-                      <div className="w-36 text-center text-sm text-gray-500">
-                        {request.userEmail}
-                      </div>
-                      <div className="w-36 text-center text-sm text-gray-500">
-                        {request.requestDate}
-                      </div>
-                      <div
-                        className={`w-36 text-center text-sm ${
-                          request.progress === "진행중"
-                            ? "text-blue-500"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {request.progress}
+                    <div key={request.requestId} className="flex items-center py-3 hover:bg-gray-50">
+                    <div className="w-24 text-center text-sm text-gray-500">{request.requestId}</div>
+                    <div className="flex-1 px-6">
+                      <Link to={`/community/request/${request.requestId}`} className="text-gray-900 hover:text-red-600">
+                        {request.requestTitle}
+                      </Link>
+                    </div>
+                    <div className="w-36 text-center text-sm text-gray-500">{request.userName}</div>
+                    <div className="w-36 text-center text-sm text-gray-500">{request.requestDate}</div>
+                    <div className={`w-36 text-center text-sm ${request.progress === "진행중" ? 'text-blue-500' : 'text-gray-500'}`}>
+                      {request.progress}
                       </div>
                       <div className="w-24 text-center text-sm text-gray-500">
                         {request.requestHits}

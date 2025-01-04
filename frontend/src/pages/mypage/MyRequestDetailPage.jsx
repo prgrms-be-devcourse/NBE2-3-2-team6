@@ -12,6 +12,8 @@ const RequestDetailPage = () => {
   const [likes, setLikes] = useState(0); // 좋아요 수 상태
   const [currentAmount, setCurrentAmount] = useState(0); // 현재 기부 금액 상태
   const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false); // 기부 모달 열림 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [isLiked, setIsLiked] = useState(false); // 좋아요 상태
 
   // 요청 상세 정보를 가져오기 위한 URL
@@ -64,9 +66,13 @@ const RequestDetailPage = () => {
         console.log("200 OK 좋아요 업데이트")
         alert(response.data.message); // 성공 메시지 알림
         setIsLiked((prevIsLiked) => !prevIsLiked); // 좋아요 상태 토글
-      }
+      } 
     } catch (error) {
-      console.error("좋아요 요청 오류:", error); // 오류 처리
+      if(error.response.status === 403) {
+        alert("로그인이 필요합니다");
+      } else {
+        console.error("좋아요 요청 오류:", error); // 오류 처리
+      }
     }
   };
 
@@ -122,6 +128,10 @@ const RequestDetailPage = () => {
     }
   };
 
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true); // 모달 열기
+  };
+
   const handleDeleteBtn = async() => {
      try{
         const response = await api.delete(url);
@@ -130,7 +140,7 @@ const RequestDetailPage = () => {
           navigate("/mypage/request")
         }
       } catch (error) {
-        console.log("err");
+        console.log("err"); 
       }
     };
   
@@ -154,7 +164,7 @@ const RequestDetailPage = () => {
 
                 <div className="flex bg-gray-50 py-3 border-b">
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">작성자</div>
-                  <div className="w-1/12 text-center text-sm font-medium">{request.userEmail}</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.userName}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">등록일</div>
                   <div className="w-1/12 text-center text-sm font-medium">{request.date}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">기부 시작일</div>
@@ -220,7 +230,7 @@ const RequestDetailPage = () => {
                     </button>
                     <button
                       className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      onClick={handleDeleteBtn}
+                      onClick={handleOpenDeleteModal}
                     >
                       삭제
                     </button>
@@ -263,6 +273,28 @@ const RequestDetailPage = () => {
           onClose={() => setIsRedboxModalOpen(false)}
           onSubmit={handleDonate} // 기부 처리 함수
         />
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <p className="mb-4">게시물을 삭제하시겠습니까?</p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={handleDeleteBtn} // 탈퇴 처리 함수 호출
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                확인
+              </button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)} // 모달 닫기
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

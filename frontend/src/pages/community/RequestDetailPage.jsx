@@ -57,16 +57,20 @@ const RequestDetailPage = () => {
 
     try {
       console.log(url + "/like");
-
       const response = await api.post(url + "/like"); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
         console.log("200 OK 좋아요 업데이트")
         alert(response.data.message); // 성공 메시지 알림
         setIsLiked((prevIsLiked) => !prevIsLiked); // 좋아요 상태 토글
-      }
+      } 
     } catch (error) {
+      if (error.response.status === 403) {
+        alert("로그인이 필요합니다");
+      } else {
       console.error("좋아요 요청 오류:", error); // 오류 처리
+
+      }
     }
   };
 
@@ -123,7 +127,7 @@ const RequestDetailPage = () => {
 
                 <div className="flex bg-gray-50 py-3 border-b">
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">작성자</div>
-                  <div className="w-1/12 text-center text-sm font-medium">{request.userEmail}</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.userName}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">등록일</div>
                   <div className="w-1/12 text-center text-sm font-medium">{request.date}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">기부 시작일</div>
