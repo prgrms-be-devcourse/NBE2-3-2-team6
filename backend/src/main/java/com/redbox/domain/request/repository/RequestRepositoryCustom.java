@@ -7,6 +7,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RequestRepositoryCustom {
-
     public Page<Request> searchBoards(Long userId, RequestFilter requestFilter, Pageable pageable);
 }

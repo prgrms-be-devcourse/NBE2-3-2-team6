@@ -78,6 +78,13 @@ public class RequestController {
         return ResponseEntity.ok(detailResponse);
     }
 
+    // 게시글 삭제하기
+    @DeleteMapping("/requests/{requestId}")
+    public ResponseEntity<Void> requestDelete(@PathVariable Long requestId) {
+        requestService.deleteRequest(requestId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/requests/{requestId}/files/{fileId}")
     public ResponseEntity<String> downloadFile(
             @PathVariable Long requestId,
