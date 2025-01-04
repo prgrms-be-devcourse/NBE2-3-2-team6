@@ -7,7 +7,7 @@ export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
@@ -152,10 +152,10 @@ export default function ProfilePage() {
       alert("현재 비밀번호를 입력해주세요.");
       return;
     }
-  
+
     try {
       const response = await api.delete(`/auth/drop-info`, {
-        data: { password: userInfo.currentPassword } 
+        data: { password: userInfo.currentPassword }
       });
 
       if (response.status === 200) {
@@ -185,11 +185,10 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold">회원 정보 수정</h1>
               <button
                 onClick={handleEditComplete}
-                className={`px-4 py-2 text-sm rounded-md transition-colors ${
-                  isEditing
+                className={`px-4 py-2 text-sm rounded-md transition-colors ${isEditing
                     ? "bg-red-600 text-white hover:bg-red-700"
                     : "bg-red-600 text-white hover:bg-red-700"
-                }`}
+                  }`}
               >
                 {isEditing ? "수정 완료" : "정보 수정"}
               </button>
@@ -230,7 +229,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700">
-                        이름
+                        이름 <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -251,7 +250,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700">
-                        연락처
+                        연락처 <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
@@ -272,16 +271,15 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700">
-                        주소
+                        주소 <span className="text-red-500">*</span>
                       </label>
                       <div className="mt-1 flex space-x-2">
                         <input
                           type="text"
                           value={userInfo.roadAddress}
                           readOnly
-                          className={`flex-1 rounded-md border border-gray-300 px-3 py-2 ${
-                            !isEditing ? "bg-gray-50" : ""
-                          }`}
+                          className={`flex-1 rounded-md border border-gray-300 px-3 py-2 ${!isEditing ? "bg-gray-50" : ""
+                            }`}
                         />
                         {isEditing && (
                           <button
@@ -297,9 +295,8 @@ export default function ProfilePage() {
                         type="text"
                         value={userInfo.extraAddress}
                         readOnly
-                        className={`mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 ${
-                          !isEditing ? "bg-gray-50" : ""
-                        }`}
+                        className={`mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 ${!isEditing ? "bg-gray-50" : ""
+                          }`}
                       />
                       <input
                         type="text"
@@ -308,15 +305,15 @@ export default function ProfilePage() {
                           setUserInfo({ ...userInfo, detailAddress: e.target.value })
                         }
                         disabled={!isEditing}
-                        className={`mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 ${
-                          !isEditing ? "bg-gray-50" : ""
-                        }`}
+                        className={`mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 ${!isEditing ? "bg-gray-50" : ""
+                          }`}
                         placeholder="상세주소를 입력해주세요"
                       />
                     </div>
                   </div>
                 </div>
               </section>
+
 
               {/* 비밀번호 변경 */}
               <section className="space-y-4">
@@ -402,14 +399,14 @@ export default function ProfilePage() {
                 )}
               </section>
               <div className="flex justify-end">
-              
-              <button
+
+                <button
                   onClick={handleOpenModal}
                   className="text-gray-500 hover:text-gray-700 bg-gray-200 hover:bg-gray-300 text-xs font-medium py-1 px-3 rounded"
                 >
-                회원 탈퇴
-              </button>
-                
+                  회원 탈퇴
+                </button>
+
                 {/* 모달 */}
                 {isModalOpen && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -450,11 +447,11 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-              </div>   
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div> 
+    </div>
   );
 }
