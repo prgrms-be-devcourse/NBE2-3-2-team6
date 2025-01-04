@@ -4,7 +4,9 @@ import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationType;
+import com.redbox.domain.donation.exception.DonationDuplicateException;
 import com.redbox.domain.donation.exception.DonationGroupNotFoundException;
+import com.redbox.domain.donation.exception.DonationNotSelfException;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.request.application.RequestService;
@@ -102,8 +104,10 @@ public class RequestDonationService extends AbstractDonationService {
         // 게시글에 기부 (대기 상태)
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
-        validateReceiver(receiverId);
         long donorId = dependencies.getCurrentUserId();
+        validateReceiver(receiverId);
+        validateSelfDonate(receiverId, donorId);
+        validateDuplicateDonate(receiverId, donorId);
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         // 기부 취소가 이루어질 수 있으니 RedCard 소유자는 변경되지 않음 -> 기부 확정 시점에 이전
@@ -112,6 +116,14 @@ public class RequestDonationService extends AbstractDonationService {
         DonationGroup requestDonationGroup = createDonationGroup(donorId, receiverId, DonationType.PENDING, donationCount, donationRequest.getComment());
         Long donationGroupId = requestDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
+    }
+
+    public void validateDuplicateDonate(long requestId, long donorId) {
+        boolean exists = requestRepository.existsByRequestIdAndUserId(requestId, donorId);
+
+        if (exists) {
+            throw new DonationDuplicateException();
+        }
     }
 
     @Transactional
@@ -140,4 +152,14 @@ public class RequestDonationService extends AbstractDonationService {
             throw new RequestNotFoundException();
         }
     }
+
+    @Override
+    public void validateSelfDonate(long receiverId, long donorId ) {
+        Request request = requestRepository.findById(receiverId).orElseThrow(RequestNotFoundException::new);
+
+        if (request.getUserId().equals(donorId)) {
+            throw new DonationNotSelfException();
+        }
+    }
+
 }

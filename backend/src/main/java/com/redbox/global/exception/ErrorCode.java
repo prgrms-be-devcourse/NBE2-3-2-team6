@@ -81,6 +81,8 @@ public enum ErrorCode {
     INVALID_DONATION_AMOUNT(HttpStatus.BAD_REQUEST, "보유량보다 많은 수를 기부할 수 없습니다."),
     DONATION_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST, "기부가 확정되어 취소할 수 없습니다."),
     NOT_FOUND_DONATION_GROUP(HttpStatus.NOT_FOUND, "해당 게시글에 대한 기부 이력이 없습니다"),
+    DONATION_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 기부한 게시글입니다."),
+    DONATION_NOT_SELF(HttpStatus.BAD_REQUEST, "스스로에게 기부할 수 없습니다."),
 
     // 기부 통계 관련 에러코드
     STATS_CALCULATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "기부 통계 계산 중 오류가 발생했습니다.");
