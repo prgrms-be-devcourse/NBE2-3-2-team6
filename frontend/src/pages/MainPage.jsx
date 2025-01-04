@@ -6,12 +6,17 @@ const MainPage = () => {
   const navigate = useNavigate();
   const [rankings, setRankings] = useState([]);
   const [boardItems, setBoardItems] = useState([]);
+  const [data, setData] = useState({
+    totalDonatedCards: 0,
+    totalPatientsHelped: 0,
+    inProgressRequests: 0,
+  });
 
   useEffect(() => {
     const fetchRankings = async () => {
       try {
         const response = await api.get("/donations/top");
-        const formattedRankings = response.data.map((donor) => ({
+        const formattedRankings = response.data.donors.map((donor) => ({
           rank: donor.rank,
           name: donor.donorName,
           donations: donor.totalAmount,
@@ -39,6 +44,16 @@ const MainPage = () => {
       }
     };
     fetchBoardItems();
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/redbox/stats");
+        setData(response.data);
+      } catch (error) {
+        console.error("데이터를 가져오는 중 오류 발생:", error);
+        alert("레드박스 데이터를 불러오는 데 문제가 발생했습니다.");
+      }
+    };
+    fetchBoardItems();
   }, []);
 
   return (
@@ -48,15 +63,21 @@ const MainPage = () => {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
-              <p className="text-3xl font-bold text-red-600 mb-2">1,234장</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">
+                {data.totalDonatedCards} 개
+              </p>
               <p className="text-gray-600">현재까지 기부된 현혈증</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
-              <p className="text-3xl font-bold text-red-600 mb-2">567명</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">
+                {data.totalPatientsHelped} 명
+              </p>
               <p className="text-gray-600">도움을 받은 환자</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
-              <p className="text-3xl font-bold text-red-600 mb-2">89건</p>
+              <p className="text-3xl font-bold text-red-600 mb-2">
+                {data.inProgressRequests} 건
+              </p>
               <p className="text-gray-600">진행중인 기부 요청</p>
             </div>
           </div>
