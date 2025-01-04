@@ -101,7 +101,7 @@ const Header = () => {
                   <ChevronDown size={16} />
                 </button>
 
-                <div className="invisible group-hover:visible absolute left-0 w-48 bg-white text-black rounded-md shadow-lg">
+                <div className="invisible group-hover:visible absolute left-0 w-48 bg-white text-black rounded-md shadow-lg z-50">
                   <div className="py-1">
                     <Link
                       to="/mypage/dashboard"
