@@ -8,11 +8,15 @@ import com.redbox.domain.donation.exception.DonationGroupNotFoundException;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.request.application.RequestService;
+import com.redbox.domain.request.entity.Request;
+import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
+import com.redbox.domain.request.repository.RequestRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,11 +24,25 @@ public class RequestDonationService extends AbstractDonationService {
 
     private final RequestService requestService;
     private final RedcardService redcardService;
+    private final RequestRepository requestRepository;
 
-    public RequestDonationService(DonationServiceDependencies dependencies, RequestService requestService) {
+    public RequestDonationService(DonationServiceDependencies dependencies, RequestService requestService, RequestRepository requestRepository) {
         super(dependencies);
         this.requestService = requestService;
         this.redcardService = dependencies.getRedcardService();
+        this.requestRepository = requestRepository;
+    }
+
+    // 게시글 만료 처리
+    @Transactional
+    public void updateExpiredRequests() {
+        LocalDate today = LocalDate.now();
+        List<Request> expiredRequests = requestRepository.findByDonationEndDateBeforeAndProgressNot(today, RequestStatus.EXPIRED);
+        for (Request request : expiredRequests) {
+            donationConfirm(request.getRequestId(), request.getUserId());
+            request.expired();
+        }
+        requestRepository.saveAll(expiredRequests);
     }
 
     @Transactional

@@ -60,6 +60,7 @@ public class RedcardService {
     public void updateRedCardUser(long redcardId, long receiverId) {
         Redcard redcard = getRedcardById(redcardId);
         redcard.updateUser(receiverId);
+        redcard.changeRedcardStatus(RedcardStatus.AVAILABLE);
     }
 
     public Redcard getRedcardById(long redcardId) {
