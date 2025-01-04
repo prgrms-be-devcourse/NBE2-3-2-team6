@@ -35,8 +35,7 @@ public class DonationStatsService {
     // 최근 기부 일자 조회
     public LocalDate getLastDonationDate(Long userId) {
         return donationGroupRepository.findLastDonationDateByDonorId(userId)
-                .orElse(null); // 없으면 null 반환
+                .orElse(null);
     }
 
-    // TODO: 내가 작성한 진행중인 요청 게시글 조회 기능 추후에 추가
 }
