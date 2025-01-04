@@ -6,17 +6,30 @@ const AdminPage = () => {
   const [hotList, setHotList] = useState([]);
   const [likedList, setLikeList] = useState([]);
 
-  const url =
-    "https://ab876606-577e-4a4b-87b5-90e8cac3a98f.mock.pstmn.io/admin/main";
+  const url = "/admin";
 
   const fetchData = async () => {
     try {
-      const { data: result } = await api.get(url);
-      const { data: resultHot } = await api.get(`${url}/hot`);
-      const { data: resultLiked } = await api.get(`${url}/like`);
-      setData(result);
-      setHotList(resultHot.articles);
-      setLikeList(resultLiked.articles);
+      // const { data: result } = await api.get(url);
+      // setData(result);
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생:", error);
+    }
+  };
+
+  const fetchHot = async () => {
+    try {
+      const response = await api.get(`${url}/hot`);
+      setHotList(response.data);
+    } catch (error) {
+      console.error("데이터를 가져오는 중 오류 발생:", error);
+    }
+  };
+
+  const fetchLike = async () => {
+    try {
+      const response = await api.get(`${url}/like`);
+      setLikeList(response.data);
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생:", error);
     }
@@ -24,6 +37,8 @@ const AdminPage = () => {
 
   useEffect(() => {
     fetchData();
+    fetchHot();
+    fetchLike();
   }, []);
 
   return (
@@ -73,11 +88,9 @@ const AdminPage = () => {
 };
 
 const ContentSection = ({ title, list }) => (
-  <div className="bg-white border rounded-lg shadow-sm h-[500px]">
-    {" "}
-    <h3 className="text-lg font-semibold p-3">{title}</h3>{" "}
+  <div className="bg-white border rounded-lg shadow-sm">
+    <h3 className="text-lg font-semibold p-3">{title}</h3>
     <div className="flex bg-gray-50 py-2 border-b">
-      {" "}
       <div className="w-16 text-center text-sm font-medium text-gray-500">
         번호
       </div>
@@ -85,26 +98,20 @@ const ContentSection = ({ title, list }) => (
       <div className="w-24 text-center text-sm font-medium text-gray-500">
         작성일
       </div>
-      <div className="w-20 text-center text-sm font-medium text-gray-500">
-        조회수
-      </div>
     </div>
     {list.length > 0 ? (
-      <div className="divide-y overflow-y-auto h-[400px]">
-        {list.map((article) => (
+      <div className="divide-y h-[400px]">
+        {list.slice(0, 5).map((request) => (
           <div
-            key={article.id}
-            className="flex items-center py-2 hover:bg-gray-50"
+            key={request.id}
+            className="flex items-center py-[12px] hover:bg-gray-50"
           >
             <div className="w-16 text-center text-sm text-gray-500">
-              {article.id}
+              {request.id}
             </div>
-            <div className="flex-1 px-6">{article.title}</div>
+            <div className="flex-1 px-6">{request.title}</div>
             <div className="w-24 text-center text-sm text-gray-500">
-              {article.date}
-            </div>
-            <div className="w-20 text-center text-sm text-gray-500">
-              {article.views}
+              {request.date}
             </div>
           </div>
         ))}
