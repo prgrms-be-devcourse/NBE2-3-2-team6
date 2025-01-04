@@ -97,9 +97,9 @@ const AdminRequestPage = () => {
                 {/* 헤더 */}
                 <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-20 text-center text-sm font-medium text-gray-500">번호</div>
-                <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">제목</div>
-                <div className="w-1/4 text-center text-sm font-medium text-gray-500">작성일</div>
-                <div className="w-1/4 text-center text-sm font-medium text-gray-500">게시글 승인 상태</div>
+                <div className="flex-1 px-6 text-left text-sm font-medium text-gray-500">제목</div>
+                <div className="w-30 text-center text-sm font-medium text-gray-500">작성자</div>
+                <div className="w-36 text-center text-sm font-medium text-gray-500">작성일</div>
                 <div className="w-16 text-center font-medium text-gray-500"></div>
                 <div className="w-16 text-center font-medium text-gray-500"></div>
             </div>
@@ -125,12 +125,13 @@ const AdminRequestPage = () => {
                           {data.title}
                         </Link>
                     </div>
-                    <div className="w-1/4 text-center text-sm text-gray-500">
-                        {data.date}
+
+                    <div className="w-30 text-center text-sm text-gray-500">
+                        {data.author}
                     </div>
 
-                    <div className="w-1/4 text-center text-sm text-gray-500">
-                        {data.status}
+                    <div className="w-36 text-center text-sm text-gray-500">
+                        {data.date}
                     </div>
                     
                     <div className="w-16 text-center text-sm text-gray-500">
@@ -157,7 +158,7 @@ const AdminRequestPage = () => {
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <h2 className="text-lg font-bold mb-4">{modal.action} 확인</h2>
-                        <p className="mb-4">{`'${modal.title}'을 ${modal.action}하시겠습니까?`}</p>
+                        <p className="mb-4">{`'${modal.id}'번 게시물을 ${modal.action}하시겠습니까?`}</p>
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={confirmAction}

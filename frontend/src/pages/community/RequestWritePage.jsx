@@ -7,7 +7,7 @@ import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
 import api from "../../lib/axios";
 import { useEffect } from 'react';
 
-const url = "/requests";
+const url = "/write/requests";
 
 const RequestWritePage = () => {
   const formatDate = (date) => date.toISOString().split("T")[0];
