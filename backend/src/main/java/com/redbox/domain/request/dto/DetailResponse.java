@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DetailResponse {
     private Long id; // 게시글 ID
-    private String userEmail; // 작성자
+    private String userName;
     private LocalDate date; // 등록일
     private String title; // 제목
     private int views; // 조회수
@@ -36,7 +36,7 @@ public class DetailResponse {
 
     public DetailResponse(Request request, Boolean isLiked) {
         this.id = request.getRequestId();
-        this.userEmail = request.getCreatedBy();
+        this.userName = request.getUserName();
         this.date = request.getCreatedAt().toLocalDate();
         this.title = request.getRequestTitle();
         this.views = request.getRequestHits();

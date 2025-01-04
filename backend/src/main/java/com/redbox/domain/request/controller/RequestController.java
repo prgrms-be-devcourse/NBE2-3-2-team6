@@ -25,13 +25,19 @@ public class RequestController {
     private final RequestService requestService;
 
     // 게시글 등록 (조회수 증가 X)
-    @PostMapping("/requests")
+    @PostMapping("/write/requests")
     public ResponseEntity<DetailResponse> requestWrite(
             @RequestPart("post") @Valid WriteRequest writeRequest,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
         DetailResponse detailResponse = requestService.createRequest(writeRequest, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(detailResponse);
+    }
+
+    // 게시글 권한 확인
+    @GetMapping("/write/requests")
+    public ResponseEntity<Void> getWrite() {
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 요청 게시글 목록 조회

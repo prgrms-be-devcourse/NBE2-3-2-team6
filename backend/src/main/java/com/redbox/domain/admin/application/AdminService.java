@@ -58,7 +58,7 @@ public class AdminService {
         return new AdminDetailResponse(
                 request.getRequestId(),
                 request.getRequestTitle(),
-                request.getCreatedBy(),
+                request.getUserName(),
                 request.getCreatedAt().toLocalDate(),
                 request.getDonationStartDate(),
                 request.getDonationEndDate(),

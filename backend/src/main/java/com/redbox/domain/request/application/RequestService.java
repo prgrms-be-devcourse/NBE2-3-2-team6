@@ -81,9 +81,11 @@ public class RequestService {
     // 게시글 등록
     @Transactional
     public DetailResponse createRequest(WriteRequest writeRequest, List<MultipartFile> files) {
+        String name = userRepository.findNameById(getCurrentUserId()).orElseThrow(UserNotFoundException::new);
         // 빌더 패턴을 사용하여 Request 객체 생성
         Request request = Request.builder()
                 .userId(getCurrentUserId())
+                .userName(name)
                 .requestTitle(writeRequest.getRequestTitle())
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())

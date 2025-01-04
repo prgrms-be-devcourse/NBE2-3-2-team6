@@ -55,7 +55,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/**").permitAll()
+                    //.requestMatchers("/**").permitAll()
 
                     // 이메일 인증 관련 엔드포인트 허용
                     // .requestMatchers("/auth/email/**").permitAll()
@@ -70,6 +70,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/articles").permitAll()
                         .requestMatchers(HttpMethod.GET, "/redbox/stats").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/my-donation-stats").authenticated()
+                        // 요청 게시판 목록 조회만 엔드 포인트 허용
+                        .requestMatchers(HttpMethod.GET, "/requests/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/write/requests").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/requests/**").authenticated()
+                        // 관리자 목록 확인
+                        .requestMatchers(HttpMethod.GET,"/admin/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/admin/**").permitAll()
                         .anyRequest().authenticated()
 
                 )
