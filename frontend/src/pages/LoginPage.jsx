@@ -35,6 +35,18 @@ const LoginPage = () => {
     }
   };
 
+  const onNaverLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/naver"
+  }
+
+  const getData = () => {
+    axios.get("http://localhost:8080/" , {withCredentials: true})
+    .then((res) => {
+      alert(JSON.stringify(res.data))
+    })
+    .catch((error) => alert(error))
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
@@ -130,7 +142,8 @@ const LoginPage = () => {
         <div className="mt-8">
           <div className="text-center text-sm text-gray-500 mb-4">소셜 계정으로 로그인</div>
           <div className="grid grid-cols-1 gap-4">
-            <button className="group relative w-full flex justify-center py-3 px-6 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            <button className="group relative w-full flex justify-center py-3 px-6 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            onClick={onNaverLogin}>
               <img
                 src="/src/assets/btnG_아이콘원형.png" // 원형 네이버 아이콘 이미지 경로
                 alt="네이버 로그인"
