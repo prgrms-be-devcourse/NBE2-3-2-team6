@@ -93,7 +93,7 @@ const ApprovalRequestDetailPage = () => {
         {/* 메인 컨텐츠 */}
         <div className="flex-1 p-8">
           {request && (
-            <div className="bg-white max-w-screen-lg mx-auto rounded-lg shadow-md p-6 h-[800px]">
+            <div className="bg-white max-w-screen-lg mx-auto rounded-lg shadow-md p-6 h-auto">
               <h1 className="text-2xl text-center font-bold mb-6">게시글 승인 요청</h1>
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="text-2xl flex-1 text-center">{request.title}</div>

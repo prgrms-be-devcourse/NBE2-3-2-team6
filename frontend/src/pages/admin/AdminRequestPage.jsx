@@ -83,7 +83,7 @@ const AdminRequestPage = () => {
       startDate,
       endDate
     );
-  }, [page, selectedStatus, selectedOption, startDate, endDate]);
+  }, [page, selectedStatus]);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
