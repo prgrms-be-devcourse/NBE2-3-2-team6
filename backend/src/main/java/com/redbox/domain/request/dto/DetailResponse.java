@@ -2,6 +2,8 @@ package com.redbox.domain.request.dto;
 
 import com.redbox.domain.attach.dto.AttachFileResponse;
 import com.redbox.domain.request.entity.Request;
+import com.redbox.domain.request.entity.RequestStatus;
+import com.redbox.domain.user.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,7 @@ public class DetailResponse {
     private int currentAmount; // 현재 모금된 수량
 
     private int likes; // 좋아요 수
+    private RequestStatus requestStatus;
     private String status; // 상태
     private String content; // 내용
     private boolean isLiked; // 좋아요 여부
@@ -42,6 +45,7 @@ public class DetailResponse {
         this.targetAmount = request.getTargetAmount();
         this.currentAmount = request.getCurrentAmount();
         this.likes = request.getRequestLikes();
+        this.requestStatus = request.getRequestStatus();
         this.status = request.getProgress().getText();
         this.content = request.getRequestContent();
         this.isLiked = isLiked;

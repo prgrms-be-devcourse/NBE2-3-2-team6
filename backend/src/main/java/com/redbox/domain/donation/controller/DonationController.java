@@ -5,7 +5,7 @@ import com.redbox.domain.donation.application.DonationStatsService;
 import com.redbox.domain.donation.application.RequestDonationService;
 import com.redbox.domain.donation.application.UserDonationService;
 import com.redbox.domain.donation.dto.DonationRequest;
-import com.redbox.domain.donation.dto.Top5DonorResponse;
+import com.redbox.domain.donation.dto.Top5DonorWrapper;
 import com.redbox.domain.donation.exception.InvalidDonationTypeException;
 
 import org.springframework.http.ResponseEntity;
@@ -39,8 +39,8 @@ public class DonationController {
     }
 
     @GetMapping("/donations/top")
-    public ResponseEntity<List<Top5DonorResponse>> getTop5Donor() {
-        return ResponseEntity.ok(userDonationService.getTop5Donor());
+    public ResponseEntity<Top5DonorWrapper> getTop5Donor() {
+        return ResponseEntity.ok(userDonationService.getCachedTop5Donors());
     }
 
     @PutMapping("/donate/cancel/{type}/{receiveId}")

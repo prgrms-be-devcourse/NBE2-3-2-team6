@@ -12,6 +12,7 @@ import com.redbox.domain.notice.repository.NoticeRepository;
 import com.redbox.global.infra.s3.S3Service;
 import com.redbox.global.util.FileUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,8 @@ public class AttachFileService {
     private final S3Service s3Service;
     private final NoticeRepository noticeRepository;
     private final FileAttachStrategyFactory fileAttachStrategyFactory;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final String NOTICE_DETAIL_KEY = "notices:detail:%d";    // 공지사항 상세글
 
     public String getFileDownloadUrl(Long postId, Long fileId) {
         AttachFile attachFile = attachFileRepository.findById(fileId)
@@ -59,6 +62,9 @@ public class AttachFileService {
         AttachFile attachFile = strategy.attach(postId, file.getOriginalFilename(), fullFilename);
         attachFileRepository.save(attachFile);
 
+        if (category.equals(Category.NOTICE)) {
+            redisTemplate.delete(String.format(NOTICE_DETAIL_KEY, postId));
+        }
         return new AttachFileResponse(attachFile);
     }
 
@@ -71,6 +77,9 @@ public class AttachFileService {
 
         s3Service.deleteFile(category, postId, attachFile.getNewFilename());
 
+        if (category.equals(Category.NOTICE)) {
+            redisTemplate.delete(String.format(NOTICE_DETAIL_KEY, postId));
+        }
         attachFileRepository.delete(attachFile);
     }
 }

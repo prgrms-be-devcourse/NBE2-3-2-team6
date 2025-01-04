@@ -2,6 +2,10 @@ package com.redbox.domain.user.service;
 
 import com.redbox.domain.auth.dto.CustomUserDetails;
 import com.redbox.domain.donation.repository.DonationGroupRepository;
+import com.redbox.domain.request.dto.ListResponse;
+import com.redbox.domain.request.dto.RequestFilter;
+import com.redbox.domain.request.entity.Request;
+import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.entity.User;
 import com.redbox.domain.user.exception.DuplicateEmailException;
@@ -15,8 +19,10 @@ import com.redbox.global.entity.PageResponse;
 import com.redbox.global.util.RandomCodeGenerator;
 import com.redbox.global.util.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +41,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final DonationGroupRepository donationGroupRepository;
+    private final RequestRepository requestRepository;
 
     // 현재 로그인한 사용자의 전체 정보 조회
     public User getCurrentUser() {
@@ -215,5 +222,14 @@ public class UserService {
     public PageResponse<ReceptionResponse> getReceptions(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return new PageResponse<>(donationGroupRepository.findAllWithDonorNameByReceiverId(getCurrentUserId(), pageable));
+    }
+
+    public PageResponse<ListResponse> getRequests(int page, int size) {
+        Pageable pageable = PageRequest.of(page -1, size, Sort.by("createdAt").descending());
+
+        Page<Request> boardPage = requestRepository.findAllByUserIdAndNotDropStatus(getCurrentUserId(), pageable);
+        Page<ListResponse> responsePage = boardPage.map(ListResponse::new);
+
+        return new PageResponse<>(responsePage);
     }
 }

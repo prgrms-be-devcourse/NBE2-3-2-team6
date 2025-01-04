@@ -93,7 +93,13 @@ public class Request extends BaseEntity {
 
     public void approve() {this.requestStatus = RequestStatus.APPROVE;}
     public void reject() {this.requestStatus = RequestStatus.REJECT;}
+    public void drop() {this.requestStatus = RequestStatus.DROP;}
+
     public void expired() {this.progress = RequestStatus.EXPIRED;}
+    public void inProgress() {this.progress = RequestStatus.IN_PROGRESS;}
+    public void rejectProgress() {this.progress = RequestStatus.REJECT;}
+    public void dropProgress() {this.progress = RequestStatus.DROP;}
+
     public void incrementHits() {this.requestHits = requestHits + 1;}
     public void incrementLikes() {this.requestLikes = requestLikes + 1;}
     public void decrementLikes() {this.requestLikes = requestLikes - 1;}

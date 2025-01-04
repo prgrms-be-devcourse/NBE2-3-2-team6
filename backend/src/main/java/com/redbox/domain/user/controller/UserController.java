@@ -1,9 +1,11 @@
 package com.redbox.domain.user.controller;
 
+import com.redbox.domain.request.application.RequestService;
+import com.redbox.domain.request.dto.ListResponse;
+import com.redbox.domain.request.dto.RequestFilter;
 import com.redbox.domain.user.dto.*;
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
 import com.redbox.domain.redcard.service.RedcardService;
-import com.redbox.domain.user.dto.*;
 import com.redbox.domain.user.service.UserService;
 import com.redbox.global.entity.PageResponse;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ public class UserController {
 
     private final UserService userService;
     private final RedcardService redCardService;
+    private final RequestService requestService;
 
     @PostMapping("/auth/email/verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody @Valid VerificationCodeRequest request) {
@@ -120,5 +123,14 @@ public class UserController {
             @RequestParam(defaultValue = "6") int size
     ) {
         return ResponseEntity.ok(userService.getReceptions(page, size));
+    }
+
+    @GetMapping("/users/my-info/requests")
+    public ResponseEntity<PageResponse<ListResponse>> getRequests(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<ListResponse> response = userService.getRequests(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

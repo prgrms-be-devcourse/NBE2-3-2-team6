@@ -13,6 +13,7 @@ public class ListResponse {
     private Long requestId; // 게시글 아이디
 
     private Long userId;
+    private String userEmail;
 
     private String requestTitle;
     private String requestContent;
@@ -31,6 +32,7 @@ public class ListResponse {
     public ListResponse(Request request) {
         this.requestId = request.getRequestId();
         this.userId = request.getUserId();
+        this.userEmail = request.getCreatedBy();
         this.requestTitle = request.getRequestTitle();
         this.requestContent = request.getRequestContent();
         this.targetAmount = request.getTargetAmount();

@@ -90,7 +90,7 @@ public class RequestService {
                 .requestContent(writeRequest.getRequestContent())
                 .targetAmount(writeRequest.getTargetAmount())
                 .requestStatus(RequestStatus.REQUEST)
-                .progress(RequestStatus.IN_PROGRESS)
+                .progress(RequestStatus.REQUEST)
                 .donationStartDate(writeRequest.getDonationStartDate())
                 .donationEndDate(writeRequest.getDonationEndDate())
                 .priority(Priority.MEDIUM) // 초기 중요도
@@ -149,8 +149,6 @@ public class RequestService {
         Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
         Long userId = getCurrentUserId();
 
-        // TODO : getCurrentUserId가 null 인경우 예외 처리 필요
-
         // 좋아요 로직
         Like like = likesRepository.findByUserIdAndRequestId(userId, requestId);
         if (like != null) {
@@ -206,5 +204,12 @@ public class RequestService {
 
     public boolean existsRequestById(long requestId) {
         return requestRepository.existsById(requestId);
+
+    // 게시글 삭제
+    public void deleteRequest(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+        request.drop();
+        request.dropProgress();
+        requestRepository.save(request);
     }
 }

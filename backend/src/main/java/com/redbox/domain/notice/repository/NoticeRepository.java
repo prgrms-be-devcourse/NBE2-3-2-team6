@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +35,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Optional<Notice> findForDelete(@Param("noticeId") Long id);
 
     List<Notice> findTop5ByOrderByCreatedAtDesc();
+
+    @Modifying
+    @Query("UPDATE Notice n SET n.noticeHits = n.noticeHits + :hits WHERE n.id = :noticeId")
+    void bulkUpdateHit(@Param("noticeId") Long noticeId, @Param("hits") Long hits);
+
 }

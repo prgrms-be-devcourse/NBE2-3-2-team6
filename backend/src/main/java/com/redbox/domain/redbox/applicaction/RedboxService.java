@@ -14,6 +14,7 @@ import com.redbox.domain.redbox.repository.RedboxRepository;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
+import com.redbox.domain.request.repository.RequestRepository;
 import com.redbox.domain.user.service.UserService;
 import com.redbox.domain.redbox.exception.RedboxNotFoundException;
 
@@ -26,12 +27,16 @@ import java.util.List;
 public class RedboxService extends AbstractDonationService {
 
     private final RedboxRepository redboxRepository;
+    private final RequestRepository requestRepository;
+
 
     public RedboxService(DonationServiceDependencies dependencies,
                          RedboxRepository redboxRepository
                          ) {
         super(dependencies); // 부모 클래스 생성자 호출
+
         this.redboxRepository = redboxRepository;
+        this.requestRepository = requestRepository;
     }
 
     public RedboxStatsResponse getRedboxStats() {
@@ -45,7 +50,10 @@ public class RedboxService extends AbstractDonationService {
         Integer helpedPatients = dependencies.getDonationGroupRepository().getHelpedPatientsCount();
         helpedPatients = (helpedPatients != null) ? helpedPatients : 0;
 
-        return new RedboxStatsResponse(totalDonatedCards, helpedPatients);
+        // 진행 중인 요청 게시글 수 조회
+        int inProgressRequests = requestRepository.countAllInProgressRequests();
+
+        return new RedboxStatsResponse(totalDonatedCards, helpedPatients, inProgressRequests);
     }
 
     @Override
