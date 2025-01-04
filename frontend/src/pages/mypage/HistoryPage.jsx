@@ -115,9 +115,9 @@ const DonationListPage = () => {
               <div className="py-4 text-center">로딩 중...</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {content.map((item) => (
+                {content.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={index}
                     className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
                   >
                     <div className="flex justify-between items-start mb-3">
