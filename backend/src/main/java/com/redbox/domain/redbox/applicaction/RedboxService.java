@@ -31,7 +31,7 @@ public class RedboxService extends AbstractDonationService {
 
 
     public RedboxService(DonationServiceDependencies dependencies,
-                         RedboxRepository redboxRepository
+                         RedboxRepository redboxRepository, RequestRepository requestRepository
                          ) {
         super(dependencies); // 부모 클래스 생성자 호출
 

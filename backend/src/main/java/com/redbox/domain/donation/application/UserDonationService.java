@@ -32,6 +32,7 @@ public class UserDonationService extends AbstractDonationService {
     public UserDonationService(DonationServiceDependencies dependencies, UserRepository userRepository, RedisTemplate<String, Object> redisTemplate) {
         super(dependencies);
         this.redisTemplate = redisTemplate;
+        this.userRepository = userRepository;
     }
 
     // 서버 시작시 캐시 초기화
