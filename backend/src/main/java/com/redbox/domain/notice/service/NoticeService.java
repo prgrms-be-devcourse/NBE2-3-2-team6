@@ -98,9 +98,7 @@ public class NoticeService {
     // Redis에서 캐시된 데이터 조회
     public NoticeListWrapper getCachedTop5Notices() {
         try {
-            log.info("Attempting to read cache from TOP5_NOTICES_KEY");
             Object cachedObject = redisTemplate.opsForValue().get(TOP5_NOTICES_KEY);
-            log.info("Cache read result: {}", cachedObject);
 
             if (cachedObject != null) {
                 return (NoticeListWrapper) cachedObject;
