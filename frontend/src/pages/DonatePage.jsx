@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import api from "../lib/axios";
 import MemberDonationModal from "../components/MemberDonationModal";
 import RedboxDonationModal from "../components/RedboxDonationModal";
+import logo from "../assets/image.png";
 
 const DonatePage = () => {
   const navigate = useNavigate();
@@ -22,10 +23,10 @@ const DonatePage = () => {
         quantity,
         comment,
       });
-      alert("기부 성공");
+      alert("기부되었습니다.");
     } catch (error) {
       console.error("기부 오류:", error);
-      alert("기부 실패");
+      alert("기부에 실패하였습니다");
     }
     setIsMemberModalOpen(false);
     setIsRedboxModalOpen(false);
@@ -65,11 +66,7 @@ const DonatePage = () => {
                   setIsRedboxModalOpen(true);
                 }}
               >
-                <img
-                  src="/src/assets/image.png"
-                  alt="레드 박스"
-                  className="w-12 h-12 mr-2"
-                />
+                <img src={logo} alt="레드 박스" className="w-12 h-12 mr-2" />
                 레드박스 기부하기
               </button>
               <button
@@ -79,11 +76,7 @@ const DonatePage = () => {
                   setIsMemberModalOpen(true);
                 }}
               >
-                <img
-                  src="/src/assets/image.png"
-                  alt="개인 기부"
-                  className="w-12 h-12 mr-2"
-                />
+                <img src={logo} alt="개인 기부" className="w-12 h-12 mr-2" />
                 개인에게 기부하기
               </button>
             </div>
@@ -92,47 +85,46 @@ const DonatePage = () => {
       </section>
 
       {/* Stats Section */}
-<section className="py-16">
-  <div className="max-w-6xl mx-auto px-6">
-    <div className="text-center mb-12">
-      <h3 className="text-4xl font-bold text-red-600">
-        레드박스 통계
-      </h3>
-      <p className="text-gray-600 text-xl mt-4">
-        진행중인 레드박스 기부 현황과 요청 건수를 확인해보세요.
-      </p>
-    </div>
-    <div className="grid grid-cols-3 gap-8 text-center">
-      {/* 총 기부된 헌혈증 */}
-      <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
-        <p className="text-4xl font-bold text-red-600 mb-2">
-          {data.totalDonatedCards} 개
-        </p>
-        <p className="text-gray-600 text-lg">레드박스에 기부된 헌혈증</p>
-      </div>
-      {/* 도움을 받은 환자 */}
-      <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
-        <p className="text-4xl font-bold text-red-600 mb-2">
-          {data.totalPatientsHelped} 명
-        </p>
-        <p className="text-gray-600 text-lg">레드박스를 통해 도움받은 환자</p>
-      </div>
-      {/* 진행 중인 기부 요청 */}
-      <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
-        <p className="text-4xl font-bold text-red-600 mb-2">
-          {data.inProgressRequests} 건
-        </p>
-        <button
-          className="text-gray-600 text-lg hover:text-black"
-          onClick={() => navigate("/community/request")}
-        >
-          진행 중인 요청 확인하기
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h3 className="text-4xl font-bold text-red-600">레드박스 통계</h3>
+            <p className="text-gray-600 text-xl mt-4">
+              진행중인 레드박스 기부 현황과 요청 건수를 확인해보세요.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-8 text-center">
+            {/* 총 기부된 헌혈증 */}
+            <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
+              <p className="text-4xl font-bold text-red-600 mb-2">
+                {data.totalDonatedCards} 개
+              </p>
+              <p className="text-gray-600 text-lg">레드박스에 기부된 헌혈증</p>
+            </div>
+            {/* 도움을 받은 환자 */}
+            <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
+              <p className="text-4xl font-bold text-red-600 mb-2">
+                {data.totalPatientsHelped} 명
+              </p>
+              <p className="text-gray-600 text-lg">
+                레드박스를 통해 도움받은 환자
+              </p>
+            </div>
+            {/* 진행 중인 기부 요청 */}
+            <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
+              <p className="text-4xl font-bold text-red-600 mb-2">
+                {data.inProgressRequests} 건
+              </p>
+              <button
+                className="text-gray-600 text-lg hover:text-black"
+                onClick={() => navigate("/community/request")}
+              >
+                진행 중인 요청 확인하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 모달 컴포넌트 */}
       {isMemberModalOpen && (
