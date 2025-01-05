@@ -13,13 +13,11 @@ public class PendingResponse {
     private final LocalDate donationDate;
     private final String donationMessage;
     private final Long donationId;
-    private final Long donationGroupId;
 
     public PendingResponse(DonationGroup donationGroup) {
         this.donationId = donationGroup.getId();
         this.donationAmount = donationGroup.getDonationAmount();
         this.donationDate = donationGroup.getDonationDate();
         this.donationMessage = donationGroup.getDonationMessage();
-        this.donationGroupId = donationGroup.getId();
     }
 }
