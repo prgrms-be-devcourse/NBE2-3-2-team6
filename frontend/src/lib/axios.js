@@ -14,6 +14,8 @@ const instance = axios.create({
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
   },
 });
 
