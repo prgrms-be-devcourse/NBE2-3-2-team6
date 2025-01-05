@@ -25,22 +25,25 @@ public class DonationGroup {
     private int donationAmount;
     private LocalDate donationDate;
     private String donationMessage;
+    @Enumerated(EnumType.STRING)
+    private DonationStatus donationStatus;
 
     @Builder
-    public DonationGroup(Long donorId, Long receiverId, DonationType donationType, int donationAmount, LocalDate donationDate, String donationMessage) {
+    public DonationGroup(Long donorId, Long receiverId, DonationType donationType, int donationAmount, LocalDate donationDate, String donationMessage, DonationStatus donationStatus) {
         this.donorId = donorId;
         this.receiverId = receiverId;
         this.donationType = donationType;
         this.donationAmount = donationAmount;
         this.donationDate = donationDate;
         this.donationMessage = donationMessage;
+        this.donationStatus = donationStatus;
     }
 
     public void donateConfirm() {
-        this.donationType = DonationType.REQUEST;
+        this.donationStatus = DonationStatus.DONE;
     }
 
     public void donateCancel() {
-        this.donationType = DonationType.CANCEL;
+        this.donationStatus = DonationStatus.CANCEL;
     }
 }

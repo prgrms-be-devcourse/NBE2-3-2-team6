@@ -29,13 +29,17 @@ public class Redcard extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RedcardStatus redcardStatus;
 
+    @Enumerated(EnumType.STRING)
+    private OwnerType ownerType;
+
     @Builder
-    public Redcard(Long userId, LocalDate donationDate, String serialNumber, String hospitalName, RedcardStatus redcardStatus) {
+    public Redcard(Long userId, LocalDate donationDate, String serialNumber, String hospitalName, RedcardStatus redcardStatus, OwnerType ownerType) {
         this.userId = userId;
         this.donationDate = donationDate;
         this.serialNumber = serialNumber;
         this.hospitalName = hospitalName;
         this.redcardStatus = redcardStatus;
+        this.ownerType = ownerType;
     }
 
     // 헌혈증 소지자가 바뀔때 사용하는 메서드
@@ -45,5 +49,9 @@ public class Redcard extends BaseEntity {
 
     public void changeRedcardStatus(RedcardStatus status) {
         this.redcardStatus = status;
+    }
+
+    public void changeOwnerType(OwnerType ownerType) {
+        this.ownerType = ownerType;
     }
 }

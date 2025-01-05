@@ -3,8 +3,10 @@ package com.redbox.domain.donation.application;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.dto.Top5DonorWrapper;
 import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
+import com.redbox.domain.redcard.entity.OwnerType;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.UserRepository;
@@ -58,8 +60,8 @@ public class UserDonationService extends AbstractDonationService {
         long donorId = dependencies.getCurrentUserId();
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
-        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId);
-        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.USER, donationCount, donationRequest.getComment());
+        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId, OwnerType.USER);
+        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, DonationStatus.PENDING, donationCount, donationRequest.getComment());
         Long donationGroupId = userDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
     }

@@ -3,6 +3,7 @@ package com.redbox.domain.donation.application;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationGroupNotFoundException;
 import com.redbox.domain.redcard.entity.Redcard;
@@ -47,7 +48,7 @@ public class RequestDonationService extends AbstractDonationService {
 
     @Transactional
     public void donationConfirm(long requestId, long receiverId) {
-        List<DonationGroup> donationGroups = getDonationGroups(requestId, DonationType.PENDING);
+        List<DonationGroup> donationGroups = getDonationGroups(requestId, DonationStatus.PENDING);
 
         for (DonationGroup donationGroup : donationGroups) {
             donationGroup.donateConfirm();
@@ -74,9 +75,9 @@ public class RequestDonationService extends AbstractDonationService {
         return dependencies.getDonationDetailRepository().findByDonationGroupId(groupId);
     }
 
-    public List<DonationGroup> getDonationGroups(long requestId, DonationType donationType) {
+    public List<DonationGroup> getDonationGroups(long requestId, DonationStatus donationStatus) {
         List<DonationGroup> donationGroups = dependencies.getDonationGroupRepository()
-                                                         .findByReceiverIdAndDonationType(requestId, donationType);
+                                                         .findByReceiverIdAndDonationStatus(requestId, donationStatus);
 
         if (donationGroups == null) {
             throw new DonationGroupNotFoundException();
@@ -85,9 +86,9 @@ public class RequestDonationService extends AbstractDonationService {
         return donationGroups;
     }
 
-    public DonationGroup getDonationGroup(long userId, long receivedId, DonationType donationType) {
+    public DonationGroup getDonationGroup(long userId, long receivedId, DonationStatus donationStatus) {
         DonationGroup donationGroup = dependencies.getDonationGroupRepository()
-                                                  .findByDonorIdAndReceiverIdAndDonationType(userId, receivedId, donationType);
+                                                  .findByDonorIdAndReceiverIdAndDonationStatus(userId, receivedId, donationStatus);
 
         if (donationGroup == null) {
             throw new DonationGroupNotFoundException();
@@ -109,7 +110,7 @@ public class RequestDonationService extends AbstractDonationService {
         // 기부 취소가 이루어질 수 있으니 RedCard 소유자는 변경되지 않음 -> 기부 확정 시점에 이전
         redcardService.updateRedCardStatusPending(redcardList); // RedCard 상태만 변경
 
-        DonationGroup requestDonationGroup = createDonationGroup(donorId, receiverId, DonationType.PENDING, donationCount, donationRequest.getComment());
+        DonationGroup requestDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_REQUEST, DonationStatus.PENDING, donationCount, donationRequest.getComment());
         Long donationGroupId = requestDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
     }
@@ -118,7 +119,7 @@ public class RequestDonationService extends AbstractDonationService {
     @Override
     public void cancelDonation(long receiveId) {
         long userId = dependencies.getCurrentUserId();
-        DonationGroup donationGroup = getDonationGroup(userId, receiveId, DonationType.PENDING);
+        DonationGroup donationGroup = getDonationGroup(userId, receiveId, DonationStatus.PENDING);
         donationGroup.donateCancel();
 
         List<DonationDetail> cancelData = getDonationDetails(donationGroup.getId());
