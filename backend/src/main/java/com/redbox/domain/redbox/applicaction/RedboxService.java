@@ -7,19 +7,11 @@ import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
-import com.redbox.domain.donation.repository.DonationDetailRepository;
-import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.RedboxStatsResponse;
-import com.redbox.domain.redbox.entity.Redbox;
-import com.redbox.domain.redbox.repository.RedboxRepository;
 import com.redbox.domain.redcard.entity.OwnerType;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.repository.RedcardRepository;
-import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.request.repository.RequestRepository;
-import com.redbox.domain.user.service.UserService;
-import com.redbox.domain.redbox.exception.RedboxNotFoundException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,25 +20,25 @@ import java.util.List;
 @Service
 public class RedboxService extends AbstractDonationService {
 
-    private final RedboxRepository redboxRepository;
     private final RequestRepository requestRepository;
+    private final RedcardRepository redcardRepository;
 
 
     public RedboxService(DonationServiceDependencies dependencies,
-                         RedboxRepository redboxRepository, RequestRepository requestRepository
+                         RequestRepository requestRepository,
+                         RedcardRepository redcardRepository
                          ) {
         super(dependencies); // 부모 클래스 생성자 호출
 
-        this.redboxRepository = redboxRepository;
         this.requestRepository = requestRepository;
+        this.redcardRepository = redcardRepository;
     }
 
     public RedboxStatsResponse getRedboxStats() {
         // Redbox 테이블의 totalCount 필드에서 누적 개수를 가져옵니다.
-        Redbox redbox = redboxRepository.findById(1L)
-                .orElseThrow(RedboxNotFoundException::new);
-
-        int totalDonatedCards = redbox.getTotalCount();
+        // 이제 redcard에서 카운팅
+        Integer totalDonatedCards = redcardRepository.countAllInRedbox();
+        totalDonatedCards = (totalDonatedCards != null) ? totalDonatedCards : 0;
 
         // 도움받은 환자 수를 DonationGroup 테이블에서 계산합니다.
         Integer helpedPatients = dependencies.getDonationGroupRepository().getHelpedPatientsCount();
@@ -74,8 +66,7 @@ public class RedboxService extends AbstractDonationService {
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
         // 레드박스 보유량 수정
-        Redbox redbox = redboxRepository.findById(1L).orElseThrow(RedboxNotFoundException::new);
-        redbox.addCount(redcardList.size());
+        // -> 이제 redcard를 카운팅
     }
 
     @Override
