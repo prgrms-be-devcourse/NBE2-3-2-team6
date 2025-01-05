@@ -10,8 +10,8 @@ const AdminPage = () => {
 
   const fetchData = async () => {
     try {
-      // const { data: result } = await api.get(url);
-      // setData(result);
+      const response = await api.get(`${url}/statistics`);
+      setData(response.data);
     } catch (error) {
       console.error("데이터를 가져오는 중 오류 발생:", error);
     }
@@ -46,10 +46,10 @@ const AdminPage = () => {
       <div className="max-w-[1400px] mx-auto">
         <div className="grid grid-cols-4 gap-6 mb-8">
           {[
-            { title: "가입한 회원 수", value: data.member_cnt },
-            { title: "레드박스 보유 현황", value: data.rebox_cnt },
-            { title: "누적 기부 수", value: data.total_cnt },
-            { title: "요청 사항", value: data.pending_cnt, link: true },
+            { title: "가입한 회원 수", value: data.userCount },
+            { title: "레드박스 보유 현황", value: data.redcardCountInRedbox },
+            { title: "누적 기부 수", value: data.sumDonation },
+            { title: "요청 사항", value: data.requestCount, link: true },
           ].map((item, idx) => (
             <div
               key={idx}
