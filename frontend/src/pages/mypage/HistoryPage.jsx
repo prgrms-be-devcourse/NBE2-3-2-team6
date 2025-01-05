@@ -31,6 +31,18 @@ const DonationListPage = () => {
     pending: `${BASE_URL}/pending`,
   };
 
+  const labelMap = {
+    donation: "받는 분",
+    receipt: "보내신 분",
+    pending: "기부 ID", 
+  };
+
+  const valueMap = {
+    donation: item.receiverName,
+    receipt: item.donorName,
+    pending: item.donationId,
+  };
+
   // API 호출 함수
   const fetchData = async (tabType, page) => {
     setIsLoading(true);
@@ -145,12 +157,10 @@ const DonationListPage = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <span className="text-sm text-gray-500">
-                          {activeTab === "donation" ? "받는 분" : "보내신 분"}
+                          {labelMap[activeTab] || "기부 ID"}
                         </span>
                         <p className="font-medium">
-                          {activeTab === "donation"
-                            ? item.receiverName
-                            : item.donorName}
+                          {valueMap[activeTab] || item.donationId}
                         </p>
                       </div>
                       <div className="text-right">
