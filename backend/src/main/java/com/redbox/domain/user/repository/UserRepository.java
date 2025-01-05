@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   
     // 이메일을 기반으로 사용자 정보를 조회
     Optional<User> findByEmail(String email);
+
+    @Query("select count(u) from User u where u.status = 'ACTIVE' and u.roleType = 'USER'")
+    Integer countActiveUser();
 }

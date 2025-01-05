@@ -4,6 +4,7 @@ import com.redbox.domain.admin.application.AdminService;
 import com.redbox.domain.admin.dto.AdminApproveRequest;
 import com.redbox.domain.admin.dto.AdminDetailResponse;
 import com.redbox.domain.admin.dto.AdminListResponse;
+import com.redbox.domain.admin.dto.AdminStatsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,10 @@ public class AdminController {
     @GetMapping("/admin/like")
     public ResponseEntity<List<AdminListResponse>> getLikedBoards() {
         return ResponseEntity.ok(adminService.getLikedBoards());
+    }
+
+    @GetMapping("/admin/statistics")
+    public ResponseEntity<AdminStatsResponse> getAdminStats() {
+        return ResponseEntity.ok(adminService.getAdminStats());
     }
 }
