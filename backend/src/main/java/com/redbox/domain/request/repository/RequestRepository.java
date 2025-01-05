@@ -11,11 +11,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface RequestRepository extends JpaRepository<Request, Long>, RequestRepositoryCustom {
     List<Request> findByRequestStatus(RequestStatus requestStatus);
 
     List<Request> findByDonationEndDateBeforeAndProgressNot(LocalDate date, RequestStatus progress);
+
+    boolean existsByRequestIdAndUserId(Long requestId, Long userId);
 
     @Query("SELECT r FROM Request r WHERE r.userId = :userId AND r.requestStatus != 'DROP'")
     Page<Request> findAllByUserIdAndNotDropStatus(Long userId, Pageable pageable);
