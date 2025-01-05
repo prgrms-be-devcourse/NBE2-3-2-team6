@@ -12,8 +12,10 @@ public class DonationResponse {
     private final int donationAmount;
     private final LocalDate donationDate;
     private final String donationMessage;
+    private final Long donationId;
 
     public DonationResponse(DonationGroup donationGroup, String receiverName) {
+        this.donationId = donationGroup.getId();
         this.receiverName = receiverName;
         this.donationAmount = donationGroup.getDonationAmount();
         this.donationDate = donationGroup.getDonationDate();

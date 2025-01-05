@@ -140,6 +140,7 @@ public class RequestDonationService extends AbstractDonationService {
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
         checkDonateAmount(redcardList, donationRequest.getQuantity());
+        // 여기 에러남 !!!!!!!!!!!!!!!
         validateReceiver(dependencies.getCurrentUserId());
     }
 
