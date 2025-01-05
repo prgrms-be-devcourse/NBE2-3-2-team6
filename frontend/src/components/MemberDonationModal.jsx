@@ -5,12 +5,12 @@ const Modal = ({ onSubmit, onClose }) => {
   // const 
   const [quantity, setQuantity] = useState("");
   const [comment, setComment] = useState("");
-  const [userId, setUserId] = useState("");
+  const [receivedId, setReceivedId] = useState("");
   const [memberName, setMemberName] = useState("");
   const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
-    if (!userId || !memberName) {
+    if (!receivedId || !memberName) {
       alert("회원을 등록해주세요");
       return;
     }
@@ -18,7 +18,7 @@ const Modal = ({ onSubmit, onClose }) => {
       alert("유효한 개수를 입력하세요.");
       return;
     }
-    onSubmit(quantity, comment, userId); 
+    onSubmit(quantity, comment, receivedId); 
   };
   const validEmail = async (email) => {
     try {
@@ -26,7 +26,7 @@ const Modal = ({ onSubmit, onClose }) => {
           email
         });
           setMemberName(response.data.name)
-          setUserId(response.data.userId)
+          setReceivedId(response.data.receivedId)
           alert("확인되었습니다.");
     } catch (error) {
       console.error("이메일 인증 요청 오류:", error);
