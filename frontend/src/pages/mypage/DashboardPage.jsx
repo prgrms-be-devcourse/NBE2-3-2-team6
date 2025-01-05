@@ -62,12 +62,12 @@ const DashboardPage = () => {
                   <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
                     <User className="text-gray-400" />
                     <span className="text-gray-600">성 명:</span>
-                    <span className="font-medium">{userInfo.name || "N/A"}</span>
+                    <span className="font-medium">{userInfo.name}</span>
                   </div>
                   <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
                     <Calendar className="text-gray-400" />
                     <span className="text-gray-600">생년월일:</span>
-                    <span>{userInfo.birth || "N/A"}</span>
+                    <span>{userInfo.birth}</span>
                   </div>
                   <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
                     <User className="text-gray-400" />
@@ -77,16 +77,15 @@ const DashboardPage = () => {
                   <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
                     <Phone className="text-gray-400" />
                     <span className="text-gray-600">연락처:</span>
-                    <span>{userInfo.phoneNumber || "N/A"}</span>
+                    <span>{userInfo.phoneNumber}</span>
                   </div>
                   <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
                     <Clock className="text-gray-400" />
                     <span className="text-gray-600">최근 기부일자:</span>
-                    <span>
-                      {donationStats.lastDonationDate || "N/A"}
-                    </span>
+                    <span>{donationStats.lastDonationDate}</span>
                   </div>
                 </div>
+
                 <div className="col-span-3 flex items-center justify-center">
                   <div className="text-center">
                     <div className="relative">
@@ -96,17 +95,23 @@ const DashboardPage = () => {
                           <h3 className="text-xl font-bold text-red-500">
                             {donationStats.grade || "N/A"}
                           </h3>
-                          <p className="text-sm text-gray-500">헌혈 전문가</p>
+                          <p className="text-sm text-gray-500">
+                            {donationStats.grade === "BRONZE" && "헌혈 초보자"}
+                            {donationStats.grade === "SILVER" && "헌혈 입문자"}
+                            {donationStats.grade === "GOLD" && "헌혈 마스터"}
+                            {donationStats.grade === "MVP" && "헌혈 레전드"}
+                          </p>
                         </div>
                       </div>
                       <div className="absolute -top-2 -right-2 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
                         <span className="text-white font-bold text-sm">
-                          {donationStats.totalDonatedCards}
+                          {donationStats.totalDonatedCards}개
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
+
               </div>
 
               {/* Stats Cards Section */}
