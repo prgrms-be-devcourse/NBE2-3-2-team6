@@ -1,6 +1,7 @@
 package com.redbox.domain.redcard.service;
 
 import com.redbox.domain.redcard.dto.RegisterRedcardRequest;
+import com.redbox.domain.redcard.entity.OwnerType;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.entity.RedcardStatus;
 import com.redbox.domain.redcard.exception.DuplicateSerialNumberException;
@@ -46,6 +47,7 @@ public class RedcardService {
                 .serialNumber(request.getCardNumber())
                 .hospitalName(request.getHospitalName())
                 .redcardStatus(RedcardStatus.AVAILABLE)
+                .ownerType(OwnerType.USER)
                 .build();
 
         redcardRepository.save(redcard);
@@ -82,9 +84,10 @@ public class RedcardService {
         redcard.changeRedcardStatus(request.validateAndGetOppositeStatus());
     }
 
-    public void updateRedCardList(List<Redcard> redcardList, Long receiveUserId) {
+    public void updateRedCardList(List<Redcard> redcardList, Long receiveUserId, OwnerType ownerType) {
         for (Redcard redcard : redcardList) {
             redcard.updateUser(receiveUserId);
+            redcard.changeOwnerType(ownerType);
         }
     }
 

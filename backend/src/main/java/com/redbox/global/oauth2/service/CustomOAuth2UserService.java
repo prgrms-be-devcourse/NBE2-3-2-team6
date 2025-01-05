@@ -41,7 +41,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String userEmail = oAuth2Response.getEmail();
-        User existData = userRepository.findByEmail(userEmail);
+        User existData = userRepository.findByEmail(userEmail).orElse(null);
 
         if (existData == null) {
             // email 을 가진 유저가 없는 경우 (처음 가입)

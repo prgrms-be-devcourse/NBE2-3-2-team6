@@ -4,6 +4,7 @@ import com.redbox.domain.donation.application.AbstractDonationService;
 import com.redbox.domain.donation.application.DonationServiceDependencies;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
 import com.redbox.domain.donation.repository.DonationDetailRepository;
@@ -11,6 +12,7 @@ import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redbox.dto.RedboxStatsResponse;
 import com.redbox.domain.redbox.entity.Redbox;
 import com.redbox.domain.redbox.repository.RedboxRepository;
+import com.redbox.domain.redcard.entity.OwnerType;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.repository.RedcardRepository;
 import com.redbox.domain.redcard.service.RedcardService;
@@ -65,9 +67,9 @@ public class RedboxService extends AbstractDonationService {
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         // 헌혈증 보유자 수정
-        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId);
+        dependencies.getRedcardService().updateRedCardList(redcardList, receiverId, OwnerType.REDBOX);
         // 레드박스 기부 기록 생성 & 저장
-        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.USER, donationCount, donationRequest.getComment());
+        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, DonationStatus.DONE,donationCount, donationRequest.getComment());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);

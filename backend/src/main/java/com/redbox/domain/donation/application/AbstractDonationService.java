@@ -3,6 +3,7 @@ package com.redbox.domain.donation.application;
 import com.redbox.domain.donation.dto.DonationRequest;
 import com.redbox.domain.donation.entity.DonationDetail;
 import com.redbox.domain.donation.entity.DonationGroup;
+import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAmountExceededException;
 import com.redbox.domain.redcard.entity.Redcard;
@@ -38,11 +39,12 @@ public abstract class AbstractDonationService implements DonationService {
     }
 
     protected DonationGroup createDonationGroup(long donationUserId, long
-            receiverId, DonationType donationType, int donationCount, String donationMessage) {
+            receiverId, DonationType donationType, DonationStatus donationStatus, int donationCount, String donationMessage) {
         DonationGroup redboxDonationGroup = DonationGroup.builder()
                                                          .donorId(donationUserId)
                                                          .receiverId(receiverId)
                                                          .donationType(donationType)
+                                                         .donationStatus(donationStatus)
                                                          .donationAmount(donationCount)
                                                          .donationDate(LocalDate.now())
                                                          .donationMessage(donationMessage)
@@ -67,5 +69,5 @@ public abstract class AbstractDonationService implements DonationService {
             throw new DonationAmountExceededException();
         }
     }
-};
+}
 

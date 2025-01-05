@@ -64,10 +64,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // API 서버이므로
-                .oauth2Login((oauth2) -> oauth2
-                        .loginPage("/login")
-                        .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
-                        .userInfoEndpoint((userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))))
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/**").permitAll()
                     // .requestMatchers("/community/request/write").permitAll()
@@ -89,9 +85,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
 
                 )
-                .formLogin(auth -> auth.disable())
-                .logout(auth -> auth.disable())
-                .httpBasic(auth -> auth.disable())
                 // 인증 플로우 수정
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
