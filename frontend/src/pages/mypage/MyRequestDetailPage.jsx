@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 import api from "../../lib/axios";
 import { ThumbsUp, HandHeart } from "lucide-react";
 import RedboxDonationModal from "../../components/RedboxDonationModal"; // 기부 모달 컴포넌트 임포트
@@ -12,6 +12,8 @@ const RequestDetailPage = () => {
   const [likes, setLikes] = useState(0); // 좋아요 수 상태
   const [currentAmount, setCurrentAmount] = useState(0); // 현재 기부 금액 상태
   const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false); // 기부 모달 열림 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [isLiked, setIsLiked] = useState(false); // 좋아요 상태
 
   // 요청 상세 정보를 가져오기 위한 URL
@@ -49,7 +51,7 @@ const RequestDetailPage = () => {
 
   // 좋아요 버튼 클릭 시 호출되는 함수
   const handleLike = async () => {
-
+    
     if (request.status === "만료") {
       alert("만료된 게시글입니다.");
       return;
@@ -57,6 +59,7 @@ const RequestDetailPage = () => {
 
     try {
       console.log(url + "/like");
+
       const response = await api.post(url + "/like"); // 좋아요 요청 API 호출
 
       if (response.status === 200) {
@@ -65,11 +68,10 @@ const RequestDetailPage = () => {
         setIsLiked((prevIsLiked) => !prevIsLiked); // 좋아요 상태 토글
       } 
     } catch (error) {
-      if (error.response.status === 403) {
+      if(error.response.status === 403) {
         alert("로그인이 필요합니다");
       } else {
-      console.error("좋아요 요청 오류:", error); // 오류 처리
-
+        console.error("좋아요 요청 오류:", error); // 오류 처리
       }
     }
   };
@@ -106,11 +108,46 @@ const RequestDetailPage = () => {
 
     setIsRedboxModalOpen(false); // 기부 모달 닫기
   };
+
+  // 수정 권한 확인
+  const modifyAuthor = async () => {
+    try {
+      if (request.status === "만료") {
+        alert("만료된 게시글입니다.");
+        return;
+      }
+      const response = await api.get(`/requests/modify/${id}`);
+      navigate(`/mypage/request/modify/${id}`); 
+    } catch (error) {
+      if (error.response.status === 403) {
+        alert("수정 권한이 없습니다");
+      } else {
+        console.error("권한 확인 중 오류:", error);
+        alert("권한 확인 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true); // 모달 열기
+  };
+
+  const handleDeleteBtn = async() => {
+     try{
+        const response = await api.delete(url);
+        if (response.status === 200) {
+          alert("삭제되었습니다");
+          navigate("/mypage/request")
+        }
+      } catch (error) {
+        console.log("err"); 
+      }
+    };
   
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
-        <CommunitySideBar /> {/* 사이드바 컴포넌트 */}
+        <MyPageSideBar /> {/* 사이드바 컴포넌트 */}
         <div className="flex-1 p-8">
           {request && ( // 요청 데이터가 있을 때만 렌더링
             <>
@@ -152,32 +189,54 @@ const RequestDetailPage = () => {
               <div className="mt-4 flex items-center">
                 <button
                   className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
-                  onClick={() => navigate("/community/request")} // 목록으로 이동
+                  onClick={() => navigate("/mypage/request")} // 목록으로 이동
                 >
                   목록
                 </button>
-                <button
-                  className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
-                  onClick={handleOpenDonateModal}
-                >
-                  <HandHeart />
-                </button>
-                <span className="mx-2">{currentAmount} 기부</span>{" "}
-                {/* 현재 기부 금액 표시 */}
-                <button
-                  className={`mx-1 px-3 py-2 transition-colors duration-200 ${
-                    isLiked
-                      ? "bg-red-500 text-white hover:bg-red-600"
-                      : "bg-gray-300 text-black hover:bg-gray-400"
-                  }`}
-                  onClick={handleLike} // 좋아요 버튼 클릭 시
-                >
-                  <ThumbsUp
-                    className={`${isLiked ? "fill-current animate-pulse" : ""}`}
-                    size={20}
-                  />
-                </button>
-                <span className="mx-2">{likes} 따봉</span> {/* 좋아요 수 표시 */}
+                {request.requestStatus !== "REQUEST" && (
+                  <>
+                    <button
+                      className="mx-1 px-3 py-2 bg-gray-300 text-black rounded"
+                      onClick={handleOpenDonateModal}
+                    >
+                      <HandHeart />
+                    </button>
+                    <span className="mx-2">{currentAmount} 기부</span>{" "}
+                    {/* 현재 기부 금액 표시 */}
+                    <button
+                      className={`mx-1 px-3 py-2 transition-colors duration-200 ${
+                        isLiked
+                          ? "bg-red-500 text-white hover:bg-red-600"
+                          : "bg-gray-300 text-black hover:bg-gray-400"
+                      }`}
+                      onClick={handleLike} // 좋아요 버튼 클릭 시
+                    >
+                      <ThumbsUp
+                        className={`${isLiked ? "fill-current animate-pulse" : ""}`}
+                        size={20}
+                      />
+                    </button>
+                    <span className="mx-2">{likes} 따봉</span> {/* 좋아요 수 표시 */}
+                  </>
+                )}
+
+                {request.requestStatus === "REQUEST" && (
+                  <div className="flex ml-auto space-x-2">
+                    <button
+                      className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      onClick={modifyAuthor} // 권한 확인 함수 호출
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      onClick={handleOpenDeleteModal}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                )}
+           
               </div>
               
               <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">
@@ -214,6 +273,28 @@ const RequestDetailPage = () => {
           onClose={() => setIsRedboxModalOpen(false)}
           onSubmit={handleDonate} // 기부 처리 함수
         />
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <p className="mb-4">게시물을 삭제하시겠습니까?</p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={handleDeleteBtn} // 탈퇴 처리 함수 호출
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                확인
+              </button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)} // 모달 닫기
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

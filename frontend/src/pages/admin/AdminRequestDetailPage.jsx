@@ -64,7 +64,12 @@ const AdminRequestDetailPage = () => {
         setIsLiked((prevIsLiked) => !prevIsLiked); // 좋아요 상태 토글
       }
     } catch (error) {
-      console.error("좋아요 요청 오류:", error); // 오류 처리
+
+      if (response.status === 403) {
+        alert("로그인이 필요합니다");
+      } else {
+        console.error("좋아요 요청 오류:", error); // 오류 처리
+      }
     }
   };
 
@@ -93,19 +98,6 @@ const AdminRequestDetailPage = () => {
     setIsRedboxModalOpen(false);
   };
 
- const handleDeleteBtn = async() => {
-   try{
-       const response = await api.post(url);
-
-      if (response.ok) {
-        alert(response.data.message);
-        //TODO: 삭제 성공시 목록으로 가기
-      }
-    } catch (error) {
-      console.log("err");
-    }
-  };
-
  return (
    <div className="flex-1 bg-gray-50">
      <div className="flex">
@@ -121,7 +113,7 @@ const AdminRequestDetailPage = () => {
                </div>
                <div className="flex bg-gray-50 py-3 border-b">
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">작성자</div>
-                  <div className="w-1/12 text-center text-sm font-medium">{request.userEmail}</div>
+                  <div className="w-1/12 text-center text-sm font-medium">{request.userName}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">등록일</div>
                   <div className="w-1/12 text-center text-sm font-medium">{request.date}</div>
                   <div className="w-1/12 text-right text-sm font-medium text-gray-500">기부 시작일</div>
@@ -171,12 +163,6 @@ const AdminRequestDetailPage = () => {
                  />
                </button>
                <span className="mx-2">{likes} 따봉</span>
-              <button
-                className="ml-auto px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={handleDeleteBtn}
-              >
-                삭제
-              </button>
              </div>
 
              <div className="mt-6 bg-white rounded-lg shadow-md p-6 h-auto">

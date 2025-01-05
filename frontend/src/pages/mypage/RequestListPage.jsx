@@ -3,12 +3,14 @@ import api from "../../lib/axios";
 import { useEffect, useState } from "react";
 import MyPageSideBar from "../../components/wrapper/MyPageSideBar";
 
+const url = "/users/my-info/requests"
+const PAGE_SIZE = 10; // 페이지 크기 상수화
+
 const RequestListPage = () => {
   const navigate = useNavigate();
   // 페이지네이션 상태 관리
-  const size = 10;
   const [page, setPage] = useState(1);
-  const [content, setContent] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
@@ -18,27 +20,20 @@ const RequestListPage = () => {
   const startPage = currentGroup * PAGE_GROUP_SIZE + 1;
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
-  const fetchBoards = async (page, size) => {
+  const fetchBoards = async () => {
     try {
-      const response = await api.get("/mypage/requests", {
-        params: {
-          page: page, // Spring Boot는 0부터 시작하므로 1을 빼줍니다
-          size,
-        },
-      });
-
-      const { content, totalPages, totalElements } = response.data;
-      setContent(content);
-      setTotalPages(totalPages);
-      setTotalElements(totalElements);
+      const response = await api.get(`${url}?page=${page}&size=${PAGE_SIZE}`);
+      setRequests(response.data.content);
+      setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
     } catch (error) {
       console.error("Error fetching boards:", error);
     }
   };
 
   useEffect(() => {
-    fetchBoards(page, size);
-  }, [page, size]);
+    fetchBoards();
+  }, [page]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage) => {
@@ -91,7 +86,7 @@ const RequestListPage = () => {
                   작성일
                 </div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">
-                  좋아요수
+                  추천수
                 </div>
                 <div className="w-20 text-center text-sm font-medium text-gray-500">
                   조회수
@@ -100,33 +95,33 @@ const RequestListPage = () => {
 
               {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {content?.map((request) => (
+                {requests?.map((request) => (
                   <div
-                    key={request.id}
+                    key={request.requestId}
                     className="flex items-center py-3 hover:bg-gray-50"
                   >
                     <div className="w-16 text-center text-sm text-gray-500">
-                      {request.id}
+                      {request.requestId}
                     </div>
-                    <div className="w-20 text-center text-sm text-gray-500">
-                      {request.status}
+                    <div className={`w-24 text-center text-sm ${request.progress === "진행중" ? 'text-blue-500' : 'text-gray-500'}`}>
+                      {request.progress}
                     </div>
                     <div className="flex-1 px-6">
                       <Link
-                        to={`/community/request/${request.id}`}
+                        to={`/mypage/request/${request.requestId}`}
                         className="text-gray-900 hover:text-red-600"
                       >
-                        {request.title}
+                        {request.requestTitle}
                       </Link>
                     </div>
                     <div className="w-24 text-center text-sm text-gray-500">
-                      {new Date(request.createdAt).toLocaleDateString()}
+                      {request.requestDate}
+                    </div>
+                    <div className="w-24 text-center text-sm text-gray-500">
+                      {request.requestLikes}
                     </div>
                     <div className="w-20 text-center text-sm text-gray-500">
-                      {request.likes}
-                    </div>
-                    <div className="w-20 text-center text-sm text-gray-500">
-                      {request.views}
+                      {request.requestHits}
                     </div>
                   </div>
                 ))}

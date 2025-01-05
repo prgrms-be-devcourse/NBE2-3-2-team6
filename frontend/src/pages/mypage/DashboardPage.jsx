@@ -111,7 +111,6 @@ const DashboardPage = () => {
                     </div>
                   </div>
                 </div>
-
               </div>
 
               {/* Stats Cards Section */}
@@ -120,7 +119,7 @@ const DashboardPage = () => {
                   <div className="flex justify-between items-center mb-4">
                     <Heart className="w-6 h-6 text-red-500" />
                     <span className="text-2xl font-bold text-red-500">
-                      {donationStats.totalDonatedCards}
+                      {donationStats.totalDonatedCards}개
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm">
@@ -131,7 +130,7 @@ const DashboardPage = () => {
                   <div className="flex justify-between items-center mb-4">
                     <Users className="w-6 h-6 text-red-500" />
                     <span className="text-2xl font-bold text-red-500">
-                      {donationStats.patientsHelped}
+                      {donationStats.patientsHelped}명
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm">도움을 받은 환자</p>
@@ -140,7 +139,7 @@ const DashboardPage = () => {
                   <div className="flex justify-between items-center mb-4">
                     <Clock className="w-6 h-6 text-red-500" />
                     <span className="text-2xl font-bold text-red-500">
-                      {donationStats.inProgressRequests}
+                      {donationStats.inProgressRequests}개
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm">진행중인 기부 요청</p>
