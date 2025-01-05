@@ -39,6 +39,8 @@ spring:
     show-sql: false
     properties:
       hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
         format_sql: false
         dialect: org.hibernate.dialect.MariaDBDialect
   data:
