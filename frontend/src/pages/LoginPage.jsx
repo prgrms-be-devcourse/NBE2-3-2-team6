@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api, { decodeJWT } from "../lib/axios";
 import logo from "../assets/image.png";
+import naverLogo from "../assets/btnG_아이콘원형.png";
 import { getRedirectPath } from "../utils/roleRedirect";
 
 const LoginPage = () => {
@@ -128,11 +129,13 @@ const LoginPage = () => {
 
         {/* 소셜 로그인 */}
         <div className="mt-8">
-          <div className="text-center text-sm text-gray-500 mb-4">소셜 계정으로 로그인</div>
+          <div className="text-center text-sm text-gray-500 mb-4">
+            소셜 계정으로 로그인
+          </div>
           <div className="grid grid-cols-1 gap-4">
             <button className="group relative w-full flex justify-center py-3 px-6 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
               <img
-                src="/src/assets/btnG_아이콘원형.png" // 원형 네이버 아이콘 이미지 경로
+                src={naverLogo} // 원형 네이버 아이콘 이미지 경로
                 alt="네이버 로그인"
                 className="h-12 w-12" // 이미지 크기를 약간 키움
               />
