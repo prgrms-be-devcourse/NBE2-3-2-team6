@@ -19,4 +19,14 @@ public abstract class BaseEntity extends BaseTimeEntity {
 
     @LastModifiedBy
     private String updatedBy;   // 수정자
+
+    // 처음 회원가입 시 가입한 이메일을 세팅해주기 위해 생성
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    // 처음 회원가입 시 가입한 이메일을 세팅해주기 위해 생성
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
 }
