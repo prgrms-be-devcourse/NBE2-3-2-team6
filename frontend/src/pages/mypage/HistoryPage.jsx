@@ -20,16 +20,26 @@ const DonationListPage = () => {
   const tabs = [
     { id: "donation", name: "기부" },
     { id: "receipt", name: "수혜" },
+    { id: "pending", name: "기부 예약" },
   ];
+  
+  const BASE_URL = "/users/my-info/redcards";
+  
+  const endpoints = {
+    donation: `${BASE_URL}/donations`,
+    receipt: `${BASE_URL}/receipts`,
+    pending: `${BASE_URL}/pending`,
+  };
 
   // API 호출 함수
   const fetchData = async (tabType, page) => {
     setIsLoading(true);
     try {
-      const endpoint =
-        tabType === "donation"
-          ? "/users/my-info/redcards/donations"
-          : "/users/my-info/redcards/receipts";
+      // 매핑된 엔드포인트 가져오기
+      const endpoint = endpoints[tabType];
+      if (!endpoint) {
+      throw new Error("유효하지 않은 탭 타입입니다.");
+      }
 
       const response = await api.get(endpoint, {
         params: {
@@ -48,6 +58,18 @@ const DonationListPage = () => {
       // 에러 처리 로직 추가 필요
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancelDonation = async (donationId) => {
+    try {
+      const endpoint = `${endpoints.pending}/${donationId}`;
+      await api.put(endpoint);
+      alert("기부가 취소되었습니다.");
+      fetchData(activeTab, page);
+    } catch (error) {
+      console.error("기부 취소 실패:", error);
+      alert("기부 취소 중 문제가 발생했습니다.");
     }
   };
 
@@ -149,6 +171,18 @@ const DonationListPage = () => {
                     <div className="text-sm text-gray-500">
                       {formatDate(item.donationDate)}
                     </div>
+
+                    {/* 기부 취소 버튼: Pending 탭에서만 표시 */}
+                    {activeTab === "pending" && (
+                      <div className="mt-4 text-right">
+                        <button
+                          onClick={() => handleCancelDonation(item.id)} // 취소 핸들러
+                          className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded"
+                        >
+                          기부 취소
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
