@@ -47,7 +47,7 @@ public class RequestRepositoryImpl implements RequestRepositoryCustom {
         }
 
         if (requestFilter.getEndDate() != null) {
-            builder.and(request.donationEndDate.goe(requestFilter.getEndDate()));
+            builder.and(request.donationEndDate.loe(requestFilter.getEndDate()));
         }
 
         // 좋아요한 글만 필터링 (옵션이 LIKED일 경우)

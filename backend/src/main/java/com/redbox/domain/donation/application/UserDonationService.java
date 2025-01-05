@@ -7,6 +7,7 @@ import com.redbox.domain.donation.entity.DonationStatus;
 import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationAlreadyConfirmedException;
 import com.redbox.domain.redcard.entity.OwnerType;
+import com.redbox.domain.donation.exception.DonationNotSelfException;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.user.exception.UserNotFoundException;
 import com.redbox.domain.user.repository.UserRepository;
@@ -56,8 +57,9 @@ public class UserDonationService extends AbstractDonationService {
         // user 에게 기부
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
-        validateReceiver(receiverId);
         long donorId = dependencies.getCurrentUserId();
+        validateReceiver(receiverId);
+        validateSelfDonate(receiverId, donorId);
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         dependencies.getRedcardService().updateRedCardList(redcardList, receiverId, OwnerType.USER);
@@ -69,6 +71,13 @@ public class UserDonationService extends AbstractDonationService {
     @Override
     public void cancelDonation(long receiveId) {
         throw new DonationAlreadyConfirmedException();
+    }
+
+    @Override
+    public void validateSelfDonate(long receiveId, long donorId) {
+        if (receiveId == donorId) {
+            throw new DonationNotSelfException();
+        }
     }
 
     @Override

@@ -84,6 +84,10 @@ public class RedboxService extends AbstractDonationService {
     }
 
     @Override
+    public void validateSelfDonate(long receiveId, long donorId) {
+    }
+
+    @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
         checkDonateAmount(redcardList, donationRequest.getQuantity());
     }
