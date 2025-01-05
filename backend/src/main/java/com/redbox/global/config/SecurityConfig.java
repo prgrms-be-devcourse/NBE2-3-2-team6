@@ -63,51 +63,69 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // API 서버이므로
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/**").permitAll()
-                    // .requestMatchers("/community/request/write").permitAll()
-                    // 헌혈기사 목록 조회만 엔드포인트 허용
-                    //.requestMatchers(HttpMethod.GET, "/articles").permitAll()
-                    //.anyRequest().authenticated()
-                        // 회원가입, 이메일, 로그인 관련 엔드포인트 허용
-                        .requestMatchers("/auth/**").permitAll()
-                        // 헌혈기사 목록 조회만 엔드포인트 허용
-                        .requestMatchers(HttpMethod.GET, "/articles").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/redbox/stats").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/my-donation-stats").authenticated()
-                        // 요청 게시판 목록 조회만 엔드 포인트 허용
-                        .requestMatchers(HttpMethod.GET, "/requests/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/write/requests").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/requests/**").authenticated()
-                        // 관리자 목록 확인
-                        .requestMatchers("/admin/**").permitAll()
-                        .anyRequest().authenticated()
+                        // ===== 공개 엔드포인트 =====
+                        .requestMatchers("/auth/**").permitAll() // 인증 관련
+                        .requestMatchers(HttpMethod.GET, "/articles", "/articles/{articleId}").permitAll() // 게시글 조회
+                        .requestMatchers(HttpMethod.GET, "/redbox/stats").permitAll() // 통계 정보
+                        .requestMatchers(HttpMethod.GET, "/requests/**").permitAll() // 요청 게시글 조회
+                        .requestMatchers(HttpMethod.GET, "/notices", "/notices/{noticeId}", "/notices/top5").permitAll() // 공지사항 조회 및 최신 공지
 
+                        // ===== 사용자 관련 엔드포인트 =====
+                        .requestMatchers("/users/my-info/**").authenticated() // 사용자 정보 (보호됨)
+                        .requestMatchers(HttpMethod.GET, "/users/my-donation-stats").authenticated() // 사용자 기부 통계
+
+                        // ===== 요청 관련 엔드포인트 =====
+                        .requestMatchers(HttpMethod.GET, "/requests/**").permitAll() // 요청 조회
+                        .requestMatchers(HttpMethod.GET, "/write/requests").authenticated() // 요청 권한 확인
+                        .requestMatchers(HttpMethod.POST, "/requests/**").authenticated() // 요청 생성
+                        .requestMatchers(HttpMethod.PUT, "/requests/**").authenticated() // 요청 수정
+                        .requestMatchers(HttpMethod.DELETE, "/requests/**").authenticated() // 요청 삭제
+
+                        // ===== 기부 관련 엔드포인트 =====
+                        .requestMatchers(HttpMethod.POST, "/donate/**").authenticated() // 기부 생성
+                        .requestMatchers(HttpMethod.PUT, "/donate/cancel/**").authenticated() // 기부 취소
+                        .requestMatchers(HttpMethod.GET, "/donations/top").permitAll() // 상위 5명의 기부자 조회
+                        .requestMatchers(HttpMethod.GET, "/test/confirm/**").authenticated()
+
+                        // ===== 대시보드 엔드포인트 =====
+                        .requestMatchers(HttpMethod.GET, "/dashboard").authenticated() // 대시보드 데이터 (보호됨)
+
+                        // ===== 공지사항 관련 엔드포인트 =====
+                        .requestMatchers(HttpMethod.POST, "/notices", "/notices/{noticeId}/files").hasRole("ADMIN") // 공지사항 생성 및 파일 추가
+                        .requestMatchers(HttpMethod.PUT, "/notices/{noticeId}").hasRole("ADMIN") // 공지사항 수정
+                        .requestMatchers(HttpMethod.DELETE, "/notices/{noticeId}", "/notices/{noticeId}/files/{fileId}").hasRole("ADMIN") // 공지사항 삭제 및 파일 삭제
+                        .requestMatchers(HttpMethod.GET, "/notices/{noticeId}/files/{fileId}").permitAll() // 공지사항 파일 다운로드
+
+                        // ===== 관리자 관련 엔드포인트 =====
+                        .requestMatchers("/admin/**").permitAll() // 관리자 페이지
+
+                        // ===== 기타 =====
+                        .anyRequest().authenticated() // 그 외의 모든 요청은 인증 필요
                 )
-                // 인증 플로우 수정
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new CustomLogoutFilter(jwtUtil, refreshTokenService), JWTFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-
-        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())); // CORS 설정
 
         return http.build();
     }
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*"));
-        configuration.setExposedHeaders(List.of("access", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:5174")); // 허용할 Origin 추가
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*")); // 허용할 헤더
+        configuration.setExposedHeaders(List.of("access", "Content-Type")); // 노출할 헤더
+        configuration.setAllowCredentials(true); // 쿠키 사용 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
