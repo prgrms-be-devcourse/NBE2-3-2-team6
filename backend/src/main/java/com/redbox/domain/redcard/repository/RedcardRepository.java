@@ -6,6 +6,7 @@ import com.redbox.domain.redcard.entity.RedcardStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +24,8 @@ public interface RedcardRepository extends JpaRepository<Redcard, Long> {
     Optional<Redcard> findByUserIdAndId(Long userId, Long id);
 
     List<Redcard> findByUserIdAndRedcardStatus(Long userId, RedcardStatus redcardStatus);
+
+    @Query("SELECT COUNT(r) FROM Redcard r WHERE r.ownerType = 'REDBOX' AND r.userId = 0")
+    Integer countAllInRedbox();
 }
 
