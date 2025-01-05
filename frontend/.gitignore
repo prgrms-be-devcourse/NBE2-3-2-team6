@@ -19,6 +19,7 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+.env
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -91,5 +92,13 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# env file
+.env*
+
+# Build output
+dist
+dist-ssr
+*.local
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,react,macos,windows

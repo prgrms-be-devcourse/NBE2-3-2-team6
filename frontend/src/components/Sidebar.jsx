@@ -1,8 +1,11 @@
-// components/community/Sidebar.jsx
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = ({ category, param }) => {
-  const location = useLocation(); // 현재 경로를 확인하기 위해 사용
+  const location = useLocation();
+
+  const isActiveUrl = (url) => {
+    return location.pathname.startsWith(url);
+  };
 
   return (
     <div className="w-64 bg-white shadow-md min-h-screen p-4">
@@ -12,7 +15,7 @@ const Sidebar = ({ category, param }) => {
           <li
             key={`SIDEBAR_KEY_${key}`}
             className={`rounded ${
-              location.pathname === url
+              isActiveUrl(url)
                 ? "bg-red-50 text-red-600"
                 : "hover:bg-gray-50"
             }`}

@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../lib/axios";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import { useEffect, useState } from "react";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
+import { formatDate } from "../../utils/dateUtils";
 
-const url = "/articles";
-
-const ArticlePage = () => {
+const AdminNoticePage = () => {
+  const navigate = useNavigate();
+  // 페이지네이션 상태 관리
   const size = 10;
   const [page, setPage] = useState(1);
-  const [articles, setArticles] = useState([]);
-  const [totalElements, setTotalElements] = useState(0);
+  const [data, setData] = useState({ notices: [] });
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   // 현재 페이지 그룹 계산을 위한 상수
   const PAGE_GROUP_SIZE = 10;
@@ -18,22 +20,23 @@ const ArticlePage = () => {
   const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
 
   useEffect(() => {
-    fetchArticles(page, size);
+    fetchBoards(page, size);
   }, [page, size]);
 
-  const fetchArticles = async (page, size) => {
+  const fetchBoards = async (page, size) => {
     try {
-      const response = await api.get(url, {
+      const response = await api.get("/notices", {
         params: {
           page: page,
           size,
         },
       });
-      setArticles(response.data.content);
-      setTotalElements(response.data.totalElements);
+
+      setData({ notices: response.data.content }); // content를 notices 배열로 설정
       setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
     } catch (error) {
-      console.error("Error fetching articles:", error);
+      console.error("Error fetching boards:", error);
     }
   };
 
@@ -58,20 +61,19 @@ const ArticlePage = () => {
     }
   };
 
+  const handleNoticeWrite = () => {
+    navigate("/admin/community/notice/write");
+  };
+
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
         {/* 사이드바 */}
-        <CommunitySideBar />
-
-        {/* 메인 컨텐츠 */}
+        <AdminSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6 h-[800px]">
-            <h1 className="text-2xl font-bold mb-6">헌혈 기사</h1>
-
-            {/* 게시판 리스트 */}
+            <h1 className="text-2xl font-bold mb-6">공지사항</h1>
             <div className="border rounded-lg">
-              {/* 헤더 */}
               <div className="flex bg-gray-50 py-3 border-b">
                 <div className="w-16 text-center text-sm font-medium text-gray-500">
                   번호
@@ -79,47 +81,42 @@ const ArticlePage = () => {
                 <div className="flex-1 px-6 text-center text-sm font-medium text-gray-500">
                   제목
                 </div>
-                <div className="w-32 text-center text-sm font-medium text-gray-500">
-                  출처
-                </div>
                 <div className="w-24 text-center text-sm font-medium text-gray-500">
                   작성일
                 </div>
+                <div className="w-20 text-center text-sm font-medium text-gray-500">
+                  조회수
+                </div>
               </div>
-
-              {/* 리스트 아이템들 */}
               <div className="divide-y">
-                {articles.length > 0 ? (
-                  articles.map((article) => (
+                {data.notices.length > 0 ? (
+                  data.notices.map((notice) => (
                     <div
-                      key={article.articleNo}
+                      key={notice.noticeNo} // id 대신 noticeNo 사용
                       className="flex items-center py-3 hover:bg-gray-50"
                     >
                       <div className="w-16 text-center text-sm text-gray-500">
-                        {article.articleNo}
+                        {notice.noticeNo}
                       </div>
                       <div className="flex-1 px-6">
-                        <a
-                          href={article.url}
-                          target="_blank" // 새 탭에서 열기
-                          rel="noopener noreferrer" // 보안을 위한 추가 속성
+                        <Link
+                          to={`/admin/community/notice/${notice.noticeNo}`}
                           className="text-gray-900 hover:text-red-600"
                         >
-                          {article.subject}
-                        </a>
-                      </div>
-                      <div className="w-32 text-center text-sm text-gray-500">
-                        {article.source}
+                          {notice.title}
+                        </Link>
                       </div>
                       <div className="w-24 text-center text-sm text-gray-500">
-                        {article.createdDate}
+                        {formatDate(notice.createdDate)}
                       </div>
-                      {/* 출처 추가 */}
+                      <div className="w-20 text-center text-sm text-gray-500">
+                        {notice.views}
+                      </div>
                     </div>
                   ))
                 ) : (
                   <div className="flex justify-center items-center py-20 text-gray-500">
-                    등록된 헌혈 기사 없습니다.
+                    등록된 공지사항이 없습니다.
                   </div>
                 )}
               </div>
@@ -127,8 +124,8 @@ const ArticlePage = () => {
 
             {/* 페이지네이션 */}
             <div className="mt-6 flex flex-col items-center space-y-2 justify-between">
-              <div className="flex justify-items-center">
-                <div></div>
+              <div className="flex justify-between items-center w-full">
+                <div className="w-16"></div>
                 <nav className="flex space-x-2 justify-between">
                   {/* 이전 그룹 버튼 */}
                   <button
@@ -166,6 +163,12 @@ const ArticlePage = () => {
                     다음
                   </button>
                 </nav>
+                <button
+                  onClick={handleNoticeWrite}
+                  className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+                >
+                  글쓰기
+                </button>
               </div>
 
               {/* 전체 페이지 정보 */}
@@ -180,4 +183,4 @@ const ArticlePage = () => {
   );
 };
 
-export default ArticlePage;
+export default AdminNoticePage;

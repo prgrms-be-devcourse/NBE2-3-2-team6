@@ -3,35 +3,19 @@ import { useRef, useState } from "react";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { Editor } from "@toast-ui/react-editor";
-import CommunitySideBar from "../../components/wrapper/CommunitySideBar";
+import AdminSideBar from "../../components/wrapper/AdminSideBar";
 import api from "../../lib/axios";
-import { useEffect } from 'react';
 
-const url = "/write/requests";
-
-const RequestWritePage = () => {
-  const formatDate = (date) => date.toISOString().split("T")[0];
-
+const AdminNoticeWritePage = () => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
-  const [donationStartDate, setDonationStartDate] = useState(formatDate(new Date()));
-  const [donationEndDate, setDonationEndDate] = useState(formatDate(new Date()));
-  const [donationAmount, setDonationAmount] = useState("1");
   const [attachFiles, setAttachFiles] = useState([]);
 
-  const handleTitleInput = (e) => setTitle(e.target.value);
-  const handleDonationStartDateInput = (e) => setDonationStartDate(e.target.value);
-  const handleDonationEndDateInput = (e) => setDonationEndDate(e.target.value);
-  const handleDonationAmountInput = (e) => setDonationAmount(e.target.value);
-
-  useEffect(() => {
-    // 오늘 날짜를 yyyy-mm-dd 형식으로 설정
-    const today = new Date().toISOString().split('T')[0];
-    setDonationStartDate(today); // 기본적으로 시작일자를 오늘 날짜로 설정
-    setDonationEndDate(today);   // 기본적으로 종료일자를 시작일자와 동일하게 설정
-  }, []);
+  const handleTitleInput = (e) => {
+    setTitle(e.target.value);
+  };
 
   const handleFileButton = () => {
     fileInputRef.current?.click();
@@ -58,46 +42,47 @@ const RequestWritePage = () => {
       }
 
       const formData = new FormData();
-      const postData = {
-        requestTitle: title,
-        requestContent: content,
-        targetAmount: donationAmount,
-        donationStartDate,
-        donationEndDate,
+      const request = {
+        title: title,
+        content: content,
       };
+
       formData.append(
-        "post",
-        new Blob([JSON.stringify(postData)], { type: "application/json" })
+        "request",
+        new Blob([JSON.stringify(request)], {
+          type: "application/json",
+        })
       );
 
       attachFiles.forEach((file) => {
         formData.append("files", file);
       });
 
-      const response = await api.post(url, formData);
+      const response = await api.post("/notices", formData);
 
       if (response.status === 201) {
-        const { id } = response.data;
-        alert("등록 완료");
-        navigate(`/mypage/request/${id}`);
-      } else {
-        alert("등록 실패");
+        alert("작성되었습니다");
+        navigate(`/admin/community/notice/${response.data.noticeNo}`);
       }
     } catch (error) {
       console.error("Error saving post:", error);
     }
   };
 
-  const handleCancelButton = () => navigate("/community/request");
+  const handleCancelButton = () => {
+    navigate("/admin/community/notice");
+  };
 
   return (
     <div className="flex-1 bg-gray-50">
       <div className="flex">
-        <CommunitySideBar />
+        {/* 사이드바 */}
+        <AdminSideBar />
         <div className="flex-1 p-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h1 className="text-2xl font-bold mb-6">글쓰기</h1>
 
+            {/* 제목 입력 */}
             <div className="mb-4">
               <input
                 type="text"
@@ -105,50 +90,6 @@ const RequestWritePage = () => {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 value={title}
                 onChange={handleTitleInput}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">기부 시작일자</label>
-                <input
-                  type="date"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={donationStartDate}
-                  min={new Date().toISOString().split('T')[0]} // 오늘 날짜 이후로 선택 가능
-                  onChange={handleDonationStartDateInput}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">기부 종료일자</label>
-                <input
-                  type="date"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={donationEndDate}
-                  min={donationStartDate} // 기부 시작일자보다 같거나 더 큰 날짜로 설정
-                  onChange={handleDonationEndDateInput}
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">헌혈증 요청 개수</label>
-              <input
-                type="number"
-                min="1"
-                placeholder="요청할 헌혈증 개수를 입력하세요"
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                value={donationAmount}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "0") {
-                    alert("헌혈증 요청 개수는 1 이상이어야 합니다.");
-                    // 값이 0이면 1로 자동 변경
-                    handleDonationAmountInput({ target: { value: "1" } });
-                  } else {
-                    handleDonationAmountInput(e);
-                  }
-                }}
               />
             </div>
 
@@ -202,6 +143,7 @@ const RequestWritePage = () => {
               </div>
             </div>
 
+            {/* 에디터 */}
             <div className="border rounded-lg">
               <Editor
                 ref={editorRef}
@@ -214,11 +156,18 @@ const RequestWritePage = () => {
               />
             </div>
 
+            {/* 버튼 그룹 */}
             <div className="mt-6 flex justify-end space-x-2">
-              <button onClick={handleCancelButton} className="px-4 py-2 border rounded-lg hover:bg-gray-50">
+              <button
+                onClick={handleCancelButton}
+                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+              >
                 취소
               </button>
-              <button onClick={handleSaveButton} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+              <button
+                onClick={handleSaveButton}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
                 저장
               </button>
             </div>
@@ -229,4 +178,4 @@ const RequestWritePage = () => {
   );
 };
 
-export default RequestWritePage;
+export default AdminNoticeWritePage;
