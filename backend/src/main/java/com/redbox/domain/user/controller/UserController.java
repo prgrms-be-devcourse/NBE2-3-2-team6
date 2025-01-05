@@ -125,6 +125,14 @@ public class UserController {
         return ResponseEntity.ok(userService.getReceptions(page, size));
     }
 
+    @GetMapping("/users/my-info/redcards/pending")
+    public ResponseEntity<PageResponse<DonationResponse>> getPendingDonations(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(userService.getPendingDonations(page, size));
+    }
+
     @GetMapping("/users/my-info/requests")
     public ResponseEntity<PageResponse<ListResponse>> getRequests(
             @RequestParam(defaultValue = "1") int page,

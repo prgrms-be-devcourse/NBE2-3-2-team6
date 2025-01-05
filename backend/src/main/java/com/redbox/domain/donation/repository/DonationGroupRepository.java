@@ -39,6 +39,14 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "AND d.donationStatus = 'DONE'")
     Page<DonationResponse> findAllWithReceiverNameByDonorId(Long donorId, Pageable pageable);
 
+    @Query("SELECT new com.redbox.domain.user.dto.DonationResponse(d, " +
+            "CASE WHEN d.receiverId = 0 THEN '레드박스' ELSE u.name END) " +
+            "FROM DonationGroup d " +
+            "LEFT JOIN User u ON d.receiverId = u.id " +
+            "WHERE d.donorId = :donorId " +
+            "AND d.donationStatus = 'PENDING'")
+    Page<DonationResponse> findAllPENDINGWithReceiverNameByDonorId(Long donorId, Pageable pageable);
+
     @Query("SELECT new com.redbox.domain.user.dto.ReceptionResponse(d, " +
             "CASE WHEN d.donorId = 0 THEN '레드박스' ELSE u.name END) " +
             "FROM DonationGroup d " +

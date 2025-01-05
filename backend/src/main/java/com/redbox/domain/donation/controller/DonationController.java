@@ -43,15 +43,15 @@ public class DonationController {
         return ResponseEntity.ok(userDonationService.getCachedTop5Donors());
     }
 
-    @PutMapping("/donate/cancel/{type}/{receiveId}")
-    public ResponseEntity<String> donateCancel(@PathVariable String type, @PathVariable long receiveId) {
-        DonationService donationService = donationServiceMap.get(type.toLowerCase());
+    @PutMapping("/users/my-info/redcards/pending/{donationId}")
+    public ResponseEntity<String> donateCancel(@PathVariable long donationId) {
+        DonationService donationService = donationServiceMap.get("request");
 
         if (donationService == null) {
             throw new InvalidDonationTypeException();
         }
 
-        donationService.cancelDonation(receiveId);
+        donationService.cancelDonation(donationId);
         return ResponseEntity.ok("기부 취소");
     }
 

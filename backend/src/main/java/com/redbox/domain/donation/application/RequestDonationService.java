@@ -14,6 +14,7 @@ import com.redbox.domain.request.application.RequestService;
 import com.redbox.domain.request.entity.Request;
 import com.redbox.domain.request.entity.RequestStatus;
 import com.redbox.domain.request.exception.RequestNotFoundException;
+import com.redbox.domain.request.exception.UnauthorizedAccessException;
 import com.redbox.domain.request.repository.RequestRepository;
 
 import org.springframework.stereotype.Service;
@@ -88,15 +89,10 @@ public class RequestDonationService extends AbstractDonationService {
         return donationGroups;
     }
 
-    public DonationGroup getDonationGroup(long userId, long receivedId, DonationStatus donationStatus) {
-        DonationGroup donationGroup = dependencies.getDonationGroupRepository()
-                                                  .findByDonorIdAndReceiverIdAndDonationStatus(userId, receivedId, donationStatus);
+    public DonationGroup getDonationGroup(long donationGroupId) {
 
-        if (donationGroup == null) {
-            throw new DonationGroupNotFoundException();
-        }
-
-        return donationGroup;
+        return dependencies.getDonationGroupRepository()
+                           .findById(donationGroupId).orElseThrow(DonationGroupNotFoundException::new);
     }
 
     @Transactional
@@ -129,9 +125,10 @@ public class RequestDonationService extends AbstractDonationService {
 
     @Transactional
     @Override
-    public void cancelDonation(long receiveId) {
+    public void cancelDonation(long donationId) {
         long userId = dependencies.getCurrentUserId();
-        DonationGroup donationGroup = getDonationGroup(userId, receiveId, DonationStatus.PENDING);
+        validationCancelUser(userId, donationId);
+        DonationGroup donationGroup = getDonationGroup(donationId);
         donationGroup.donateCancel();
 
         List<DonationDetail> cancelData = getDonationDetails(donationGroup.getId());
@@ -160,6 +157,13 @@ public class RequestDonationService extends AbstractDonationService {
 
         if (request.getUserId().equals(donorId)) {
             throw new DonationNotSelfException();
+        }
+    }
+
+    public void validationCancelUser(long userId, long donationId) {
+        DonationGroup donationGroup = getDonationGroup(donationId);
+        if (!donationGroup.getDonorId().equals(userId)) {
+            throw new UnauthorizedAccessException();
         }
     }
 
