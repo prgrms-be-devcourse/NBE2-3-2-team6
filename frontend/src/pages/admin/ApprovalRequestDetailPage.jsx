@@ -41,17 +41,12 @@ const ApprovalRequestDetailPage = () => {
   /// 데이터 보내기 (게시판 id, status)
   const sendData = async (id, status) => {
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          approveStatus: status,
-        }),
+      const response = await api.post(`${url}/${id}`, {
+        approveStatus: status,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
+        // 또는 response.data가 있는지 확인
         alert("처리 완료");
         setCount(count + 1);
         navigate("/admin/approve");
