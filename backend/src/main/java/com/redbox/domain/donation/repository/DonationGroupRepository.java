@@ -78,4 +78,6 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
 
     @Query("SELECT SUM(d.donationAmount) FROM DonationGroup d where d.donationType = 'TO_REDBOX' and d.donationStatus = 'DONE'")
     Integer sumDonationAmountInRedbox();
+
+    boolean existsByReceiverIdAndDonorId(Long requestId, Long donorId);
 }

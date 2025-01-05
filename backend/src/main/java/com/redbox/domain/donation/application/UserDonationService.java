@@ -58,6 +58,7 @@ public class UserDonationService extends AbstractDonationService {
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
         long donorId = dependencies.getCurrentUserId();
+        // user 가 존재하는지
         validateReceiver(receiverId);
         validateSelfDonate(receiverId, donorId);
 

@@ -5,6 +5,6 @@ import com.redbox.global.exception.ErrorCode;
 
 public class UserNotFoundException extends BusinessException {
     public UserNotFoundException() {
-        super(ErrorCode.FAIL_TO_FIND_REQUEST);
+        super(ErrorCode.FAIL_TO_FIND_USER);
     }
 }
