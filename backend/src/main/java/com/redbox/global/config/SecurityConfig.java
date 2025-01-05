@@ -117,7 +117,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // 허용할 Origin 추가
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://react-practice-7f2j.vercel.app")); // 허용할 Origin 추가
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*")); // 허용할 헤더
         configuration.setExposedHeaders(List.of("access", "Content-Type")); // 노출할 헤더
