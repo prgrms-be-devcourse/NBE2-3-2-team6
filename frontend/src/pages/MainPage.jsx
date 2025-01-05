@@ -53,7 +53,7 @@ const MainPage = () => {
         alert("레드박스 데이터를 불러오는 데 문제가 발생했습니다.");
       }
     };
-    fetchBoardItems();
+    fetchData();
   }, []);
 
   return (
