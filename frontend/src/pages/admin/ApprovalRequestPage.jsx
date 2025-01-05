@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"; // Link 컴포넌트
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/axios";
 
 const AdminRequestPage = () => {
   // 요청 들어온 개수를 fetchData 실행될때
@@ -15,10 +16,9 @@ const AdminRequestPage = () => {
   /// 데이터 가져오기
   const fetchData = async () => {
     try {
-      const response = await fetch(url);
-      const result = await response.json();
-      reqSetdata(result);
-      console.log(result);
+      const response = await api.get(url);
+      reqSetdata(response.data);
+      console.log(response.data);
     } catch (error) {
       console.log("데이터를 가져오는 중 오류 발생 : ", error);
     }
@@ -27,17 +27,12 @@ const AdminRequestPage = () => {
   // 데이터 보내기
   const sendData = async (id, status) => {
     try {
-      const response = await fetch(url + `/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          approveStatus: status,
-        }),
+      const response = await api.post(`${url}/${id}`, {
+        approveStatus: status,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
+        // 또는 response.data가 있는지 확인
         alert("처리 완료");
         setCount(count + 1);
         navigate("/admin/approve");
