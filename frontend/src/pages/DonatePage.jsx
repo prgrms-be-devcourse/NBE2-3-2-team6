@@ -16,10 +16,10 @@ const DonatePage = () => {
   const [isRedboxModalOpen, setIsRedboxModalOpen] = useState(false);
   const [donationType, setDonationType] = useState("");
 
-  const handleSubmit = async (quantity, comment, userId = null) => {
+  const handleSubmit = async (quantity, comment, receiveId = null) => {
     try {
       await api.post(`/donate/${donationType}`, {
-        userId,
+        receiveId,
         quantity,
         comment,
       });
