@@ -219,9 +219,9 @@ public class UserService {
         return new PageResponse<>(donationGroupRepository.findAllWithReceiverNameByDonorId(getCurrentUserId(), pageable));
     }
 
-    public PageResponse<DonationResponse> getPendingDonations(int page, int size) {
+    public PageResponse<PendingResponse> getPendingDonations(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        return new PageResponse<>(donationGroupRepository.findAllPENDINGWithReceiverNameByDonorId(getCurrentUserId(), pageable));
+        return new PageResponse<>(donationGroupRepository.findAllPENDINGByDonorId(getCurrentUserId(), pageable));
     }
 
 

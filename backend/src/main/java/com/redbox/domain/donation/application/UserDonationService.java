@@ -58,12 +58,13 @@ public class UserDonationService extends AbstractDonationService {
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
         long donorId = dependencies.getCurrentUserId();
+        // user 가 존재하는지
         validateReceiver(receiverId);
         validateSelfDonate(receiverId, donorId);
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
         dependencies.getRedcardService().updateRedCardList(redcardList, receiverId, OwnerType.USER);
-        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, DonationStatus.PENDING, donationCount, donationRequest.getComment());
+        DonationGroup userDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, DonationStatus.DONE, donationCount, donationRequest.getComment());
         Long donationGroupId = userDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);
     }

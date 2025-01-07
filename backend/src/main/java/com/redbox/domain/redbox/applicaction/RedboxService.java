@@ -61,7 +61,7 @@ public class RedboxService extends AbstractDonationService {
         // 헌혈증 보유자 수정
         dependencies.getRedcardService().updateRedCardList(redcardList, receiverId, OwnerType.REDBOX);
         // 레드박스 기부 기록 생성 & 저장
-        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_USER, DonationStatus.DONE,donationCount, donationRequest.getComment());
+        DonationGroup redboxDonationGroup = createDonationGroup(donorId, receiverId, DonationType.TO_REDBOX, DonationStatus.DONE,donationCount, donationRequest.getComment());
         // 레드박스 디테일 생성 & 저장
         Long donationGroupId = redboxDonationGroup.getId();
         saveDonationDetails(redcardList, donationGroupId);

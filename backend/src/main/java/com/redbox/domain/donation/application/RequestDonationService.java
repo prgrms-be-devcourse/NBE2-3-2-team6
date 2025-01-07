@@ -8,6 +8,7 @@ import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.donation.exception.DonationDuplicateException;
 import com.redbox.domain.donation.exception.DonationGroupNotFoundException;
 import com.redbox.domain.donation.exception.DonationNotSelfException;
+import com.redbox.domain.donation.repository.DonationGroupRepository;
 import com.redbox.domain.redcard.entity.Redcard;
 import com.redbox.domain.redcard.service.RedcardService;
 import com.redbox.domain.request.application.RequestService;
@@ -29,12 +30,14 @@ public class RequestDonationService extends AbstractDonationService {
     private final RequestService requestService;
     private final RedcardService redcardService;
     private final RequestRepository requestRepository;
+    private final DonationGroupRepository donationGroupRepository;
 
-    public RequestDonationService(DonationServiceDependencies dependencies, RequestService requestService, RequestRepository requestRepository) {
+    public RequestDonationService(DonationServiceDependencies dependencies, RequestService requestService, RequestRepository requestRepository, DonationGroupRepository donationGroupRepository) {
         super(dependencies);
         this.requestService = requestService;
         this.redcardService = dependencies.getRedcardService();
         this.requestRepository = requestRepository;
+        this.donationGroupRepository = dependencies.getDonationGroupRepository();
     }
 
     // 게시글 만료 처리
@@ -102,8 +105,11 @@ public class RequestDonationService extends AbstractDonationService {
         int donationCount = donationRequest.getQuantity();
         long receiverId = donationRequest.getReceiveId();
         long donorId = dependencies.getCurrentUserId();
+        // 게시글이 존재하는지
         validateReceiver(receiverId);
+        // 본인에게 기부하는지
         validateSelfDonate(receiverId, donorId);
+        // 이미 기부한 적이 있는지
         validateDuplicateDonate(receiverId, donorId);
 
         List<Redcard> redcardList = pickDonateRedCardList(donationRequest);
@@ -116,7 +122,7 @@ public class RequestDonationService extends AbstractDonationService {
     }
 
     public void validateDuplicateDonate(long requestId, long donorId) {
-        boolean exists = requestRepository.existsByRequestIdAndUserId(requestId, donorId);
+        boolean exists = donationGroupRepository.existsByReceiverIdAndDonorId(requestId, donorId);
 
         if (exists) {
             throw new DonationDuplicateException();
@@ -140,7 +146,8 @@ public class RequestDonationService extends AbstractDonationService {
     @Override
     public void validateDonation(List<Redcard> redcardList, DonationRequest donationRequest) {
         checkDonateAmount(redcardList, donationRequest.getQuantity());
-        validateReceiver(dependencies.getCurrentUserId());
+        //게시글이 존재하는지
+        validateReceiver(donationRequest.getReceiveId());
     }
 
     @Override

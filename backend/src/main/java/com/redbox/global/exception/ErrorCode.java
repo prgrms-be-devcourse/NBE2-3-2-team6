@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 요청 게시판 관련
-    FAIL_TO_FIND_REQUEST(HttpStatus.NOT_FOUND,"해당 게시판을 찾을 수 없습니다."),
+    FAIL_TO_FIND_REQUEST(HttpStatus.NOT_FOUND,"해당 게시글을 찾을 수 없습니다."),
 
     // 현재 로그인한 회원 찾기
     FAIL_TO_FIND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),

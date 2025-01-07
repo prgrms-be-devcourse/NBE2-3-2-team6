@@ -3,8 +3,8 @@ package com.redbox.domain.donation.repository;
 import com.redbox.domain.donation.dto.Top5DonorResponse;
 import com.redbox.domain.donation.entity.DonationGroup;
 import com.redbox.domain.donation.entity.DonationStatus;
-import com.redbox.domain.donation.entity.DonationType;
 import com.redbox.domain.user.dto.DonationResponse;
+import com.redbox.domain.user.dto.PendingResponse;
 import com.redbox.domain.user.dto.ReceptionResponse;
 
 import org.springframework.data.domain.Page;
@@ -39,13 +39,11 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
             "AND d.donationStatus = 'DONE'")
     Page<DonationResponse> findAllWithReceiverNameByDonorId(Long donorId, Pageable pageable);
 
-    @Query("SELECT new com.redbox.domain.user.dto.DonationResponse(d, " +
-            "CASE WHEN d.receiverId = 0 THEN '레드박스' ELSE u.name END) " +
+    @Query("SELECT new com.redbox.domain.user.dto.PendingResponse(d)" +
             "FROM DonationGroup d " +
-            "LEFT JOIN User u ON d.receiverId = u.id " +
             "WHERE d.donorId = :donorId " +
             "AND d.donationStatus = 'PENDING'")
-    Page<DonationResponse> findAllPENDINGWithReceiverNameByDonorId(Long donorId, Pageable pageable);
+    Page<PendingResponse> findAllPENDINGByDonorId(Long donorId, Pageable pageable);
 
     @Query("SELECT new com.redbox.domain.user.dto.ReceptionResponse(d, " +
             "CASE WHEN d.donorId = 0 THEN '레드박스' ELSE u.name END) " +
@@ -78,4 +76,6 @@ public interface DonationGroupRepository extends JpaRepository<DonationGroup, Lo
 
     @Query("SELECT SUM(d.donationAmount) FROM DonationGroup d where d.donationType = 'TO_REDBOX' and d.donationStatus = 'DONE'")
     Integer sumDonationAmountInRedbox();
+
+    boolean existsByReceiverIdAndDonorId(Long requestId, Long donorId);
 }

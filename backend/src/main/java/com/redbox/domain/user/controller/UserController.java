@@ -126,7 +126,7 @@ public class UserController {
     }
 
     @GetMapping("/users/my-info/redcards/pending")
-    public ResponseEntity<PageResponse<DonationResponse>> getPendingDonations(
+    public ResponseEntity<PageResponse<PendingResponse>> getPendingDonations(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
