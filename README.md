@@ -23,8 +23,8 @@ REDBOX는 사용자에게 기부받은 헌혈증이 모이는 곳이며, 모인 
         </a>
     </td>
     <td>
-        <a href="https://github.com/Jhynguu">
-            <img src="https://avatars.githubusercontent.com/Jhynguu?v=4" width="100px" />
+        <a href="https://github.com/Jhyngu">
+            <img src="https://avatars.githubusercontent.com/Jhyngu?v=4" width="100px" />
         </a>
     </td>
     <td>
